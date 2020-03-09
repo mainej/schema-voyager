@@ -1,9 +1,7 @@
-
-{:source-paths ["src"]
- :dependencies []
+{:deps     true
  :dev-http {8080 "target/"}
- :builds {:app {:output-dir "target/"
-                :asset-path "."
-                :target :browser
-                :modules {:main {:init-fn app.main/main!}}
-                :devtools {:after-load app.main/reload!}}}}
+ :builds   {:app {:output-dir "target/"
+                  :asset-path "."
+                  :target     :browser
+                  :modules    {:main {:init-fn app.main/main!}}
+                  :devtools   {:after-load app.main/reload!}}}}

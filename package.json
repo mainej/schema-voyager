@@ -1,5 +1,5 @@
 {
-  "name": "minimal-shadow-cljs-browser",
+  "name": "schema-voyager",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -16,6 +16,6 @@
   "license": "MIT",
   "devDependencies": {
     "http-server": "^0.11.1",
-    "shadow-cljs": "^2.8.39"
+    "shadow-cljs": "^2.8.91"
   }
 }
