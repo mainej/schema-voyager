@@ -1,0 +1,32 @@
+* process data into datascript db
+** basic schema
+** with deprecations
+** with see-also
+** with references
+** with tuples
+** with tuple references
+** with derived aggregate/enum
+** with explicit aggregate/enum
+** with attribute predicates
+** with entity predicates
+* ingest data
+** from file
+** from db
+* inspect data
+** aggregate table
+*** name
+*** primary key?
+*** type, with refs
+*** comments
+*** see also
+*** special attributes
+** enum table
+*** name
+*** comments
+*** see also
+** connections graph for one aggregate/enum
+** full graph
+* export data
+** to static datascript db?
+** to static HTML, with inlined data (and JS and CSS)
+** to svg
