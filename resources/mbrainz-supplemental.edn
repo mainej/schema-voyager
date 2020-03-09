@@ -1,3 +1,2 @@
 [#:db{:ident                 :track/artistCredit
-      :db.schema/deprecated? true
-      :db.schema/see-also    [:track/artists]}]
+      :db.schema/deprecated? true}]
