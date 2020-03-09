@@ -1,6 +1,8 @@
 * process data into datascript db
-** basic schema
-** with deprecations
+** DONE basic schema
+   CLOSED: [2020-03-09 Mon 14:17]
+** DONE with deprecations
+   CLOSED: [2020-03-09 Mon 14:43]
 ** with see-also
 ** with references
 ** with tuples

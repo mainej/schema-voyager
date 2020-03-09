@@ -1,0 +1,2 @@
+[#:db{:ident                 :track/artistCredit
+      :db.schema/deprecated? true}]
