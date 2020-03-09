@@ -3,5 +3,5 @@
  :builds   {:app {:output-dir "target/"
                   :asset-path "."
                   :target     :browser
-                  :modules    {:main {:init-fn app.main/main!}}
-                  :devtools   {:after-load app.main/reload!}}}}
+                  :modules    {:main {:init-fn schema-voyager.html.live/main!}}
+                  :devtools   {:after-load schema-voyager.html.live/reload!}}}}
