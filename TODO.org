@@ -3,16 +3,22 @@
    CLOSED: [2020-03-09 Mon 14:17]
 ** DONE with deprecations
    CLOSED: [2020-03-09 Mon 14:43]
-** with see-also
-** with references
+** DONE with see-also
+   CLOSED: [2020-03-09 Mon 14:56]
+** DONE with references
+   CLOSED: [2020-03-09 Mon 16:41]
 ** with tuples
 ** with tuple references
-** with derived aggregate/enum
-** with explicit aggregate/enum
+** DONE with derived aggregate/enum
+   CLOSED: [2020-03-09 Mon 16:42]
+** DONE with explicit aggregate/enum
+   CLOSED: [2020-03-09 Mon 16:42]
 ** with attribute predicates
 ** with entity predicates
+** allow doc strings on collections
 * ingest data
-** from file
+** DONE from file
+   CLOSED: [2020-03-09 Mon 16:44]
 ** from db
 * inspect data
 ** aggregate table

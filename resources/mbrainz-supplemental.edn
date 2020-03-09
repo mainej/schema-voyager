@@ -1,2 +1,39 @@
-[#:db{:ident                 :track/artistCredit
-      :db.schema/deprecated? true}]
+[#:db.schema{:db/ident    :track/artistCredit
+             :deprecated? true
+             :see-also    [[:db/ident :track/artists]]}
+ #:db.schema{:db/ident   :artist/type
+             :references [#schema-coll [:enum :artist.type]]}
+ #:db.schema{:db/ident   :artist/gender
+             :references [#schema-coll [:enum :artist.gender]]}
+ #:db.schema{:db/ident   :artist/country
+             :references [#schema-coll [:aggregate :country]]}
+ #:db.schema{:db/ident   :abstractRelease/type
+             :references [#schema-coll [:enum :release.type]]}
+ #:db.schema{:db/ident   :abstractRelease/artists
+             :references [#schema-coll [:aggregate :artist]]}
+ #:db.schema{:db/ident   :label/type
+             :references [#schema-coll [:enum :label.type]]}
+ #:db.schema{:db/ident   :label/country
+             :references [#schema-coll [:aggregate :country]]}
+ #:db.schema{:db/ident   :release/country
+             :references [#schema-coll [:aggregate :country]]}
+ #:db.schema{:db/ident   :release/labels
+             :references [#schema-coll [:aggregate :label]]}
+ #:db.schema{:db/ident   :release/script
+             :references [#schema-coll [:aggregate :script]]}
+ #:db.schema{:db/ident   :release/language
+             :references [#schema-coll [:aggregate :language]]}
+ #:db.schema{:db/ident   :release/media
+             :references [#schema-coll [:aggregate :medium]]}
+ #:db.schema{:db/ident   :release/packaging
+             :references [#schema-coll [:enum :release.packaging]]}
+ #:db.schema{:db/ident   :release/artists
+             :references [#schema-coll [:aggregate :artist]]}
+ #:db.schema{:db/ident   :release/abstractRelease
+             :references [#schema-coll [:aggregate :abstractRelease]]}
+ #:db.schema{:db/ident   :medium/tracks
+             :references [#schema-coll [:aggregate :track]]}
+ #:db.schema{:db/ident   :medium/format
+             :references [#schema-coll [:enum :medium.format]]}
+ #:db.schema{:db/ident   :track/artists
+             :references [#schema-coll [:aggregate :artist]]}]

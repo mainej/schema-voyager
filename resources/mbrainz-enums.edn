@@ -1,0 +1,55 @@
+[#:db{:ident :artist.gender/female, :doc "Female"}
+ #:db{:ident :artist.gender/male, :doc "Male"}
+ #:db{:ident :artist.type/group, :doc "Group"}
+ #:db{:ident :artist.type/person, :doc "Person"}
+ #:db{:ident :label.type/bootlegProduction, :doc "Bootleg Production"}
+ #:db{:ident :label.type/distributor, :doc "Distributor"}
+ #:db{:ident :label.type/holding, :doc "Holding"}
+ #:db{:ident :label.type/originalProduction,:doc "Original Production"}
+ #:db{:ident :label.type/production, :doc "Production"}
+ #:db{:ident :label.type/publisher, :doc "Publisher"}
+ #:db{:ident :label.type/reissueProduction, :doc "Reissue Production"}
+ #:db{:ident :medium.format/betamax, :doc "Betamax"}
+ #:db{:ident :medium.format/bluray, :doc "Blu-ray"}
+ #:db{:ident :medium.format/cartridge, :doc "Cartridge"}
+ #:db{:ident :medium.format/cassette, :doc "Cassette"}
+ #:db{:ident :medium.format/cd, :doc "CD"}
+ #:db{:ident :medium.format/cd8cm, :doc "8cm CD"}
+ #:db{:ident :medium.format/cdr, :doc "CD-R"}
+ #:db{:ident :medium.format/dat, :doc "DAT"}
+ #:db{:ident :medium.format/dcc, :doc "DCC"}
+ #:db{:ident :medium.format/digitalMedia, :doc "Digital Media"}
+ #:db{:ident :medium.format/dualDisc, :doc "DualDisc"}
+ #:db{:ident :medium.format/dvd, :doc "DVD"}
+ #:db{:ident :medium.format/dvdAudio, :doc "DVD-Audio"}
+ #:db{:ident :medium.format/dvdVideo, :doc "DVD-Video"}
+ #:db{:ident :medium.format/hdcd, :doc "HDCD"}
+ #:db{:ident :medium.format/hddvd, :doc "HD-DVD"}
+ #:db{:ident :medium.format/laserDisc, :doc "LaserDisc"}
+ #:db{:ident :medium.format/miniDisc, :doc "MiniDisc"}
+ #:db{:ident :medium.format/other, :doc "Other"}
+ #:db{:ident :medium.format/pianoRoll, :doc "Piano Roll"}
+ #:db{:ident :medium.format/reel, :doc "Reel-to-reel"}
+ #:db{:ident :medium.format/sacd, :doc "SACD"}
+ #:db{:ident :medium.format/slotMusic, :doc "slotMusic"}
+ #:db{:ident :medium.format/svcd, :doc "SVCD"}
+ #:db{:ident :medium.format/umd, :doc "UMD"}
+ #:db{:ident :medium.format/usbFlashDrive, :doc "USB Flash Drive"}
+ #:db{:ident :medium.format/vcd, :doc "VCD"}
+ #:db{:ident :medium.format/vhs, :doc "VHS"}
+ #:db{:ident :medium.format/videotape, :doc "Videotape"}
+ #:db{:ident :medium.format/vinyl, :doc "Vinyl"}
+ #:db{:ident :medium.format/vinyl10, :doc "10\" Vinyl"}
+ #:db{:ident :medium.format/vinyl12, :doc "12\" Vinyl"}
+ #:db{:ident :medium.format/vinyl7, :doc "7\" Vinyl"}
+ #:db{:ident :medium.format/waxCylinder, :doc "Wax Cylinder"}
+ #:db{:ident :release.packaging/cardboardPaperSleeve,:doc "Cardboard/Paper Sleeve"}
+ #:db{:ident :release.packaging/digipak, :doc "Digipak"}
+ #:db{:ident :release.packaging/jewelCase, :doc "Jewel Case"}
+ #:db{:ident :release.packaging/keepCase, :doc "Keep Case"}
+ #:db{:ident :release.packaging/none, :doc "None"}
+ #:db{:ident :release.packaging/slimJewelCase, :doc "Slim Jewel Case"}
+ #:db{:ident :release.type/album, :doc "Album"}
+ #:db{:ident :release.type/audiobook, :doc "Audiobook"}
+ #:db{:ident :release.type/ep, :doc "EP"}
+ #:db{:ident :release.type/single, :doc "Single"}]
