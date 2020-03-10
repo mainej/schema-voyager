@@ -21,6 +21,7 @@
    CLOSED: [2020-03-09 Mon 16:44]
 ** from db
 * inspect data
+** index
 ** aggregate table
 *** name
 *** primary key?

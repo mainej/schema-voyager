@@ -1,6 +1,18 @@
 [#:db.schema{:db/ident    :track/artistCredit
              :deprecated? true
              :see-also    [[:db/ident :track/artists]]}
+ #:db.schema{:db/ident :artist.type/name
+             :part-of  [#schema-coll [:enum :artist.type]]}
+ #:db.schema{:db/ident :artist.gender/name
+             :part-of  [#schema-coll [:enum :artist.gender]]}
+ #:db.schema{:db/ident :label.type/name
+             :part-of  [#schema-coll [:enum :label.type]]}
+ #:db.schema{:db/ident :medium.format/name
+             :part-of  [#schema-coll [:enum :medium.format]]}
+ #:db.schema{:db/ident :release.packaging/name
+             :part-of  [#schema-coll [:enum :release.packaging]]}
+ #:db.schema{:db/ident :release.type/name
+             :part-of  [#schema-coll [:enum :release.type]]}
  #:db.schema{:db/ident   :artist/type
              :references [#schema-coll [:enum :artist.type]]}
  #:db.schema{:db/ident   :artist/gender

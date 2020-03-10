@@ -10,9 +10,6 @@
 (defn read-string [s]
   (edn/read-string {:readers {'schema-coll read-schema-coll}} s))
 
-(defn read-file [f]
-  (read-string (slurp f)))
-
 (def metaschema
   {
    ;; Other attributes to which this attribute is related. Often used with

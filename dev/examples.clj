@@ -4,12 +4,15 @@
             [schema-voyager.data :as data]
             [datascript.core :as d]))
 
-(let [schema (data/read-file (io/resource "mbrainz-schema.edn"))
-      enums  (data/read-file (io/resource "mbrainz-enums.edn"))
-      supp   (data/read-file (io/resource "mbrainz-supplemental.edn"))
-      db     (data/process (data/empty-db) (-> schema
-                                               (data/join enums)
-                                               (data/join supp)))]
+(def mbrainz-db
+  (let [schema (data/read-string (slurp (io/resource "mbrainz-schema.edn")))
+        enums  (data/read-string (slurp (io/resource "mbrainz-enums.edn")))
+        supp   (data/read-string (slurp (io/resource "mbrainz-supplemental.edn")))]
+    (data/process (data/empty-db) (-> schema
+                                      (data/join enums)
+                                      (data/join supp)))))
+
+(let [db mbrainz-db]
   #_(println
    (d/touch (d/entity db [:db/ident :track/artistCredit])))
   #_(println
@@ -29,7 +32,7 @@
            db))
    )
 
-  (pprint/pprint
+  #_(pprint/pprint
    (map d/touch (:db.schema/references (d/entity db [:db/ident :track/artists])))
    )
   )
