@@ -43,12 +43,16 @@
   [:ul
    (for [{:keys [db/id db.schema.collection/name] :as coll} collection]
      ^{:key id}
-     [:li [:a {:href (util/coll-href coll)}
+     [:li [:a.text-blue-500.hover:underline {:href (util/coll-href coll)}
            name]])])
+
+(defn list-section [title collections]
+  [:div.md:flex.mb-6
+   [:h1.md:w-1of4.small-caps title]
+   [:div.md:w-3of4
+    [collection-list collections]]])
 
 (defn page []
   [:div
-   [:h1 "aggregates"]
-   [collection-list (<sub [::aggregates])]
-   [:h1 "enums"]
-   [collection-list (<sub [::enums])]])
+   [list-section "Aggregates" (<sub [::aggregates])]
+   [list-section "Enums" (<sub [::enums])]])

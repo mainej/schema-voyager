@@ -1,6 +1,5 @@
 // disable some colors
 module.exports = {
-    separator: '_',
     theme: {
         width: (theme) => ({
             auto: 'auto',
@@ -47,6 +46,9 @@ module.exports = {
         extend: {
             maxWidth: {
                 screen: '100vw',
+            },
+            fill: {
+                none: 'none'
             }
         },
     },

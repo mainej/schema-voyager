@@ -1,0 +1,27 @@
+/* purgecss start ignore */
+
+/**
+ * This injects Tailwind's base styles, which is a combination of
+ * Normalize.css and some additional base styles.
+ *
+ * You can see the styles here:
+ * https://github.com/tailwindcss/tailwindcss/blob/master/css/base.css
+ */
+
+@import "tailwindcss/base";
+@import "./custom-base-styles.css";
+
+/**
+ * This injects any component classes registered by plugins.
+ */
+@import "tailwindcss/components";
+@import "./custom-components.css";
+
+/* purgecss end ignore */
+
+/**
+ * This injects all of Tailwind's utility classes, generated based on your
+ * config file.
+ */
+@import "tailwindcss/utilities";
+@import "./custom-utilities.css";

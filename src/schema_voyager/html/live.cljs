@@ -1,7 +1,7 @@
 (ns schema-voyager.html.live
   (:require [schema-voyager.data :as data]
             [schema-voyager.html.routes :as routes]
-            [schema-voyager.html.util :refer [<sub >dis]]
+            [schema-voyager.html.util :refer [<sub >dis] :as util]
             [shadow.resource :as resource]
             [datascript.core :as d]
             [re-posh.core :as rp]
@@ -34,12 +34,31 @@
  (fn [db _]
    (:active-route db)))
 
+[:div
+ [:header.bg-white.shadow
+  [:div.max-w-7xl.mx-auto.py-6.px-4.sm:px-6.lg:px-8
+   [:h2.text-3xl.font-bold.leading-tight.text-gray-900
+    "\n        Dashboard\n      "]]]
+ [:main
+  [:div.max-w-7xl.mx-auto.py-6.sm:px-6.lg:px-8
+   "<!-- Replace with your content -->"
+   [:div.px-4.py-6.sm:px-0
+    [:div.border-4.border-dashed.border-gray-200.rounded-lg.h-96]]
+   "<!-- /End replace -->"]]]
+
 (defn main-view []
-  [:div.min-h-screen.min-w-screen.font-sans.text-gray-900.flex.flex-col.justify-between.items-center
-   [:div.container.mx-auto.p-4
-    (let [route (<sub [::active-route])]
-      (when-let [view (:view (:data route))]
-        [view (:parameters route)]))]])
+  (let [route (<sub [::active-route])]
+    [:div.min-w-screen.font-sans.text-gray-900
+     [:header.bg-gray-900.shadow
+      [:div.max-w-7xl.mx-auto.py-6.px-4.sm:px-6.lg:px-8
+       [:h1.text-3xl.font-bold.leading-tight.text-white
+        (if (= :route/collections (:name (:data route)))
+          "Schema Voyage"
+          [:a {:href (util/href :route/collections)} "Schema Voyage"])]]]
+     [:main.bg-gray-200.min-h-screen
+      [:div.max-w-7xl.mx-auto.py-6.sm:px-6.lg:px-8
+       (when-let [view (:view (:data route))]
+         [view (:parameters route)])]]]))
 
 (defn ^:export mount-root []
   (re-frame/clear-subscription-cache!)

@@ -1,0 +1,87 @@
+/**
+ * Here you would add any of your custom component classes; stuff that you'd
+ * want loaded *before* the utilities so that the utilities could still
+ * override them.
+ *
+ * Example:
+ *
+ * .btn { ... }
+ * .form-input { ... }
+ *
+ * Or if using a preprocessor or `postcss-import`:
+ *
+ * @import "components/buttons";
+ * @import "components/forms";
+ */
+
+.btn {
+    /* basscss sets font family, size and weight */
+    @apply cursor-pointer;
+    @apply inline-block;
+    /* basscss sets line-height */
+    @apply px-3 py-2 m-0 h-auto;
+    @apply border-2;
+    @apply align-middle;
+    @apply appearance-none;
+    @apply bg-transparent;
+    color: inherit;
+}
+
+.btn:disabled {
+    @apply cursor-not-allowed;
+}
+
+.btn:focus {
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+.btn-outline, .btn-outline:hover {
+    border-color: currentColor;
+}
+
+.btn-primary {
+    @apply bg-blue-500 text-white;
+}
+
+.btn-primary, .btn-outline {
+    @apply rounded;
+}
+
+.btn:focus {
+    @apply outline-none;
+}
+
+.btn:focus, .btn-primary:hover, .btn-outline:hover, .btn-primary:active, .btn-outline:active {
+    @apply shadow-outline;
+}
+
+.btn-primary:disabled, .btn-primary.is-disabled, .btn-outline:disabled, .btn-outline.is-disabled {
+    @apply opacity-50;
+}
+
+.feather {
+    width: 1em;
+    height: 1em;
+    fill: none;
+    @apply stroke-current;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.small-caps {
+    font-variant: small-caps;
+    @apply tracking-wider;
+}
+
+.label {
+    @apply small-caps text-gray-700 text-sm;
+}
+
+.input-region {
+    @apply px-3 py-2 border border-gray-500 w-full;
+}
+
+.input-region:focus-within {
+    @apply border-blue-600;
+}

@@ -1,54 +1,62 @@
 (ns schema-voyager.html.components.entity
-  (:require [schema-voyager.html.util :as util]
-            [schema-voyager.html.components.attributes :as attributes]))
+  (:require [schema-voyager.html.util :as util]))
 
-(defn field-definition-list [fields]
-  [:dl
-   (for [[field value] (sort-by first fields)]
-     ^{:key field}
-     [:<>
-      [:dt (pr-str field)]
-      [:dd (pr-str value)]])])
+(def chevron-right
+  [:svg.fill-none.stroke-current.stroke-2.w-4.h-4 {:viewBox "0 0 24 24"}
+   [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M9 5l7 7-7 7"}]])
 
-(defn reference-list [colls]
-  [:ul
-   (for [coll colls]
-     [:li
-      [:a {:href (util/coll-href coll)}
-       (pr-str
-        (:db.schema.collection/name coll))]])])
+(def lock-closed
+  [:svg.inline.fill-none.stroke-current.stroke-2.w-4.h-4 {:viewBox "0 0 24 24"}
+   [:title "Unique key"]
+   [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"}]])
 
-(defn see-also-links [{:keys [db.schema/see-also]}]
-  (when-let [see-also see-also]
-    [:div "see also"
-     [attributes/links see-also]]))
+(defn doc-str [{:keys [db/doc]}]
+  (when-let [doc-str doc]
+    [:p.mt-4.text-gray-600 doc-str]))
+
+(defn value-type [{:keys [db/valueType db/cardinality db.schema/references]}]
+  (let [many? (= :db.cardinality/many cardinality)]
+    [:p
+     (when many? "[")
+     (if (seq references)
+       [util/coll-links references]
+       valueType)
+     (when many? "]")]))
+
+(defn header [{:keys [db/ident db/unique]}]
+  [:h1
+   (pr-str ident)
+   (when (= :db.unique/identity unique)
+     [:<> " " [:span.text-purple-700 lock-closed]])])
 
 (defmulti panel (fn [entity]
                   (if (:db/valueType entity)
                     :attribute
                     :constant)))
 
-(defmethod panel :attribute [{:keys [db/ident db/doc db/valueType db/cardinality db.schema/references] :as entity}]
-  (let [many? (= :db.cardinality/many cardinality)]
-    [:section
-     [:h1 (pr-str ident)]
-     (when-let [doc-str doc]
-       [:p doc-str])
-     [:p
-      (when many? "[")
-      (if (seq references)
-        [reference-list references]
-        valueType)
-      (when many? "]")]
-     [see-also-links entity]
-     (when-let [additional-fields (seq (dissoc entity :db/id :db.schema/part-of :db.schema/see-also :db/ident :db/doc :db/valueType :db/cardinality :db.schema/references))]
-       [field-definition-list additional-fields])]))
+(defmethod panel :attribute [entity]
+  [:section.border-b
+   {:class (when (:db.schema/deprecated? entity)
+             :bg-gray-300)}
+   [:a.p-4.sm:p-6.flex.items-center.justify-center
+    {:href (util/attr-href entity)}
+    [:div.sm:flex.flex-grow
+     [:div.sm:w-4of6
+      [header entity]
+      [:div.hidden.sm:block
+       [doc-str entity]]]
+     [:div.flex-grow.sm:text-right.mt-4.sm:mt-0
+      [value-type entity]]]
+    [:div.ml-4.sm:ml-6 chevron-right]]])
 
-(defmethod panel :constant [{:keys [db/ident db/doc] :as entity}]
-  [:section
-   [:h1 (pr-str ident)]
-   (when-let [doc-str doc]
-     [:p doc-str])
-   [see-also-links entity]
-   (when-let [additional-fields (seq (dissoc entity :db/id :db.schema/part-of :db.schema/see-also :db/ident :db/doc))]
-     [field-definition-list additional-fields])])
+(defmethod panel :constant [entity]
+  [:section.border-b
+   {:class (when (:db.schema/deprecated? entity)
+             :bg-gray-300)}
+   [:a.p-4.sm:p-6.flex.items-center.justify-center
+    {:href (util/attr-href entity)}
+    [:div.flex-grow
+     [header entity]
+     [:div.hidden.sm:block
+      [doc-str entity]]]
+    [:div.ml-4.sm:ml-6 chevron-right]]])

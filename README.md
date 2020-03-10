@@ -1,3 +1,17 @@
+### CSS
+
+#### development
+
+```bash
+	NODE_ENV=development npx postcss -c postcss.config.js -o target/styles.css assets/css/styles.css
+```
+
+#### production
+
+```bash
+	NODE_ENV=production npx postcss -c postcss.config.js -o target/styles.css assets/css/styles.css
+```
+
 ### REPL
 
 ```emacs

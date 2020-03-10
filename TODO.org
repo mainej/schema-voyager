@@ -36,6 +36,7 @@
     CLOSED: [2020-03-09 Mon 22:24]
 *** DONE special attributes
     CLOSED: [2020-03-09 Mon 21:31]
+*** deprecated
 *** sorted
 ** enum table
 *** DONE referenced by
@@ -48,6 +49,7 @@
     CLOSED: [2020-03-09 Mon 22:24]
 *** DONE special attributes
     CLOSED: [2020-03-09 Mon 21:31]
+*** deprecated
 *** sorted
 ** connections graph for one aggregate/enum
 ** full graph
@@ -55,3 +57,6 @@
 ** to static datascript db?
 ** to static HTML, with inlined data (and JS and CSS)
 ** to svg
+* refactoring
+** switch to just datascript and reagent... don't need re-frame or re-posh
+** why do we have both entity and attribute? aren't they two names for the same thing?

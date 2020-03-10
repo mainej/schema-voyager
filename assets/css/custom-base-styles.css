@@ -1,0 +1,20 @@
+/**
+ * Override tailwindcss's default placeholder color
+ */
+
+input::placeholder,
+textarea::placeholder {
+    @apply text-gray-800;
+}
+
+/**
+ * Show abbr underline only on hover, since that's the only time it's useful
+ */
+abbr[title] {
+    text-decoration: none;
+}
+
+abbr[title]:hover {
+    text-decoration: underline;
+    text-decoration: underline dotted;
+}
