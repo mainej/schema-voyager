@@ -34,18 +34,6 @@
  (fn [db _]
    (:active-route db)))
 
-[:div
- [:header.bg-white.shadow
-  [:div.max-w-7xl.mx-auto.py-6.px-4.sm:px-6.lg:px-8
-   [:h2.text-3xl.font-bold.leading-tight.text-gray-900
-    "\n        Dashboard\n      "]]]
- [:main
-  [:div.max-w-7xl.mx-auto.py-6.sm:px-6.lg:px-8
-   "<!-- Replace with your content -->"
-   [:div.px-4.py-6.sm:px-0
-    [:div.border-4.border-dashed.border-gray-200.rounded-lg.h-96]]
-   "<!-- /End replace -->"]]]
-
 (def voyage-icon
   [:svg.inline.fill-none.stroke-current.stroke-2.w-8.h-8 {:viewBox "0 0 24 24"}
    [:title "Schema Voyage"]
