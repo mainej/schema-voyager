@@ -45,7 +45,7 @@
      ^{:key id}
      [:li
       [util/link {:href (util/coll-href coll)}
-       (util/coll-name coll)]])])
+       [util/coll-name* coll]]])])
 
 (defn list-section [title collections]
   [:div.md:flex.mb-6

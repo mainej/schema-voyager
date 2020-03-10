@@ -24,7 +24,7 @@
     :id      eid}))
 
 (defn part-of [{:keys [db.schema/part-of]}]
-  [:div "Part of "
+  [:div.text-gray-600 "Part of "
    [util/coll-links part-of]])
 
 (defn see-also-links [{:keys [db.schema/see-also]}]
@@ -37,17 +37,24 @@
     [:div "Noted by "
      [util/attr-links _see-also]]))
 
+(defn details-section [{:keys [db/doc db.schema/see-also db.schema/_see-also] :as entity}]
+  (when (or doc (seq see-also) (seq _see-also))
+    [:div.p-4.sm:p-6
+     [entity/doc-str entity]
+     [see-also-links entity]
+     [seen-by-links entity]]))
+
 (defn unhandled-fields [{:keys [db/unique] :as entity}]
   (cond-> (dissoc entity :db/id :db.schema/part-of :db.schema/_see-also :db.schema/see-also :db.schema/deprecated? :db/ident :db/doc)
     (= unique :db.unique/identity) (dissoc :db/unique)))
 
 (defn additional-fields [entity but-fields]
   (when-let [fields (seq (apply dissoc (unhandled-fields entity) but-fields))]
-    [:dl.mt-4.rounded-lg.p-4.bg-gray-300.grid.grid-cols-2.gap-4
+    [:dl
      (for [[field value] (sort-by first fields)]
        ^{:key field}
-       [:<>
-        [:dt (pr-str field)]
+       [:div.sm:flex.border-t.p-4.sm:p-6
+        [:dt.sm:w-1of3 (pr-str field)]
         [:dd (pr-str value)]])]))
 
 (defn additional-attribute-fields [entity]
@@ -55,6 +62,12 @@
 
 (defn additional-constant-fields [entity]
   [additional-fields entity []])
+
+(defn header [{:keys [db/ident] :as entity} coll-type]
+  [:h1.mb-4.font-bold
+   [util/ident-name ident coll-type]
+   [entity/unique-span entity]
+   [entity/deprecated-span entity]])
 
 (defmulti panel (fn [entity]
                   (if (:db/valueType entity)
@@ -64,27 +77,22 @@
 (defmethod panel :attribute [entity]
   [:div.px-4.sm:px-0
    [:div.sm:flex
-    [:div.sm:w-4of6.mb-4
-     [:div.font-bold
-      [entity/header entity]]
-     [part-of entity]
-     [entity/doc-str entity]
-     [see-also-links entity]
-     [seen-by-links entity]]
+    [:div.sm:w-4of6
+     [header entity :aggregate]
+     [part-of entity]]
     [:div.sm:text-right.flex-grow
      [entity/value-type entity]]]
-   [additional-attribute-fields entity]])
+   [:div.mt-6.sm:shadow-lg.sm:rounded-lg.bg-white.max-w-4xl
+    [details-section entity]
+    [additional-attribute-fields entity]]])
 
 (defmethod panel :constant [entity]
-  [:div.px-4.sm:px-0.sm:flex
-   [:div.sm:w-4of6.mb-4
-    [:div.font-bold
-     [entity/header entity]]
-    [part-of entity]
-    [entity/doc-str entity]
-    [see-also-links entity]
-    [seen-by-links entity]]
-   [:div
+  [:div.px-4.sm:px-0
+   [:div.sm:w-4of6
+    [header entity :enum]
+    [part-of entity]]
+   [:div.mt-6.sm:shadow-lg.sm:rounded-lg.bg-white.max-w-4xl
+    [details-section entity]
     [additional-constant-fields entity]]])
 
 (defn page [parameters]

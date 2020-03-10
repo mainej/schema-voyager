@@ -35,7 +35,7 @@
   [:div
    [:div.px-4.sm:px-0
     [:h1.mb-4.font-bold
-     (util/coll-name coll)
+     [util/coll-name* coll]
      " "
      [util/aggregate-abbr coll]]
     (when (seq _references)

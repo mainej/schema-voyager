@@ -12,7 +12,7 @@
 
 (defn doc-str [{:keys [db/doc]}]
   (when-let [doc-str doc]
-    [:p.mt-4.text-gray-600 doc-str]))
+    [:p.text-gray-600 doc-str]))
 
 (defn value-type [{:keys [db/valueType db/cardinality db.schema/references]}]
   (let [many? (= :db.cardinality/many cardinality)]
@@ -23,13 +23,20 @@
        valueType)
      (when many? "]")]))
 
-(defn header [{:keys [db/ident db/unique db.schema/deprecated?]}]
+(defn unique-span [{:keys [db/unique]}]
+  (when (= :db.unique/identity unique)
+    [:span.ml-2.text-purple-700 lock-closed]))
+
+(defn deprecated-span [{:keys [db.schema/deprecated?]}]
+  (when deprecated?
+    [:span.ml-2.inline-block.px-2.rounded-full.bg-gray-400.text-xs "DEPRECATED"]))
+
+(defn header [{:keys [db/ident] :as entity} coll-type]
   [:h1.mb-4
-   (pr-str ident)
-   (when (= :db.unique/identity unique)
-     [:span.ml-2.text-purple-700 lock-closed])
-   (when deprecated?
-     [:span.ml-2.inline-block.px-2.rounded-full.bg-gray-400.text-xs "DEPRECATED"])])
+   [:span.underline
+    [util/ident-name ident coll-type]]
+   [unique-span entity]
+   [deprecated-span entity]])
 
 (defmulti panel (fn [entity]
                   (if (:db/valueType entity)
@@ -45,8 +52,8 @@
     [:div.sm:flex.flex-grow
      [:div.sm:w-4of6
       [:div.font-medium
-       [header entity]]
-      [:div.hidden.sm:block
+       [header entity :aggregate]]
+      [:div.hidden.sm:block.mt-4
        [doc-str entity]]]
      [:div.flex-grow.sm:text-right.mt-4.sm:mt-0
       [value-type entity]]]
@@ -60,7 +67,7 @@
     {:href (util/attr-href entity)}
     [:div.flex-grow
      [:div.font-medium
-      [header entity]]
-     [:div.hidden.sm:block
+      [header entity :enum]]
+     [:div.hidden.sm:block.mt-4
       [doc-str entity]]]
     [:div.ml-4.sm:ml-6 chevron-right]]])

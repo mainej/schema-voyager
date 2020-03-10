@@ -26,10 +26,26 @@
     [char-abbr {:class [:bg-purple-200 :text-purple-800]} "Aggregate"]
     [char-abbr {:class [:bg-green-200 :text-green-800]} "Enumeration"]))
 
-(defn coll-name [{:keys [db.schema.collection/name]}]
-  (str (pr-str name) "/*"))
+(defn coll-name [{:keys [db.schema.collection/name db.schema.collection/type]}]
+  [:span {:class (if (= :aggregate type)
+                   :text-purple-700
+                   :text-green-600)}
+   (pr-str name)])
 
-(def link :a.text-blue-500.hover:underline)
+(defn coll-name* [coll]
+  [:span [coll-name coll] "/" [:span.text-blue-500 "*"]])
+
+(defn ident-name
+  ([ident]
+   [:span.text-blue-500 (pr-str ident)])
+  ([ident coll-type]
+   [:span
+    [coll-name {:db.schema.collection/name (keyword (namespace ident))
+                :db.schema.collection/type coll-type}]
+    "/"
+    [:span.text-blue-500 (name ident)]]))
+
+(def link :a.underline)
 
 (defn link-list [f coll]
   (->> coll
@@ -40,7 +56,7 @@
 (defn coll-links [colls]
   (link-list (fn [coll]
                [link {:href (coll-href coll)}
-                (coll-name coll)
+                [coll-name* coll]
                 " "
                 [aggregate-abbr coll]])
              colls))
@@ -53,13 +69,15 @@
 (defn attr-links [attributes]
   (link-list (fn [{:keys [db/ident db.schema/part-of] :as attr}]
                (if (= 1 (count part-of))
-                 [:span
-                  [link {:href (coll-href (first part-of))}
-                   ":" (namespace ident)]
-                  "/"
-                  [link {:href (attr-href attr)} (name ident)]
-                  [attr-deprecated-abbr attr]]
+                 (let [coll (first part-of)]
+                   [:span
+                    [link {:href (coll-href coll)}
+                     [coll-name coll]]
+                    "/"
+                    [link {:href (attr-href attr)}
+                     [:span.text-blue-500 (name ident)]]
+                    [attr-deprecated-abbr attr]])
                  [link {:href (attr-href attr)}
-                  (pr-str ident)
+                  [ident-name ident]
                   [attr-deprecated-abbr attr]]))
              attributes))
