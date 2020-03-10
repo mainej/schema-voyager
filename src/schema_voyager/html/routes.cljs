@@ -1,6 +1,8 @@
 (ns schema-voyager.html.routes
   (:require [re-frame.core :as re-frame]
             [schema-voyager.html.pages.collections :as pages.collections]
+            [schema-voyager.html.pages.enum :as pages.enum]
+            [schema-voyager.html.pages.aggregate :as pages.aggregate]
             [reitit.frontend :as rf]
             [reitit.frontend.easy :as rfe]
             [reitit.frontend.controllers :as rfc]))
@@ -9,7 +11,11 @@
 (def ^:private routes
   ["/"
    ["" {:name :route/collections
-        :view pages.collections/page}]])
+        :view pages.collections/page}]
+   ["enum/:id" {:name :route/enum
+                :view pages.enum/page}]
+   ["aggregate/:id" {:name :route/aggregate
+                     :view pages.aggregate/page}]])
 
 (def ^:private router
   (rf/router routes))

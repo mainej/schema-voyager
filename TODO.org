@@ -23,16 +23,32 @@
 * inspect data
 ** index
 ** aggregate table
-*** name
+*** DONE referenced by
+    CLOSED: [2020-03-09 Mon 22:24]
+*** DONE name
+    CLOSED: [2020-03-09 Mon 21:31]
 *** primary key?
-*** type, with refs
-*** comments
-*** see also
-*** special attributes
+*** DONE type, with refs
+    CLOSED: [2020-03-09 Mon 22:24]
+*** DONE comments
+    CLOSED: [2020-03-09 Mon 21:31]
+*** DONE see also
+    CLOSED: [2020-03-09 Mon 22:24]
+*** DONE special attributes
+    CLOSED: [2020-03-09 Mon 21:31]
+*** sorted
 ** enum table
-*** name
-*** comments
-*** see also
+*** DONE referenced by
+    CLOSED: [2020-03-09 Mon 22:24]
+*** DONE name
+    CLOSED: [2020-03-09 Mon 21:13]
+*** DONE comments
+    CLOSED: [2020-03-09 Mon 21:13]
+*** DONE see also
+    CLOSED: [2020-03-09 Mon 22:24]
+*** DONE special attributes
+    CLOSED: [2020-03-09 Mon 21:31]
+*** sorted
 ** connections graph for one aggregate/enum
 ** full graph
 * export data

@@ -1,6 +1,7 @@
 (ns schema-voyager.html.live
   (:require [schema-voyager.data :as data]
             [schema-voyager.html.routes :as routes]
+            [schema-voyager.html.util :refer [<sub >dis]]
             [shadow.resource :as resource]
             [datascript.core :as d]
             [re-posh.core :as rp]
@@ -33,21 +34,16 @@
  (fn [db _]
    (:active-route db)))
 
-(re-frame/reg-sub
- ::active-panel
- :<- [::active-route]
- (fn [route _]
-   (:view (:data route))))
-
-(defn main-panel []
+(defn main-view []
   [:div.min-h-screen.min-w-screen.font-sans.text-gray-900.flex.flex-col.justify-between.items-center
    [:div.container.mx-auto.p-4
-    (when-let [panel @(rp/subscribe [::active-panel])]
-      [panel])]])
+    (let [route (<sub [::active-route])]
+      (when-let [view (:view (:data route))]
+        [view (:parameters route)]))]])
 
 (defn ^:export mount-root []
   (re-frame/clear-subscription-cache!)
-  (reagent.dom/render [main-panel]
+  (reagent.dom/render [main-view]
                       (.getElementById js/document "app")))
 
 (defn ^:export init []

@@ -1,5 +1,6 @@
 (ns schema-voyager.html.pages.collections
   (:require [re-posh.core :as rp]
+            [schema-voyager.html.util :as util :refer [<sub >dis]]
             [re-frame.core :as re-frame]))
 
 (rp/reg-sub
@@ -40,13 +41,14 @@
 
 (defn collection-list [collection]
   [:ul
-   (for [{:keys [db/id db.schema.collection/name]} collection]
+   (for [{:keys [db/id db.schema.collection/name] :as coll} collection]
      ^{:key id}
-     [:li name])])
+     [:li [:a {:href (util/coll-href coll)}
+           name]])])
 
 (defn page []
   [:div
    [:h1 "aggregates"]
-   [collection-list @(rp/subscribe [::aggregates])]
+   [collection-list (<sub [::aggregates])]
    [:h1 "enums"]
-   [collection-list @(rp/subscribe [::enums])]])
+   [collection-list (<sub [::enums])]])
