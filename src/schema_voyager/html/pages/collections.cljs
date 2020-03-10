@@ -41,10 +41,11 @@
 
 (defn collection-list [collection]
   [:ul
-   (for [{:keys [db/id db.schema.collection/name] :as coll} collection]
+   (for [{:keys [db/id] :as coll} collection]
      ^{:key id}
-     [:li [:a.text-blue-500.hover:underline {:href (util/coll-href coll)}
-           name]])])
+     [:li
+      [:a.text-blue-500.hover:underline {:href (util/coll-href coll)}
+       (util/coll-name coll)]])])
 
 (defn list-section [title collections]
   [:div.md:flex.mb-6

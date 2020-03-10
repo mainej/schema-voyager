@@ -30,11 +30,11 @@
   [{:keys [db.schema/deprecated? db/unique db/ident]}]
   [(not= :db.unique/identity unique) deprecated? ident])
 
-(defn page [{:keys [db.schema.collection/name db.schema/_part-of db.schema/_references] :as coll}]
+(defn page [{:keys [db.schema/_part-of db.schema/_references] :as coll}]
   [:div
    [:div.px-4.sm:px-0
-    [:h1.font-bold
-     (pr-str name)
+    [:h1.mb-4.font-bold
+     (util/coll-name coll)
      " "
      [util/aggregate-abbr coll]]
     (when (seq _references)

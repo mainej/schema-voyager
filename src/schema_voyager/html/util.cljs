@@ -8,7 +8,7 @@
 
 (defn coll-href [coll]
   (href (keyword :route (:db.schema.collection/type coll))
-        {:id (name (:db.schema.collection/name coll))}))
+        {:id (:db.schema.collection/name coll)}))
 
 (defn attr-href [attr]
   (href :route/attribute {:id (:db/ident attr)}))
@@ -27,13 +27,16 @@
     [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full.bg-purple-200.text-pink-700 [:abbr {:title "Aggregate"} "A"]]
     [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full.bg-green-200.text-teal-400 [:abbr {:title "Enumeration"} "E"]]))
 
+(defn coll-name [{:keys [db.schema.collection/name]}]
+  (str (pr-str name) "/*"))
+
 (defn coll-links [colls]
   (into
    [:span]
    (interpose ", "
-              (for [{:keys [db.schema.collection/name] :as coll} colls]
+              (for [coll colls]
                 [:a.text-blue-500.hover:underline {:href (coll-href coll)}
-                 (pr-str name)
+                 (coll-name coll)
                  " "
                  [aggregate-abbr coll]]))))
 
