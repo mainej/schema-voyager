@@ -16,7 +16,11 @@
    (rp/subscribe [::eid-by-ident ident]))
  (fn [eid _]
    {:type    :pull
-    :pattern util/attribute-pull
+    :pattern ['*
+              {:db.schema/part-of    ['*]
+               :db.schema/references ['*]
+               :db.schema/see-also   util/attr-link-pull
+               :db.schema/_see-also  util/attr-link-pull}]
     :id      eid}))
 
 (defn part-of [{:keys [db.schema/part-of]}]
@@ -24,12 +28,17 @@
    [util/coll-links part-of]])
 
 (defn see-also-links [{:keys [db.schema/see-also]}]
-  (when-let [see-also see-also]
+  (when (seq see-also)
     [:div "See also "
      [util/attr-links see-also]]))
 
+(defn seen-by-links [{:keys [db.schema/_see-also]}]
+  (when (seq _see-also)
+    [:div "Noted by "
+     [util/attr-links _see-also]]))
+
 (defn unhandled-fields [{:keys [db/unique] :as entity}]
-  (cond-> (dissoc entity :db/id :db.schema/part-of :db.schema/see-also :db.schema/deprecated? :db/ident :db/doc)
+  (cond-> (dissoc entity :db/id :db.schema/part-of :db.schema/_see-also :db.schema/see-also :db.schema/deprecated? :db/ident :db/doc)
     (= unique :db.unique/identity) (dissoc :db/unique)))
 
 (defn additional-fields [entity but-fields]
@@ -60,7 +69,8 @@
       [entity/header entity]]
      [part-of entity]
      [entity/doc-str entity]
-     [see-also-links entity]]
+     [see-also-links entity]
+     [seen-by-links entity]]
     [:div.sm:text-right.flex-grow
      [entity/value-type entity]]]
    [additional-attribute-fields entity]])
@@ -72,7 +82,8 @@
      [entity/header entity]]
     [part-of entity]
     [entity/doc-str entity]
-    [see-also-links entity]]
+    [see-also-links entity]
+    [seen-by-links entity]]
    [:div
     [additional-constant-fields entity]]])
 

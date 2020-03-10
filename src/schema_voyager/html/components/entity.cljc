@@ -44,7 +44,8 @@
     {:href (util/attr-href entity)}
     [:div.sm:flex.flex-grow
      [:div.sm:w-4of6
-      [header entity]
+      [:div.font-medium
+       [header entity]]
       [:div.hidden.sm:block
        [doc-str entity]]]
      [:div.flex-grow.sm:text-right.mt-4.sm:mt-0
@@ -58,7 +59,8 @@
    [:a.p-4.sm:p-6.flex.items-center.justify-center
     {:href (util/attr-href entity)}
     [:div.flex-grow
-     [header entity]
+     [:div.font-medium
+      [header entity]]
      [:div.hidden.sm:block
       [doc-str entity]]]
     [:div.ml-4.sm:ml-6 chevron-right]]])

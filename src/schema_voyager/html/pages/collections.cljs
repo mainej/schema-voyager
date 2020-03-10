@@ -44,7 +44,7 @@
    (for [{:keys [db/id] :as coll} collection]
      ^{:key id}
      [:li
-      [:a.text-blue-500.hover:underline {:href (util/coll-href coll)}
+      [util/link {:href (util/coll-href coll)}
        (util/coll-name coll)]])])
 
 (defn list-section [title collections]

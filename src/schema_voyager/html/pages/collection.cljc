@@ -19,7 +19,8 @@
    {:type    :pull
     :pattern ['*
               {:db.schema/_references util/attr-link-pull
-               :db.schema/_part-of    util/attribute-pull}]
+               :db.schema/_part-of    ['*
+                                       {:db.schema/references ['*]}]}]
     :id      eid}))
 
 (defn collection-from-route
