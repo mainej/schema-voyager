@@ -75,8 +75,8 @@
                     :constant)))
 
 (defmethod panel :attribute [entity]
-  [:div.px-4.sm:px-0
-   [:div.sm:flex
+  [:div
+   [:div.px-4.sm:px-0.sm:flex
     [:div
      [header entity :aggregate]
      [part-of entity]]
@@ -92,8 +92,8 @@
     [additional-attribute-fields entity]]])
 
 (defmethod panel :constant [entity]
-  [:div.px-4.sm:px-0
-   [:div
+  [:div
+   [:div.px-4.sm:px-0
     [header entity :enum]
     [part-of entity]]
    [:div.mt-6.sm:shadow-lg.sm:rounded-lg.bg-white.max-w-4xl
