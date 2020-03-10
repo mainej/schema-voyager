@@ -24,8 +24,8 @@
 
 (defn aggregate-abbr [{:keys [db.schema.collection/type]}]
   (if (= :aggregate type)
-    [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full.bg-purple-200.text-pink-700 [:abbr {:title "Aggregate"} "A"]]
-    [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full.bg-green-200.text-teal-400 [:abbr {:title "Enumeration"} "E"]]))
+    [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full.bg-purple-200.text-purple-800 [:abbr {:title "Aggregate"} "A"]]
+    [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full.bg-green-200.text-green-800 [:abbr {:title "Enumeration"} "E"]]))
 
 (defn coll-name [{:keys [db.schema.collection/name]}]
   (str (pr-str name) "/*"))

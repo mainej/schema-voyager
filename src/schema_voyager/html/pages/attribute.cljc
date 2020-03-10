@@ -53,8 +53,8 @@
                     :constant)))
 
 (defmethod panel :attribute [entity]
-  [:div.px-4
-   [:div.sm:px-0.sm:flex
+  [:div.px-4.sm:px-0
+   [:div.sm:flex
     [:div.sm:w-4of6.mb-4
      [:div.font-bold
       [entity/header entity]]
