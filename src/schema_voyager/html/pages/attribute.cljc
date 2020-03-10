@@ -28,8 +28,12 @@
     [:div "See also "
      [util/attr-links see-also]]))
 
+(defn unhandled-fields [{:keys [db/unique] :as entity}]
+  (cond-> (dissoc entity :db/id :db.schema/part-of :db.schema/see-also :db.schema/deprecated? :db/ident :db/doc)
+    (= unique :db.unique/identity) (dissoc :db/unique)))
+
 (defn additional-fields [entity but-fields]
-  (when-let [fields (seq (apply dissoc (dissoc entity :db/id :db.schema/part-of :db.schema/see-also :db/ident :db/doc) but-fields))]
+  (when-let [fields (seq (apply dissoc (unhandled-fields entity) but-fields))]
     [:dl.mt-4.rounded-lg.p-4.bg-gray-300.grid.grid-cols-2.gap-4
      (for [[field value] (sort-by first fields)]
        ^{:key field}

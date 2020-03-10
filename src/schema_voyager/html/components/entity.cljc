@@ -7,7 +7,7 @@
 
 (def lock-closed
   [:svg.inline.fill-none.stroke-current.stroke-2.w-4.h-4 {:viewBox "0 0 24 24"}
-   [:title "Unique key"]
+   [:title ":db.unique/identity"]
    [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"}]])
 
 (defn doc-str [{:keys [db/doc]}]
@@ -23,11 +23,13 @@
        valueType)
      (when many? "]")]))
 
-(defn header [{:keys [db/ident db/unique]}]
-  [:h1
+(defn header [{:keys [db/ident db/unique db.schema/deprecated?]}]
+  [:h1.mb-4
    (pr-str ident)
    (when (= :db.unique/identity unique)
-     [:<> " " [:span.text-purple-700 lock-closed]])])
+     [:span.ml-2.text-purple-700 lock-closed])
+   (when deprecated?
+     [:span.ml-2.inline-block.px-2.rounded-full.bg-gray-400.text-xs "DEPRECATED"])])
 
 (defmulti panel (fn [entity]
                   (if (:db/valueType entity)
