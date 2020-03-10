@@ -14,13 +14,16 @@
   (when-let [doc-str doc]
     [:p.text-gray-600 doc-str]))
 
-(defn value-type [{:keys [db/valueType db/cardinality db.schema/references]}]
+(defn value-type [{:keys [db/valueType db.schema/references]}]
+  (if (seq references)
+    [util/coll-links references]
+    [:span valueType]))
+
+(defn value-type-shorthand [{:keys [db/cardinality] :as entity}]
   (let [many? (= :db.cardinality/many cardinality)]
-    [:p
+    [:span
      (when many? "[")
-     (if (seq references)
-       [util/coll-links references]
-       valueType)
+     [value-type entity]
      (when many? "]")]))
 
 (defn unique-span [{:keys [db/unique]}]
@@ -56,7 +59,7 @@
       [:div.hidden.sm:block.mt-4
        [doc-str entity]]]
      [:div.flex-grow.sm:text-right.mt-4.sm:mt-0
-      [value-type entity]]]
+      [value-type-shorthand entity]]]
     [:div.ml-4.sm:ml-6 chevron-right]]])
 
 (defmethod panel :constant [entity]

@@ -21,13 +21,16 @@
    CLOSED: [2020-03-09 Mon 16:44]
 ** from db
 * inspect data
-** index
-** aggregate table
+** DONE index
+   CLOSED: [2020-03-10 Tue 15:44]
+** DONE aggregate table
+   CLOSED: [2020-03-10 Tue 15:45]
 *** DONE referenced by
     CLOSED: [2020-03-09 Mon 22:24]
 *** DONE name
     CLOSED: [2020-03-09 Mon 21:31]
-*** primary key?
+*** DONE primary key?
+    CLOSED: [2020-03-10 Tue 15:44]
 *** DONE type, with refs
     CLOSED: [2020-03-09 Mon 22:24]
 *** DONE comments
@@ -36,9 +39,12 @@
     CLOSED: [2020-03-09 Mon 22:24]
 *** DONE special attributes
     CLOSED: [2020-03-09 Mon 21:31]
-*** deprecated
-*** sorted
-** enum table
+*** DONE deprecated
+    CLOSED: [2020-03-10 Tue 15:45]
+*** DONE sorted
+    CLOSED: [2020-03-10 Tue 15:45]
+** DONE enum table
+   CLOSED: [2020-03-10 Tue 15:45]
 *** DONE referenced by
     CLOSED: [2020-03-09 Mon 22:24]
 *** DONE name
@@ -49,8 +55,10 @@
     CLOSED: [2020-03-09 Mon 22:24]
 *** DONE special attributes
     CLOSED: [2020-03-09 Mon 21:31]
-*** deprecated
-*** sorted
+*** DONE deprecated
+    CLOSED: [2020-03-10 Tue 15:45]
+*** DONE sorted
+    CLOSED: [2020-03-10 Tue 15:45]
 ** connections graph for one aggregate/enum
 ** full graph
 * export data
