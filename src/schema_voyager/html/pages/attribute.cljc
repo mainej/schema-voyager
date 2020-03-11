@@ -2,10 +2,10 @@
   (:require [datascript.core :as d]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.components.entity :as entity]
-            [schema-voyager.html.util :refer [<sub] :as util]))
+            [schema-voyager.html.util :as util]))
 
 (defn by-ident [ident]
-  (d/pull db/mbrainz-db
+  (d/pull db/db
           ['*
            {:db.schema/part-of    ['*]
             :db.schema/references ['*]

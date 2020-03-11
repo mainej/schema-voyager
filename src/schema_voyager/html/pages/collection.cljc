@@ -2,7 +2,7 @@
   (:require [schema-voyager.html.db :as db]
             [datascript.core :as d]
             [schema-voyager.html.components.entity :as entity]
-            [schema-voyager.html.util :refer [<sub] :as util]))
+            [schema-voyager.html.util :as util]))
 
 (defn eid-by-type-and-name [db collection-type collection-name]
   (d/q '[:find ?collection .
@@ -22,7 +22,7 @@
 
 (defn collection-from-route
   [collection-type parameters]
-  (by-type-and-name db/mbrainz-db collection-type (keyword (:id (:path parameters)))))
+  (by-type-and-name db/db collection-type (keyword (:id (:path parameters)))))
 
 (defn entity-comparable
   [{:keys [db.schema/deprecated? db/unique db/ident]}]

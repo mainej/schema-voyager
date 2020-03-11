@@ -1,7 +1,7 @@
 (ns schema-voyager.html.pages.collections
   (:require [datascript.core :as d]
             [schema-voyager.html.db :as db]
-            [schema-voyager.html.util :as util :refer [<sub >dis]]))
+            [schema-voyager.html.util :as util]))
 
 (defn collections [db collection-type]
   (->> (d/q '[:find [?coll ...]
@@ -32,8 +32,8 @@
    [list-section
     "Aggregates"
     "Aggregates are collections of attributes that often co-exist on an entity. They are analogous to a SQL table, though some attributes may appear on many aggregates."
-    (collections db/mbrainz-db :aggregate)]
+    (collections db/db :aggregate)]
    [list-section
     "Enums"
     "Enums are collections of named constants. They usually specify the various values that an attribute may take."
-    (collections db/mbrainz-db :enum)]])
+    (collections db/db :enum)]])

@@ -1,5 +1,5 @@
 {:paths ["src" "resources"]
  :deps  {datascript              {:mvn/version "0.18.10"}
          metosin/reitit-frontend {:mvn/version "0.3.10"}
-         re-frame                {:mvn/version "0.12.0"}
+         reagent                 {:mvn/version "0.10.0"}
          thheller/shadow-cljs    {:mvn/version "2.8.91"}}}

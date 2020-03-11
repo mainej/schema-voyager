@@ -1,7 +1,7 @@
 (ns schema-voyager.html.live
   (:require [schema-voyager.html.routes :as routes]
-            [schema-voyager.html.util :refer [<sub >dis] :as util]
-            [re-frame.core :as re-frame]
+            [schema-voyager.html.util :as util]
+            [schema-voyager.html.db :as db]
             [reagent.dom]
             ))
 
@@ -13,18 +13,13 @@
     (enable-console-print!)
     (println "dev mode")))
 
-(re-frame/reg-sub
- ::active-route
- (fn [db _]
-   (:active-route db)))
-
 (def voyage-icon
   [:svg.inline.fill-none.stroke-current.stroke-2.w-8.h-8 {:viewBox "0 0 24 24"}
    [:title "Schema Voyage"]
    [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"}]])
 
 (defn main-view []
-  (let [route (<sub [::active-route])]
+  (let [route (db/active-route)]
     [:div.min-w-screen.font-sans.text-gray-900
      [:header.bg-gray-900.shadow
       [:div.max-w-7xl.mx-auto.py-6.px-4.sm:px-6.lg:px-8
@@ -38,7 +33,6 @@
          [view (:parameters route)])]]]))
 
 (defn ^:export mount-root []
-  (re-frame/clear-subscription-cache!)
   (reagent.dom/render [main-view]
                       (.getElementById js/document "app")))
 
