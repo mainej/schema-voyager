@@ -45,24 +45,34 @@
     e
     (assoc e :db.schema/part-of [(entity-derive-collection e)])))
 
-(defn process [db entities]
-  (let [entities      (map entity-with-part-of entities)
-        index-by-coll (zipmap (set (mapcat :db.schema/part-of entities))
-                              (map (fn [idx]
-                                     (* -1 (inc idx)))
-                                   (range)))
-        entities      (map (fn [e]
-                             (cond-> (update e :db.schema/part-of #(mapv index-by-coll %))
-                               (seq (:db.schema/references e)) (update :db.schema/references #(mapv index-by-coll %))))
-                           entities)
-        collections   (map (fn [[coll idx]]
-                             (assoc coll :db/id idx))
-                           index-by-coll)]
+(defn- merge-by [f items]
+  (->> items
+       (group-by f)
+       (map (fn [[_group items]]
+              (apply merge items)))))
+
+(defn coll-identity [coll]
+  (select-keys coll [:db.schema.collection/type :db.schema.collection/name]))
+
+(defn process [db attributes]
+  (let [entities          (->> attributes
+                               (filter :db/ident)
+                               (map entity-with-part-of))
+        collections       (->> (concat (mapcat :db.schema/part-of entities)
+                                       (filter :db.schema.collection/name attributes))
+                               (merge-by coll-identity)
+                               (map-indexed (fn [idx coll]
+                                              (assoc coll :db/id (* -1 (inc idx))))))
+        coll-to-temp-id   (zipmap (map coll-identity collections)
+                                  (map :db/id collections))
+        colls-to-temp-ids #(mapv (comp coll-to-temp-id coll-identity) %)
+        entities          (map (fn [e]
+                                 (cond-> (update e :db.schema/part-of colls-to-temp-ids)
+                                   (seq (:db.schema/references e)) (update :db.schema/references colls-to-temp-ids)))
+                               entities)]
     (d/db-with db (concat collections entities))))
 
 (defn join [& schemas]
   (->> schemas
        (apply concat)
-       (group-by :db/ident)
-       (map (fn [[_ident items]]
-              (apply merge items)))))
+       (merge-by #(select-keys % [:db/ident :db.schema.collection/type :db.schema.collection/name]))))

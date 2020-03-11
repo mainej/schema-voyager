@@ -15,7 +15,8 @@
    CLOSED: [2020-03-09 Mon 16:42]
 ** with attribute predicates
 ** with entity predicates
-** allow doc strings on collections
+** DONE allow doc strings on collections
+   CLOSED: [2020-03-10 Tue 18:06]
 * ingest data
 ** DONE from file
    CLOSED: [2020-03-09 Mon 16:44]

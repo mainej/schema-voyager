@@ -1,6 +1,14 @@
-[#:db.schema{:db/ident    :track/artistCredit
+[{:db.schema.collection/name :release.type
+  :db.schema.collection/type :enum
+  :db/doc                    "A type of recording, for example an audiobook versus an album."}
+ {:db.schema.collection/name :country
+  :db.schema.collection/type :aggregate
+  :db/doc                    "A geographical country."}
+ {:db/id "track-artists"
+  :db/ident :track/artists}
+ #:db.schema{:db/ident    :track/artistCredit
              :deprecated? true
-             :see-also    [[:db/ident :track/artists]]}
+             :see-also    ["track-artists"]}
  #:db.schema{:db/ident :artist.type/name
              :part-of  [#schema-coll [:enum :artist.type]]}
  #:db.schema{:db/ident :artist.gender/name
