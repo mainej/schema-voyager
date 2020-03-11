@@ -1,28 +1,12 @@
 (ns schema-voyager.html.live
-  (:require [schema-voyager.data :as data]
-            [schema-voyager.html.routes :as routes]
+  (:require [schema-voyager.html.routes :as routes]
             [schema-voyager.html.util :refer [<sub >dis] :as util]
-            [shadow.resource :as resource]
-            [datascript.core :as d]
-            [re-posh.core :as rp]
             [re-frame.core :as re-frame]
             [reagent.dom]
             ))
 
 (def debug?
   ^boolean goog.DEBUG)
-
-(def mbrainz-db
-  (let [schema (data/read-string (resource/inline "mbrainz-schema.edn"))
-        enums  (data/read-string (resource/inline "mbrainz-enums.edn"))
-        supp   (data/read-string (resource/inline "mbrainz-supplemental.edn"))]
-    (data/process (data/empty-db) (-> schema
-                                      (data/join enums)
-                                      (data/join supp)))))
-
-(def mbrainz-conn (d/conn-from-db mbrainz-db))
-
-(rp/connect! mbrainz-conn)
 
 (defn dev-setup []
   (when debug?

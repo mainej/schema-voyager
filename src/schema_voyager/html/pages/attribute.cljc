@@ -1,27 +1,17 @@
 (ns schema-voyager.html.pages.attribute
-  (:require [re-posh.core :as rp]
+  (:require [datascript.core :as d]
+            [schema-voyager.html.db :as db]
             [schema-voyager.html.components.entity :as entity]
             [schema-voyager.html.util :refer [<sub] :as util]))
 
-(rp/reg-query-sub
- ::eid-by-ident
- '[:find ?attr .
-   :in $ ?ident
-   :where
-   [?attr :db/ident ?ident]])
-
-(rp/reg-sub
- ::by-ident
- (fn [[_ ident]]
-   (rp/subscribe [::eid-by-ident ident]))
- (fn [eid _]
-   {:type    :pull
-    :pattern ['*
-              {:db.schema/part-of    ['*]
-               :db.schema/references ['*]
-               :db.schema/see-also   util/attr-link-pull
-               :db.schema/_see-also  util/attr-link-pull}]
-    :id      eid}))
+(defn by-ident [ident]
+  (d/pull db/mbrainz-db
+          ['*
+           {:db.schema/part-of    ['*]
+            :db.schema/references ['*]
+            :db.schema/see-also   util/attr-link-pull
+            :db.schema/_see-also  util/attr-link-pull}]
+          [:db/ident ident]))
 
 (defn part-of [{:keys [db.schema/part-of]}]
   [:div.text-gray-600 "Part of "
@@ -101,5 +91,5 @@
     [additional-constant-fields entity]]])
 
 (defn page [parameters]
-  (let [attr (<sub [::by-ident (keyword (:id (:path parameters)))])]
+  (let [attr (by-ident (keyword (:id (:path parameters))))]
     [panel attr]))

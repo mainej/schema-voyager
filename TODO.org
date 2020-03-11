@@ -69,3 +69,4 @@
 * refactoring
 ** switch to just datascript and reagent... don't need re-frame or re-posh
 ** why do we have both entity and attribute? aren't they two names for the same thing?
+** fix :a within another :a on collection page: invalid DOM

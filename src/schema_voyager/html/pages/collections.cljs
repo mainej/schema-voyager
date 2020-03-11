@@ -1,43 +1,15 @@
 (ns schema-voyager.html.pages.collections
-  (:require [re-posh.core :as rp]
-            [schema-voyager.html.util :as util :refer [<sub >dis]]
-            [re-frame.core :as re-frame]))
+  (:require [datascript.core :as d]
+            [schema-voyager.html.db :as db]
+            [schema-voyager.html.util :as util :refer [<sub >dis]]))
 
-(rp/reg-sub
- ::aggregate-eids
- (fn [_ _]
-   {:type  :query
-    :query '[:find [?coll ...]
-             :where [?coll :db.schema.collection/type :aggregate]]}))
-
-(rp/reg-sub
- ::enum-eids
- (fn [_ _]
-   {:type  :query
-    :query '[:find [?coll ...]
-             :where [?coll :db.schema.collection/type :enum]]}))
-
-(rp/reg-sub
- ::aggregates-pull
- :<- [::aggregate-eids]
- (fn [aggregate-eids]
-   {:type    :pull-many
-    :pattern '[*]
-    :ids     aggregate-eids}))
-
-(rp/reg-sub
- ::enums-pull
- :<- [::enum-eids]
- (fn [enum-eids]
-   {:type    :pull-many
-    :pattern '[*]
-    :ids     enum-eids}))
-
-(defn sort-by-collection-name [collection _]
-  (sort-by :db.schema.collection/name collection))
-
-(re-frame/reg-sub ::aggregates :<- [::aggregates-pull] sort-by-collection-name)
-(re-frame/reg-sub ::enums :<- [::enums-pull] sort-by-collection-name)
+(defn collections [db collection-type]
+  (->> (d/q '[:find [?coll ...]
+              :in $ ?collection-type
+              :where [?coll :db.schema.collection/type ?collection-type]]
+            db collection-type)
+       (d/pull-many db '[*])
+       (sort-by :db.schema.collection/name)))
 
 (defn collection-list [collection]
   [:ul
@@ -60,8 +32,8 @@
    [list-section
     "Aggregates"
     "Aggregates are collections of attributes that often co-exist on an entity. They are analogous to a SQL table, though some attributes may appear on many aggregates."
-    (<sub [::aggregates])]
+    (collections db/mbrainz-db :aggregate)]
    [list-section
     "Enums"
     "Enums are collections of named constants. They usually specify the various values that an attribute may take."
-    (<sub [::enums])]])
+    (collections db/mbrainz-db :enum)]])
