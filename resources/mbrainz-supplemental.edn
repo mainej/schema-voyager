@@ -1,11 +1,11 @@
-[{:db.schema.collection/name :release.type
-  :db.schema.collection/type :enum
-  :db/doc                    "A type of recording, for example an audiobook versus an album."}
- {:db.schema.collection/name :country
-  :db.schema.collection/type :aggregate
-  :db/doc                    "A geographical country."}
- {:db/id "track-artists"
-  :db/ident :track/artists}
+[#:db.schema.collection{:name   :release.type
+                        :type   :enum
+                        :db/doc "A type of recording, for example an audiobook versus an album."}
+ #:db.schema.collection{:name   :country
+                        :type   :aggregate
+                        :db/doc "A geographical country."}
+ #:db{:id    "track-artists"
+      :ident :track/artists}
  #:db.schema{:db/ident    :track/artistCredit
              :deprecated? true
              :see-also    ["track-artists"]}
