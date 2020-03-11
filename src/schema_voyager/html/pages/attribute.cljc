@@ -72,9 +72,10 @@
      [part-of entity]]
     [:div.sm:ml-6
      [:span.text-gray-600.font-light
+      "Type of "
       (if (= :db.cardinality/many (:db/cardinality entity))
-        "Values are"
-        "Value is")]
+        "values are"
+        "value is")]
      " "
      [entity/value-type entity]]]
    [:div.mt-6.sm:shadow-lg.sm:rounded-lg.bg-white.max-w-4xl

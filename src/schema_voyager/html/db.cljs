@@ -1,16 +1,11 @@
 (ns schema-voyager.html.db
-  (:require [schema-voyager.data :as data]
-            [reitit.frontend.controllers :as rfc]
+  (:require [reitit.frontend.controllers :as rfc]
+            [clojure.edn :as edn]
             [reagent.core :as r]
             [shadow.resource :as resource]))
 
 (def db
-  (let [schema (data/read-string (resource/inline "mbrainz-schema.edn"))
-        enums  (data/read-string (resource/inline "mbrainz-enums.edn"))
-        supp   (data/read-string (resource/inline "mbrainz-supplemental.edn"))]
-    (data/process (data/empty-db) (-> schema
-                                      (data/join enums)
-                                      (data/join supp)))))
+  (edn/read-string (resource/inline "db.edn")))
 
 (defonce !active-route (r/atom nil))
 

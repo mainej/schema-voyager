@@ -1,7 +1,6 @@
 (ns schema-voyager.data
   (:refer-clojure :exclude [read-string])
-  (:require [datascript.core :as d]
-            [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]))
 
 (defn read-schema-coll [[type name]]
   {:db.schema.collection/type type
@@ -24,9 +23,6 @@
    ;; Which collection(s) this attribute refers to.
    :db.schema/references {:db/valueType   :db.type/ref
                           :db/cardinality :db.cardinality/many}})
-
-(defn empty-db []
-  (d/empty-db metaschema))
 
 (defn entity-derive-collection-type [e]
   (if (:db/valueType e)
@@ -54,7 +50,7 @@
 (defn coll-identity [coll]
   (select-keys coll [:db.schema.collection/type :db.schema.collection/name]))
 
-(defn process [db attributes]
+(defn process [attributes]
   (let [entities          (->> attributes
                                (filter :db/ident)
                                (map entity-with-part-of))
@@ -70,7 +66,7 @@
                                  (cond-> (update e :db.schema/part-of colls-to-temp-ids)
                                    (seq (:db.schema/references e)) (update :db.schema/references colls-to-temp-ids)))
                                entities)]
-    (d/db-with db (concat collections entities))))
+    (concat collections entities)))
 
 (defn join [& schemas]
   (->> schemas

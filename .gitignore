@@ -8,3 +8,4 @@
 .shadow-cljs/
 
 .nrepl-port
+resources/db.edn

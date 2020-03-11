@@ -63,10 +63,14 @@
 ** connections graph for one aggregate/enum
 ** full graph
 * export data
-** to static datascript db?
-** to static HTML, with inlined data (and JS and CSS)
+** DONE to static datascript db
+   CLOSED: [2020-03-10 Tue 23:22]
+** DONE to static HTML, with inlined data
+   CLOSED: [2020-03-10 Tue 23:23]
+** to static HTML, with inlined JS and CSS
 ** to svg
 * refactoring
-** switch to just datascript and reagent... don't need re-frame or re-posh
+** DONE switch to just datascript and reagent... don't need re-frame or re-posh
+   CLOSED: [2020-03-10 Tue 22:38]
 ** why do we have both entity and attribute? aren't they two names for the same thing?
 ** fix :a within another :a on collection page: invalid DOM
