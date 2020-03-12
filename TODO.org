@@ -74,3 +74,11 @@
    CLOSED: [2020-03-10 Tue 22:38]
 ** why do we have both entity and attribute? aren't they two names for the same thing?
 ** fix :a within another :a on collection page: invalid DOM
+** DONE try CSS purge
+   CLOSED: [2020-03-11 Wed 22:30]
+** document how to create
+*** yarn html
+*** clj -A:ingest example
+*** clj -A:ingest ingest <file>*
+*** css
+*** minified css
