@@ -24,6 +24,3 @@
 (defn ^:dev/after-load initialize
   []
   (rfe/start! router db/save-route {:use-fragment true}))
-
-(defn visit [route]
-  (apply rfe/push-state route))

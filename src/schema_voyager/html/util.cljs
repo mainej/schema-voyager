@@ -3,12 +3,18 @@
 
 (def href rfe/href)
 
+(defn visit [route]
+  (apply rfe/push-state route))
+
 (defn coll-href [coll]
   (href (keyword :route (:db.schema.collection/type coll))
         {:id (:db.schema.collection/name coll)}))
 
+(defn attr-route [{:keys [db/ident]}]
+  [:route/attribute {:id ident}])
+
 (defn attr-href [attr]
-  (href :route/attribute {:id (:db/ident attr)}))
+  (apply href (attr-route attr)))
 
 (def attr-link-pull
   [:db/ident

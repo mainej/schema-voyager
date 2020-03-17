@@ -28,6 +28,59 @@
   [{:keys [db.schema/deprecated? db/unique db/ident]}]
   [(not= :db.unique/identity unique) deprecated? ident])
 
+(def chevron-right
+  [:svg.fill-none.stroke-current.stroke-2.w-4.h-4 {:viewBox "0 0 24 24"}
+   [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M9 5l7 7-7 7"}]])
+
+(defn value-type-shorthand [{:keys [db/cardinality] :as entity}]
+  (let [many? (= :db.cardinality/many cardinality)]
+    [:span
+     (when many? "[")
+     [entity/value-type entity]
+     (when many? "]")]))
+
+(defn entity-header [{:keys [db/ident] :as entity} coll-type]
+  [:h1.mb-4
+   [:a.underline
+    {:href (util/attr-href entity)}
+    [util/ident-name ident coll-type]]
+   [entity/unique-span entity]
+   [entity/deprecated-span entity]])
+
+(defmulti entity-panel (fn [entity]
+                         (if (:db/valueType entity)
+                           :attribute
+                           :constant)))
+
+(defmethod entity-panel :attribute [entity]
+  [:section.border-b
+   {:class (when (:db.schema/deprecated? entity)
+             :bg-gray-300)}
+   [:div.p-4.sm:p-6.flex.items-center.justify-center.cursor-pointer
+    {:on-click #(util/visit (util/attr-route entity))}
+    [:div.sm:flex.flex-grow
+     [:div.sm:w-4of6
+      [:div.font-medium
+       [entity-header entity :aggregate]]
+      [:div.hidden.sm:block.mt-4
+       [entity/doc-str entity]]]
+     [:div.flex-grow.sm:text-right.mt-4.sm:mt-0
+      [value-type-shorthand entity]]]
+    [:div.ml-4.sm:ml-6 chevron-right]]])
+
+(defmethod entity-panel :constant [entity]
+  [:section.border-b
+   {:class (when (:db.schema/deprecated? entity)
+             :bg-gray-300)}
+   [:div.p-4.sm:p-6.flex.items-center.justify-center.cursor-pointer
+    {:on-click #(util/visit (util/attr-route entity))}
+    [:div.flex-grow
+     [:div.font-medium
+      [entity-header entity :enum]]
+     [:div.hidden.sm:block.mt-4
+      [entity/doc-str entity]]]
+    [:div.ml-4.sm:ml-6 chevron-right]]])
+
 (defn page [{:keys [db.schema/_part-of db.schema/_references db/doc] :as coll}]
   [:div
    [:div.px-4.sm:px-0
@@ -43,4 +96,4 @@
    [:div.mt-6.sm:shadow-lg.sm:rounded-lg.bg-white.max-w-4xl
     (for [entity (sort-by entity-comparable _part-of)]
       ^{:key (:db/id entity)}
-      [entity/panel entity])]])
+      [entity-panel entity])]])
