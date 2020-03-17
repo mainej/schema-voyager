@@ -82,3 +82,4 @@
 *** clj -A:ingest ingest <file>*
 *** css
 *** minified css
+** document supplemental schema
