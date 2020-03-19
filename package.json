@@ -27,6 +27,9 @@
     "dependencies": {
         "create-react-class": "^15.6.3",
         "react": "16.13.0",
-        "react-dom": "16.13.0"
+        "react-dom": "16.13.0",
+        "vega": "5.9.0",
+        "vega-embed": "6.0.0",
+        "vega-lite": "4.0.2"
     }
 }

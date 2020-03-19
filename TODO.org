@@ -60,7 +60,8 @@
     CLOSED: [2020-03-10 Tue 15:45]
 *** DONE sorted
     CLOSED: [2020-03-10 Tue 15:45]
-** connections graph for one aggregate/enum
+** DONE connections graph for one aggregate/enum
+   CLOSED: [2020-03-19 Thu 15:30]
 ** full graph
 * export data
 ** DONE to static datascript db
@@ -77,6 +78,7 @@
    CLOSED: [2020-03-17 Tue 14:56]
 ** DONE try CSS purge
    CLOSED: [2020-03-11 Wed 22:30]
+* documentation
 ** document how to create
 *** yarn html
 *** clj -A:ingest example

@@ -16,13 +16,10 @@
 (defn attr-href [attr]
   (apply href (attr-route attr)))
 
-(def attr-link-pull
-  [:db/ident
-   :db.schema/deprecated?
-   {:db.schema/part-of ['*]}])
-
 (defn char-abbr [opts title]
-  [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full opts [:abbr {:title title} (first title)]])
+  [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full
+   opts
+   [:abbr {:title title} (first title)]])
 
 (defn aggregate-abbr [{:keys [db.schema.collection/type]}]
   (if (= :aggregate type)
@@ -68,6 +65,11 @@
   (when deprecated?
     [:<> " "
      [char-abbr {:class [:bg-gray-300 :text-gray-800]} "Deprecated"]]))
+
+(def attr-link-pull
+  [:db/ident
+   :db.schema/deprecated?
+   {:db.schema/part-of ['*]}])
 
 (defn attr-links [attributes]
   (link-list (fn [{:keys [db/ident db.schema/part-of] :as attr}]
