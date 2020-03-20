@@ -92,4 +92,12 @@
         {:on-click #(util/visit (util/attr-route entity))}
         [:div.flex-grow [entity-panel entity]]
         [:div.ml-4.sm:ml-6 chevron-right]]])]
-   [diagrams.collection/radial-tree coll]])
+   [:div.mt-4
+    [diagrams.collection/force-graph
+     (concat
+      (mapcat #(for [source (:db.schema/part-of %)]
+                 [source coll])
+              _references)
+      (mapcat #(for [target (:db.schema/references %)]
+                 [coll target])
+              _part-of))]]])

@@ -30,6 +30,7 @@
         "react-dom": "16.13.0",
         "vega": "5.9.0",
         "vega-embed": "6.0.0",
-        "vega-lite": "4.0.2"
+        "vega-lite": "4.0.2",
+        "vega-tooltip": "0.20.0"
     }
 }

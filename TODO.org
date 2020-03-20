@@ -62,7 +62,10 @@
     CLOSED: [2020-03-10 Tue 15:45]
 ** DONE connections graph for one aggregate/enum
    CLOSED: [2020-03-19 Thu 15:30]
-** full graph
+** DONE full graph
+   CLOSED: [2020-03-19 Thu 23:32]
+** DONE connections graph for one agregate/enum, force directed, including inbound references
+   CLOSED: [2020-03-19 Thu 23:33]
 * export data
 ** DONE to static datascript db
    CLOSED: [2020-03-10 Tue 23:22]
