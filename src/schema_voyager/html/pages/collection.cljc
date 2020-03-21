@@ -26,6 +26,13 @@
   (by-type-and-name db/db collection-type (keyword (:id (:path parameters)))))
 
 (defn entity-comparable
+  "Helper for sorting attributes. Returns items in this order:
+  * Unique attributes
+  * Deprecated unique attributes (rare)
+  * Regular attributes
+  * Deprecated attributes
+
+  Further sorts alphabetically within each group."
   [{:keys [db.schema/deprecated? db/unique db/ident]}]
   [(not= :db.unique/identity unique) deprecated? ident])
 
@@ -48,10 +55,7 @@
    [entity/unique-span entity]
    [entity/deprecated-span entity]])
 
-(defmulti entity-panel (fn [entity]
-                         (if (:db/valueType entity)
-                           :attribute
-                           :constant)))
+(defmulti entity-panel entity/entity-type)
 
 (defmethod entity-panel :attribute [entity]
   [:div.sm:flex

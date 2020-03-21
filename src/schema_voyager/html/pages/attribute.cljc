@@ -59,10 +59,7 @@
    [entity/unique-span entity]
    [entity/deprecated-span entity]])
 
-(defmulti panel (fn [entity]
-                  (if (:db/valueType entity)
-                    :attribute
-                    :constant)))
+(defmulti panel entity/entity-type)
 
 (defmethod panel :attribute [entity]
   [:div

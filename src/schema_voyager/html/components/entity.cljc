@@ -22,3 +22,8 @@
 (defn deprecated-span [{:keys [db.schema/deprecated?]}]
   (when deprecated?
     [:span.ml-2.inline-block.px-2.rounded-full.bg-gray-400.text-xs "DEPRECATED"]))
+
+(defn entity-type [entity]
+  (if (:db/valueType entity)
+    :attribute
+    :constant))
