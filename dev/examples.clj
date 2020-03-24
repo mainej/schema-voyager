@@ -1,13 +1,13 @@
 (ns examples
-  (:require [ingest]))
+  (:require [ingest.files]))
 
 (def mbrainz-db
-  (ingest/from-files ["resources/mbrainz-schema.edn"
-                      "resources/mbrainz-enums.edn"
-                      "resources/mbrainz-supplemental.edn"]))
+  (ingest.files/from-files ["resources/mbrainz-schema.edn"
+                            "resources/mbrainz-enums.edn"
+                            "resources/mbrainz-supplemental.edn"]))
 
 (defn -main []
-  (ingest/save-db mbrainz-db))
+  (ingest.files/save-db mbrainz-db))
 
 (comment
   (require '[clojure.pprint :as pprint])

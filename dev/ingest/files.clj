@@ -1,4 +1,4 @@
-(ns ingest
+(ns ingest.files
   (:require [clojure.java.io :as io]
             [datascript.core :as d]
             [schema-voyager.data :as data]))

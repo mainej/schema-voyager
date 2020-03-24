@@ -84,8 +84,8 @@
 * documentation
 ** document how to create
 *** yarn html
-*** clj -A:ingest example
-*** clj -A:ingest ingest <file>*
+*** clj -A:ingest -m example
+*** clj -A:ingest -m ingest.files <file>*
 *** yarn css
 *** yarn --prod css
 ** document supplemental schema
