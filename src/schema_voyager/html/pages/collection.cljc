@@ -92,7 +92,7 @@
       [:section.border-b
        {:class (when (:db.schema/deprecated? entity)
                  :bg-gray-300)}
-       [:div.p-4.sm:p-6.flex.items-center.justify-center.cursor-pointer
+       [:div.p-4.sm:p-6.flex.items-center.justify-center.cursor-pointer.hover:bg-gray-100.transition.duration-300.ease-in-out
         {:on-click #(util/visit (util/attr-route entity))}
         [:div.flex-grow [entity-panel entity]]
         [:div.ml-4.sm:ml-6 chevron-right]]])]

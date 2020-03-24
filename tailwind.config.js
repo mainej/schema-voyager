@@ -1,4 +1,3 @@
-// disable some colors
 module.exports = {
     theme: {
         width: (theme) => ({
