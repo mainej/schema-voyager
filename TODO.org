@@ -86,6 +86,6 @@
 *** yarn html
 *** clj -A:ingest example
 *** clj -A:ingest ingest <file>*
-*** css
-*** minified css
+*** yarn css
+*** yarn --prod css
 ** document supplemental schema

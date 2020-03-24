@@ -1,34 +1,31 @@
-### CSS
-
-#### development
+## Hack
 
 ```bash
-	NODE_ENV=development npx postcss -c postcss.config.js -o target/styles.css assets/css/styles.css
+yarn html # optional, only once
+yarn css # optional, only if css changed
 ```
 
-#### production
+### Terminal
 
 ```bash
-	NODE_ENV=production npx postcss -c postcss.config.js -o target/styles.css assets/css/styles.css
+yarn run js-server
+yarn run watch-js # in separate terminal tab
 ```
 
 ### REPL
 
 ```emacs
 cider-jack-in-cljs
-  shadow-cljs
-  shadow
-  app
 ```
 
-Respond 'y' to view app at http://localhost:8080.
+Then open http://localhost:8080
 
-### Release
+## Release
 
-Compile with optimizations with `release` sub-command:
+Compile with optimizations:
 
 ```bash
-yarn release
-yarn html
-yarn serve # serving target/ on http://localhost:8080
+yarn --prod compile-js
+yarn --prod html
+yarn --prod css
 ```
