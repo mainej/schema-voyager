@@ -4,8 +4,9 @@
             [schema-voyager.html.pages.attribute :as pages.attribute]
             [schema-voyager.html.pages.aggregate :as pages.aggregate]
             [schema-voyager.html.db :as db]
-            [reitit.frontend :as rf]
-            [reitit.frontend.easy :as rfe]))
+            #?@(:cljs [[reitit.frontend :as rf]
+                       [reitit.frontend.easy :as rfe]]
+                :clj [[reitit.core :as r]])))
 
 (def ^:private routes
   ["/"
@@ -19,8 +20,10 @@
                      :view pages.attribute/page}]])
 
 (def ^:private router
-  (rf/router routes))
+  #?(:cljs (rf/router routes)
+     :clj (r/router routes)))
 
 (defn ^:dev/after-load initialize
   []
-  (rfe/start! router db/save-route {:use-fragment true}))
+  #?(:cljs
+     (rfe/start! router db/save-route {:use-fragment true})))

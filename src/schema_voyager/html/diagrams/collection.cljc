@@ -1,6 +1,10 @@
 (ns schema-voyager.html.diagrams.collection
-  (:require [oz.core :as oz]
+  (:require #?(:cljs [oz.core :as oz])
             [schema-voyager.html.util :as util]))
+
+(defn vega [schema]
+  #?(:cljs [oz/vega schema]
+     :clj [:div]))
 
 (defn coll-id [{coll-type :db.schema.collection/type
                 coll-name :db.schema.collection/name}]
@@ -30,7 +34,7 @@
                                  (map (fn [[source target]]
                                         {:source (get node-idx-by-node-id (coll-id source))
                                          :target (get node-idx-by-node-id (coll-id target))})))]
-    [oz/vega
+    [vega
      {:$schema "https://vega.github.io/schema/vega/v5.json"
       :height  400
       :width   400

@@ -1,10 +1,15 @@
 (ns schema-voyager.html.util
-  (:require [reitit.frontend.easy :as rfe]))
+  #?(:cljs (:require [reitit.frontend.easy :as rfe])))
 
-(def href rfe/href)
+(def href
+  #?(:cljs rfe/href
+     ;; TODO: is there a way to generate hrefs in CLJ, without creating a
+     ;; circular dependency with the routes ns?
+     :clj (constantly nil)))
 
 (defn visit [route]
-  (apply rfe/push-state route))
+  #?(:cljs (apply rfe/push-state route)
+     :clj nil))
 
 (defn coll-href [coll]
   (href (keyword :route (:db.schema.collection/type coll))
