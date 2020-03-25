@@ -60,7 +60,8 @@
 
 (defn coll-links [colls]
   (link-list (fn [coll]
-               [link {:href (coll-href coll)}
+               [link {:href     (coll-href coll)
+                      :on-click #(.stopPropagation %)}
                 [coll-name* coll]
                 " "
                 [aggregate-abbr coll]])
