@@ -99,9 +99,11 @@
    [:div.mt-4
     [diagrams.collection/force-graph
      (concat
-      (mapcat #(for [source (:db.schema/part-of %)]
-                 [source coll])
-              _references)
-      (mapcat #(for [target (:db.schema/references %)]
-                 [coll target])
-              _part-of))]]])
+      (->> _references
+           (remove :db.schema/deprecated?)
+           (mapcat #(for [source (:db.schema/part-of %)]
+                      [source coll])))
+      (->> _part-of
+           (remove :db.schema/deprecated?)
+           (mapcat #(for [target (:db.schema/references %)]
+                      [coll target]))))]]])

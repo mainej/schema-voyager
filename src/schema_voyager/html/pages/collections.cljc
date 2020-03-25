@@ -17,6 +17,7 @@
               :where
               [?source-attr :db.schema/references ?dest]
               [?source-attr :db.schema/part-of ?source]
+              (not [?source-attr :db.schema/deprecated? true])
               [?source :db.schema.collection/name ?source-name]
               [?source :db.schema.collection/type ?source-type]
               [?dest :db.schema.collection/name ?dest-name]
