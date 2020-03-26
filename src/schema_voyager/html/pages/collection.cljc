@@ -58,13 +58,13 @@
 (defmulti entity-panel entity/entity-type)
 
 (defmethod entity-panel :attribute [entity]
-  [:div.sm:flex
-   [:div.sm:w-4of6
+  [:div.sm:flex.justify-between
+   [:div
     [:div.font-medium
      [entity-header entity :aggregate]]
     [:div.hidden.sm:block.mt-4
      [entity/doc-str entity]]]
-   [:div.flex-grow.sm:text-right.mt-4.sm:mt-0
+   [:div.sm:text-right.mt-4.sm:mt-0
     [value-type-shorthand entity]]])
 
 (defmethod entity-panel :constant [entity]
@@ -77,7 +77,7 @@
 (defn page [{:keys [db.schema/_part-of db.schema/_references db/doc] :as coll}]
   [:div
    [:div.px-4.sm:px-0
-    [:h1.mb-4.font-bold
+    [:h1.mb-4.font-bold.whitespace-no-wrap
      [util/coll-name* coll]
      " "
      [util/aggregate-abbr coll]]
@@ -86,15 +86,15 @@
     (when (seq _references)
       [:div.text-gray-600 "Referenced by "
        [util/attr-links _references]])]
-   [:div.mt-6.sm:shadow-lg.sm:rounded-lg.bg-white.max-w-4xl
+   [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl
     (for [entity (sort-by entity-comparable _part-of)]
       ^{:key (:db/id entity)}
       [:section.border-b
        {:class (when (:db.schema/deprecated? entity)
                  :bg-gray-300)}
-       [:div.p-4.sm:p-6.flex.items-center.justify-center.cursor-pointer.hover:bg-gray-100.transition.duration-300.ease-in-out
+       [:div.p-4.sm:p-6.flex.items-center.justify-between.cursor-pointer.hover:bg-gray-100.transition.duration-150.ease-in-out
         {:on-click #(util/visit (util/attr-route entity))}
-        [:div.flex-grow [entity-panel entity]]
+        [:div.flex-1 [entity-panel entity]]
         [:div.ml-4.sm:ml-6 chevron-right]]])]
    [:div.mt-4
     [diagrams.collection/force-graph

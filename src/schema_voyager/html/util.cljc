@@ -1,6 +1,8 @@
 (ns schema-voyager.html.util
   #?(:cljs (:require [reitit.frontend.easy :as rfe])))
 
+(def nbsp "\u00A0")
+
 (def href
   #?(:cljs rfe/href
      ;; TODO: is there a way to generate hrefs in CLJ, without creating a
@@ -22,7 +24,7 @@
   (apply href (attr-route attr)))
 
 (defn char-abbr [opts title]
-  [:div.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full
+  [:span.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full
    opts
    [:abbr {:title title} (first title)]])
 
@@ -38,13 +40,13 @@
    (pr-str name)])
 
 (defn coll-name* [coll]
-  [:span [coll-name coll] "/" [:span.text-blue-500 "*"]])
+  [:span.whitespace-no-wrap [coll-name coll] "/" [:span.text-blue-500 "*"]])
 
 (defn ident-name
   ([ident]
    [:span.text-blue-500 (pr-str ident)])
   ([ident coll-type]
-   [:span
+   [:span.whitespace-no-wrap
     [coll-name {:db.schema.collection/name (keyword (namespace ident))
                 :db.schema.collection/type coll-type}]
     "/"
@@ -61,6 +63,7 @@
 (defn coll-links [colls]
   (link-list (fn [coll]
                [link {:href     (coll-href coll)
+                      :class    :whitespace-no-wrap
                       :on-click #(.stopPropagation %)}
                 [coll-name* coll]
                 " "
@@ -81,14 +84,15 @@
   (link-list (fn [{:keys [db/ident db.schema/part-of] :as attr}]
                (if (= 1 (count part-of))
                  (let [coll (first part-of)]
-                   [:span
+                   [:span.whitespace-no-wrap
                     [link {:href (coll-href coll)}
                      [coll-name coll]]
                     "/"
                     [link {:href (attr-href attr)}
                      [:span.text-blue-500 (name ident)]]
                     [attr-deprecated-abbr attr]])
-                 [link {:href (attr-href attr)}
+                 [link {:class :whitespace-no-wrap
+                        :href  (attr-href attr)}
                   [ident-name ident]
                   [attr-deprecated-abbr attr]]))
              attributes))

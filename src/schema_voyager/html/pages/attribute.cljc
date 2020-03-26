@@ -76,7 +76,7 @@
        " of type"]
       " "
       [entity/value-type entity]]]]
-   [:div.mt-6.sm:shadow-lg.sm:rounded-lg.bg-white.max-w-4xl
+   [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl
     [details-section entity]
     [additional-attribute-fields entity]]])
 
@@ -85,7 +85,7 @@
    [:div.px-4.sm:px-0
     [header entity :enum]
     [part-of entity]]
-   [:div.mt-6.sm:shadow-lg.sm:rounded-lg.bg-white.max-w-4xl
+   [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl
     [details-section entity]
     [additional-constant-fields entity]]])
 
