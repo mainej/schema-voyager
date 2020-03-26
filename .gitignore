@@ -9,3 +9,4 @@
 
 .nrepl-port
 resources/db.edn
+/dev/ingest/projects

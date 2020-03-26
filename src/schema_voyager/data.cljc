@@ -3,10 +3,12 @@
   (:require [clojure.edn :as edn]))
 
 (defn read-schema-coll [[type name]]
-  {:db.schema.collection/type type
-   :db.schema.collection/name name})
+  #:db.schema.collection{:type type, :name name})
 
-(defn read-string [s]
+(defn read-string
+  "Reads `s` as EDN, converting `#schema-coll[:enum :foo]` into:
+  `#:db.schema.collection{:type :enum, :name :foo}`"
+  [s]
   (edn/read-string {:readers {'schema-coll read-schema-coll}} s))
 
 (def metaschema
@@ -36,10 +38,11 @@
   {:db.schema.collection/type (entity-derive-collection-type e)
    :db.schema.collection/name (entity-derive-collection-name e)})
 
+(defn entity-derive-part-of [e]
+  (get e :db.schema/part-of [(entity-derive-collection e)]))
+
 (defn entity-with-part-of [e]
-  (if (:db.schema/part-of e)
-    e
-    (assoc e :db.schema/part-of [(entity-derive-collection e)])))
+  (assoc e :db.schema/part-of (entity-derive-part-of e)))
 
 (defn- merge-by [f items]
   (->> items

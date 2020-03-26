@@ -37,8 +37,8 @@
                                            :target (get node-idx-by-node-id (coll-id target))})))]
       [vega
        {:$schema "https://vega.github.io/schema/vega/v5.json"
-        :height  400
-        :width   400
+        :height  600
+        :width   800
         :padding 5
         :signals [{:name "cx", :update "width / 2"}
                   {:name "cy", :update "height / 2"}

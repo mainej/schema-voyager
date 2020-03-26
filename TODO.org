@@ -1,3 +1,8 @@
+* ingest data
+** DONE from file
+   CLOSED: [2020-03-09 Mon 16:44]
+** DONE from db
+   CLOSED: [2020-03-25 Wed 17:04]
 * process data into datascript db
 ** DONE basic schema
    CLOSED: [2020-03-09 Mon 14:17]
@@ -17,10 +22,6 @@
 ** with entity predicates
 ** DONE allow doc strings on collections
    CLOSED: [2020-03-10 Tue 18:06]
-* ingest data
-** DONE from file
-   CLOSED: [2020-03-09 Mon 16:44]
-** from db
 * inspect data
 ** DONE index
    CLOSED: [2020-03-10 Tue 15:44]
@@ -69,10 +70,12 @@
 * export data
 ** DONE to static datascript db
    CLOSED: [2020-03-10 Tue 23:22]
-** DONE to static HTML, with inlined data
+** DONE to live HTML, with inlined data
    CLOSED: [2020-03-10 Tue 23:23]
 ** to static HTML, with inlined JS and CSS
-** to svg
+** DONE to svg
+   CLOSED: [2020-03-25 Wed 17:10]
+Done by Vega, see toolbox to upper right of diagram
 * refactoring
 ** DONE switch to just datascript and reagent... don't need re-frame or re-posh
    CLOSED: [2020-03-10 Tue 22:38]
@@ -82,10 +85,27 @@
 ** DONE try CSS purge
    CLOSED: [2020-03-11 Wed 22:30]
 * documentation
-** document how to create
-*** yarn html
-*** clj -A:ingest -m example
+** terminology
+*** collections, aggregates, enums, attributes, constants
+** supplemental schema
+*** references, part-of, see-also, deprecated, collections (and db/doc)
+** how to generate data
+*** dev/projects/* folders
+*** :ingest alias
+*** :datomic alias
+*** clj -A:ingest -m examples
 *** clj -A:ingest -m ingest.files <file>*
-*** yarn css
-*** yarn --prod css
-** document supplemental schema
+*** clj -A:ingest:datomic -m ingest.projects.my-project
+** how to run local, live web page
+*** generate schema database
+*** yarn run html
+*** yarn run css
+*** yarn run watch-js
+*** open https://localhost:8080
+** how to host web page
+*** generate schema database
+*** yarn --prod run clean
+*** yarn --prod run html
+*** yarn --prod run css
+*** yarn --prod run compile-js
+*** upload assets/* to Netlify, or a server of your choice

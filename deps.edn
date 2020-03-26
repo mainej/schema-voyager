@@ -4,4 +4,5 @@
            reagent                 {:mvn/version "0.10.0"}
            thheller/shadow-cljs    {:mvn/version "2.8.91"}
            metasoarous/oz          {:mvn/version "1.6.0-alpha6"}}
- :aliases {:ingest {:extra-paths ["dev"]}}}
+ :aliases {:ingest {:extra-paths ["dev"]}
+           :datomic {:extra-deps {com.datomic/client-cloud {:mvn/version "0.8.78"}}}}}
