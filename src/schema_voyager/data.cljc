@@ -1,6 +1,7 @@
 (ns schema-voyager.data
   (:refer-clojure :exclude [read-string])
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]
+            [clojure.walk :as walk]))
 
 (defn read-schema-coll [[type name]]
   #:db.schema.collection{:type type, :name name})
@@ -15,16 +16,20 @@
   {
    ;; Other attributes to which this attribute is related. Often used with
    ;; :db.schema/deprecated? to point to a new way of storing some data
-   :db.schema/see-also   {:db/valueType   :db.type/ref
-                          :db/cardinality :db.cardinality/many}
+   :db.schema/see-also         {:db/valueType   :db.type/ref
+                                :db/cardinality :db.cardinality/many}
    ;; Which collection(s) this attribute is a part of. Usually derived from the
    ;; name and type of the attribute. Can be overridden for attributes that are
    ;; used on many aggregates.
-   :db.schema/part-of    {:db/valueType   :db.type/ref
-                          :db/cardinality :db.cardinality/many}
+   :db.schema/part-of          {:db/valueType   :db.type/ref
+                                :db/cardinality :db.cardinality/many}
    ;; Which collection(s) this attribute refers to.
-   :db.schema/references {:db/valueType   :db.type/ref
-                          :db/cardinality :db.cardinality/many}})
+   :db.schema/references       {:db/valueType   :db.type/ref
+                                :db/cardinality :db.cardinality/many}
+   ;; Which collection(s) various parts of this tuple refers to.
+   :db.schema/tuple-references {:db/valueType   :db.type/ref
+                                :db/cardinality :db.cardinality/many}
+   })
 
 (defn entity-derive-collection-type [e]
   (if (:db/valueType e)
@@ -53,23 +58,25 @@
 (defn coll-identity [coll]
   (select-keys coll [:db.schema.collection/type :db.schema.collection/name]))
 
+(defn replace-collections-by-temp-ids [collections entities]
+  (let [coll-to-temp-id (zipmap (map coll-identity collections)
+                                (map :db/id collections))]
+    (walk/postwalk (fn [x] (if (map? x)
+                             (get coll-to-temp-id (coll-identity x) x)
+                             x))
+                   entities)))
+
 (defn process [attributes]
-  (let [entities          (->> attributes
-                               (filter :db/ident)
-                               (map entity-with-part-of))
-        collections       (->> (concat (mapcat :db.schema/part-of entities)
-                                       (filter :db.schema.collection/name attributes))
-                               (merge-by coll-identity)
-                               (map-indexed (fn [idx coll]
-                                              (assoc coll :db/id (* -1 (inc idx))))))
-        coll-to-temp-id   (zipmap (map coll-identity collections)
-                                  (map :db/id collections))
-        colls-to-temp-ids #(mapv (comp coll-to-temp-id coll-identity) %)
-        entities          (map (fn [e]
-                                 (cond-> (update e :db.schema/part-of colls-to-temp-ids)
-                                   (seq (:db.schema/references e)) (update :db.schema/references colls-to-temp-ids)))
-                               entities)]
-    (concat collections entities)))
+  (let [entities    (->> attributes
+                         (filter :db/ident)
+                         (map entity-with-part-of))
+        collections (->> (concat (mapcat :db.schema/part-of entities)
+                                 (filter :db.schema.collection/name attributes))
+                         (merge-by coll-identity)
+                         (map-indexed (fn [idx coll]
+                                        (assoc coll :db/id (* -1 (inc idx))))))]
+    (concat collections
+            (replace-collections-by-temp-ids collections entities))))
 
 (defn join [& schemas]
   (->> schemas

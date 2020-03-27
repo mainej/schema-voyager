@@ -15,8 +15,12 @@
 (defn references [db]
   (->> (d/q '[:find ?source-name ?source-type ?dest-name ?dest-type
               :where
-              [?source-attr :db.schema/references ?dest]
               [?source-attr :db.schema/part-of ?source]
+              (or-join [?source-attr ?dest]
+                       [?source-attr :db.schema/references ?dest]
+                       (and
+                        [?source-attr :db.schema/tuple-references ?dest-tuple-ref]
+                        [?dest-tuple-ref :db.schema/references ?dest]))
               (not [?source-attr :db.schema/deprecated? true])
               [?source :db.schema.collection/name ?source-name]
               [?source :db.schema.collection/type ?source-type]
@@ -56,4 +60,4 @@
     "Enums are collections of named constants. They usually specify the various values that an attribute may take."
     (collections db/db :enum)]
    [:div.mt-10
-    [diagrams.collection/force-graph (references db/db)]]])
+    [diagrams.collection/force-graph [800 600] (references db/db)]]])

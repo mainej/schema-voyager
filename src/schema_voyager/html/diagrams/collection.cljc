@@ -22,7 +22,7 @@
   "Generates a force-directed graph of collections and their relationships.
   `references` is a seq of pairs of related collections: `[source-collection
   target-collection]`."
-  [references]
+  [[width height] references]
   (when (seq references)
     (let [nodes               (->> references
                                    (mapcat identity)
@@ -37,8 +37,8 @@
                                            :target (get node-idx-by-node-id (coll-id target))})))]
       [vega
        {:$schema "https://vega.github.io/schema/vega/v5.json"
-        :height  600
-        :width   800
+        :height  height
+        :width   width
         :padding 5
         :signals [{:name "cx", :update "width / 2"}
                   {:name "cy", :update "height / 2"}

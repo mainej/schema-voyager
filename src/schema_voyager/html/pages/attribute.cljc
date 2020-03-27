@@ -3,15 +3,18 @@
             [schema-voyager.html.db :as db]
             [schema-voyager.html.components.entity :as entity]
             [schema-voyager.html.components.value-type :as value-type]
+            [schema-voyager.html.diagrams.collection :as diagrams.collection]
             [schema-voyager.html.util :as util]))
 
 (defn by-ident [ident]
   (d/pull db/db
           ['*
-           {:db.schema/part-of    ['*]
-            :db.schema/references ['*]
-            :db.schema/see-also   util/attr-link-pull
-            :db.schema/_see-also  util/attr-link-pull}]
+           {:db.schema/part-of          ['*]
+            :db.schema/references       ['*]
+            :db.schema/tuple-references ['*
+                                         {:db.schema/references ['*]}]
+            :db.schema/see-also         util/attr-link-pull
+            :db.schema/_see-also        util/attr-link-pull}]
           [:db/ident ident]))
 
 (defn part-of [{:keys [db.schema/part-of]}]
@@ -51,6 +54,17 @@
         [:dt.sm:w-1of3 (pr-str field)]
         [:dd (pr-str value)]])]))
 
+(defn diagram [{:keys [db.schema/part-of db.schema/references db.schema/tuple-references]}]
+  [diagrams.collection/force-graph
+   [400 300]
+   (concat
+    (for [source part-of
+          dest   references]
+      [source dest])
+    (for [source part-of
+          dest (mapcat :db.schema/references tuple-references)]
+      [source dest]))])
+
 (defn header [{:keys [db/ident] :as entity} coll-type]
   [:h1.mb-4.font-bold
    [util/ident-name ident coll-type]
@@ -70,7 +84,9 @@
       [value-type/p entity]]]]
    [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white
     [details-section entity]
-    [additional-fields entity]]])
+    [additional-fields entity]]
+   [:div.mt-6
+    [diagram entity]]])
 
 (defmethod panel :constant [entity]
   [:div.max-w-4xl
