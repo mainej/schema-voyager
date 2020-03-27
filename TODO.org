@@ -12,14 +12,17 @@
    CLOSED: [2020-03-09 Mon 14:56]
 ** DONE with references
    CLOSED: [2020-03-09 Mon 16:41]
-** with tuples
-** with tuple references
+** DONE with tuples
+   CLOSED: [2020-03-27 Fri 14:29]
+** DONE with tuple references
+   CLOSED: [2020-03-27 Fri 14:29]
+** include tuple references in Referenced By
 ** DONE with derived aggregate/enum
    CLOSED: [2020-03-09 Mon 16:42]
 ** DONE with explicit aggregate/enum
    CLOSED: [2020-03-09 Mon 16:42]
 ** with attribute predicates
-** with entity predicates
+** with entity specs
 ** DONE allow doc strings on collections
    CLOSED: [2020-03-10 Tue 18:06]
 * inspect data
@@ -67,6 +70,8 @@
    CLOSED: [2020-03-19 Thu 23:32]
 ** DONE connections graph for one agregate/enum, force directed, including inbound references
    CLOSED: [2020-03-19 Thu 23:33]
+** pannable connections graph
+** keep arrow tips close to the target
 * export data
 ** DONE to static datascript db
    CLOSED: [2020-03-10 Tue 23:22]

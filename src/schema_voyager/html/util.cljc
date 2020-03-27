@@ -52,23 +52,28 @@
     "/"
     [:span.text-blue-500 (name ident)]]))
 
-(def link :a.underline)
+(defn pipe-list [items]
+  (->> items
+       (interpose " | ")
+       (into [:span])))
 
-(defn link-list [f coll]
-  (->> coll
-       (map f)
+(defn comma-list [items]
+  (->> items
        (interpose ", ")
        (into [:span])))
 
+(def link :a.hover:underline)
+
+(defn coll-link [coll]
+  [link {:href     (coll-href coll)
+         :class    :whitespace-no-wrap
+         :on-click #(.stopPropagation %)}
+   [coll-name* coll]
+   " "
+   [aggregate-abbr coll]])
+
 (defn coll-links [colls]
-  (link-list (fn [coll]
-               [link {:href     (coll-href coll)
-                      :class    :whitespace-no-wrap
-                      :on-click #(.stopPropagation %)}
-                [coll-name* coll]
-                " "
-                [aggregate-abbr coll]])
-             colls))
+  (pipe-list (map coll-link colls)))
 
 (defn attr-deprecated-abbr [{:keys [db.schema/deprecated?]}]
   (when deprecated?
@@ -80,19 +85,20 @@
    :db.schema/deprecated?
    {:db.schema/part-of ['*]}])
 
+(defn attr-link [{:keys [db/ident db.schema/part-of] :as attr}]
+  (if (= 1 (count part-of))
+    (let [coll (first part-of)]
+      [:span.whitespace-no-wrap
+       [link {:href (coll-href coll)}
+        [coll-name coll]]
+       "/"
+       [link {:href (attr-href attr)}
+        [:span.text-blue-500 (name ident)]]
+       [attr-deprecated-abbr attr]])
+    [link {:class :whitespace-no-wrap
+           :href  (attr-href attr)}
+     [ident-name ident]
+     [attr-deprecated-abbr attr]]))
+
 (defn attr-links [attributes]
-  (link-list (fn [{:keys [db/ident db.schema/part-of] :as attr}]
-               (if (= 1 (count part-of))
-                 (let [coll (first part-of)]
-                   [:span.whitespace-no-wrap
-                    [link {:href (coll-href coll)}
-                     [coll-name coll]]
-                    "/"
-                    [link {:href (attr-href attr)}
-                     [:span.text-blue-500 (name ident)]]
-                    [attr-deprecated-abbr attr]])
-                 [link {:class :whitespace-no-wrap
-                        :href  (attr-href attr)}
-                  [ident-name ident]
-                  [attr-deprecated-abbr attr]]))
-             attributes))
+  (pipe-list (map attr-link attributes)))
