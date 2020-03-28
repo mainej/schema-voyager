@@ -9,8 +9,15 @@
                        [reitit.frontend.easy :as rfe]]
                 :clj [[reitit.core :as r]])))
 
+(defn- scroll-to-top
+  []
+  #?(:cljs (js/window.scrollTo 0 0)
+     :clj nil))
+
 (def ^:private routes
   ["/"
+   {:controllers [{:identity identity
+                   :start    scroll-to-top}]}
    ["" {:name :route/collections
         :view pages.collections/page}]
    ["enum/:id" {:name :route/enum
