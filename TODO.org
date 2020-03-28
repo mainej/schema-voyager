@@ -89,7 +89,8 @@ Done by Vega, see toolbox to upper right of diagram
 * refactoring
 ** DONE switch to just datascript and reagent... don't need re-frame or re-posh
    CLOSED: [2020-03-10 Tue 22:38]
-** why do we have both entity and attribute? aren't they two names for the same thing?
+** DONE why do we have both entity and attribute? aren't they two names for the same thing?
+   CLOSED: [2020-03-27 Fri 20:06]
 ** DONE fix :a within another :a on collection page: invalid DOM
    CLOSED: [2020-03-17 Tue 14:56]
 ** DONE try CSS purge

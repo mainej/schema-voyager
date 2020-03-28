@@ -95,4 +95,4 @@
         (remove (fn [e]
                   (contains? entity-exclusions (:db/ident e))))
         (remove (fn [e]
-                  (some coll-exclusions (data/entity-derive-part-of e)))))))
+                  (some coll-exclusions (data/attribute-derive-part-of e)))))))

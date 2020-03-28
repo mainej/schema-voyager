@@ -1,7 +1,6 @@
 (ns schema-voyager.html.pages.collection
   (:require [schema-voyager.html.db :as db]
             [datascript.core :as d]
-            [schema-voyager.html.components.entity :as entity]
             [schema-voyager.html.components.value-type :as value-type]
             [schema-voyager.html.diagrams.collection :as diagrams.collection]
             [schema-voyager.html.util :as util]))
@@ -11,7 +10,8 @@
          :in $ ?collection-type ?collection-name
          :where
          [?collection :db.schema.collection/type ?collection-type]
-         [?collection :db.schema.collection/name ?collection-name]]
+         [?collection :db.schema.collection/name ?collection-name]
+         [?collection :db.schema.pseudo/type :collection]]
        db collection-type collection-name))
 
 (defn- by-type-and-name [db collection-type collection-name]
@@ -31,13 +31,13 @@
                                        (->> collection
                                             :db.schema/_references
                                             (mapcat :db.schema/_tuple-references))))]
-    (assoc collection :db.schema/referenced-by referenced-by)))
+    (assoc collection :db.schema.pseudo/referenced-by referenced-by)))
 
 (defn collection-from-route
   [collection-type parameters]
   (by-type-and-name db/db collection-type (keyword (:id (:path parameters)))))
 
-(defn- entity-comparable
+(defn- attribute-comparable
   "Helper for sorting attributes. Returns items in this order:
   * Unique attributes
   * Deprecated unique attributes (rare)
@@ -52,34 +52,40 @@
   [:svg.fill-none.stroke-current.stroke-2.w-4.h-4 {:viewBox "0 0 24 24"}
    [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M9 5l7 7-7 7"}]])
 
-(defn- entity-header [{:keys [db/ident] :as entity} coll-type]
+(defn doc-str [{:keys [db/doc]}]
+  (when doc
+    [:p.text-gray-600.italic doc]))
+
+(defn- attribute-header [{:keys [db/ident db/unique db.schema/deprecated?] :as attribute} coll-type]
   [:h1.mb-4
    [:a.group-hover:underline
-    {:href (util/attr-href entity)}
+    {:href (util/attr-href attribute)}
     [util/ident-name ident coll-type]]
-   [entity/unique-span entity]
-   [entity/deprecated-span entity]])
+   (when (= :db.unique/identity unique)
+     [:span.ml-2 util/lock-closed])
+   (when deprecated?
+     [:span.ml-2 util/deprecated-pill])])
 
-(defmulti entity-panel entity/entity-type)
+(defmulti attribute-panel :db.schema.pseudo/type)
 
-(defmethod entity-panel :attribute [entity]
+(defmethod attribute-panel :attribute [attribute]
   [:div.sm:flex.justify-between
    [:div
     [:div.font-medium
-     [entity-header entity :aggregate]]
+     [attribute-header attribute :aggregate]]
     [:div.hidden.sm:block.mt-4
-     [entity/doc-str entity]]]
+     [doc-str attribute]]]
    [:div.sm:text-right.mt-4.sm:mt-0
-    [value-type/shorthand entity]]])
+    [value-type/shorthand attribute]]])
 
-(defmethod entity-panel :constant [entity]
+(defmethod attribute-panel :constant [constant]
   [:div
    [:div.font-medium
-    [entity-header entity :enum]]
+    [attribute-header constant :enum]]
    [:div.hidden.sm:block.mt-4
-    [entity/doc-str entity]]])
+    [doc-str constant]]])
 
-(defn page [{:keys [db.schema/_part-of db.schema/referenced-by db/doc] :as coll}]
+(defn page [{:keys [db.schema/_part-of db.schema.pseudo/referenced-by db/doc] :as coll}]
   [:div
    [:div.px-4.sm:px-0
     [:h1.mb-4.font-bold.whitespace-no-wrap
@@ -92,14 +98,14 @@
       [:div.text-gray-600 "Referenced by "
        [util/attr-links referenced-by]])]
    [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl
-    (for [entity (sort-by entity-comparable _part-of)]
-      ^{:key (:db/id entity)}
+    (for [attribute (sort-by attribute-comparable _part-of)]
+      ^{:key (:db/id attribute)}
       [:section.border-b
-       {:class (when (:db.schema/deprecated? entity)
+       {:class (when (:db.schema/deprecated? attribute)
                  :bg-gray-300)}
        [:div.p-4.sm:p-6.flex.items-center.justify-between.cursor-pointer.hover:bg-gray-100.transition.duration-150.ease-in-out.group
-        {:on-click #(util/visit (util/attr-route entity))}
-        [:div.flex-1 [entity-panel entity]]
+        {:on-click #(util/visit (util/attr-route attribute))}
+        [:div.flex-1 [attribute-panel attribute]]
         [:div.ml-4.sm:ml-6 chevron-right]]])]
    [:div.mt-4
     [diagrams.collection/force-graph

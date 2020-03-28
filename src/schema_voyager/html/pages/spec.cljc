@@ -1,7 +1,6 @@
 (ns schema-voyager.html.pages.spec
   (:require [datascript.core :as d]
             [schema-voyager.html.db :as db]
-            [schema-voyager.html.components.entity :as entity]
             [schema-voyager.html.util :as util]))
 
 (defn- by-ident [ident]
@@ -19,11 +18,15 @@
      ^{:key (:db/ident attr)}
      [:li [util/attr-link attr]])])
 
+(defn doc-str [{:keys [db/doc]}]
+  (when doc
+    [:p.italic doc]))
+
 (defn- details-section [{:keys [db/doc db.entity/attrs db.entity/preds] :as spec}]
   [:div
    (when doc
      [:div.px-4.py-6.sm:p-8.border-b
-      [entity/doc-str spec]])
+      [doc-str spec]])
    [:div.px-4.py-6.sm:p-8
     [:div.mb-8 "When placed on an entity, " [util/spec-name spec] "..."]
     (when attrs

@@ -1,8 +1,13 @@
 (ns schema-voyager.html.components.value-type
   (:require [datascript.core :as d]
             [schema-voyager.html.db :as db]
-            [schema-voyager.html.components.entity :as entity]
             [schema-voyager.html.util :as util]))
+
+(defn tuple-type [{:keys [db/tupleAttrs db/tupleType db/tupleTypes]}]
+  (cond
+    tupleAttrs :db.type.tuple/composite
+    tupleType  :db.type.tuple/homogeneous
+    tupleTypes :db.type.tuple/heterogeneous))
 
 (defn angle-span [child]
   [:span "< " child " >"])
@@ -35,7 +40,7 @@
   (fn [{:keys [db/cardinality db/valueType db.schema/references db/tupleType] :as attribute}]
     (let [tuple?     (= :db.type/tuple valueType)
           ref?       (= :db.type/ref valueType)
-          tuple-type (entity/tuple-type attribute)]
+          tuple-type (tuple-type attribute)]
       [cardinality
        (cond tuple? tuple-type
              ref?   valueType
@@ -140,7 +145,7 @@
   (fn [{:keys [db/valueType db.schema/references db/tupleType] :as attribute}]
     (let [tuple?     (= :db.type/tuple valueType)
           ref?       (= :db.type/ref valueType)
-          tuple-type (entity/tuple-type attribute)]
+          tuple-type (tuple-type attribute)]
       [(cond tuple? tuple-type
              ref?   valueType
              :else  ::default)
@@ -181,9 +186,9 @@
 (defmethod shorthand-span [::default ::default] [{:keys [db/valueType]}]
   [keyword-abbr valueType])
 
-(defn shorthand [{:keys [db/cardinality] :as entity}]
+(defn shorthand [{:keys [db/cardinality] :as attribute}]
   (let [many? (= :db.cardinality/many cardinality)]
     [:span
      (when many? "[")
-     [shorthand-span entity]
+     [shorthand-span attribute]
      (when many? "]")]))

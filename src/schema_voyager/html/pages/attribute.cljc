@@ -1,7 +1,6 @@
 (ns schema-voyager.html.pages.attribute
   (:require [datascript.core :as d]
             [schema-voyager.html.db :as db]
-            [schema-voyager.html.components.entity :as entity]
             [schema-voyager.html.components.value-type :as value-type]
             [schema-voyager.html.diagrams.collection :as diagrams.collection]
             [schema-voyager.html.util :as util]))
@@ -17,6 +16,10 @@
             :db.schema/_see-also        util/attr-link-pull}]
           [:db/ident ident]))
 
+(defn doc-str [{:keys [db/doc]}]
+  (when doc
+    [:p.italic doc]))
+
 (defn part-of [{:keys [db.schema/part-of]}]
   [:div.text-gray-600 "Part of "
    [util/coll-links part-of]])
@@ -31,22 +34,24 @@
     [:div.mt-6 "Noted by "
      [util/attr-links _see-also]]))
 
-(defn details-section [{:keys [db/doc db.schema/see-also db.schema/_see-also] :as entity}]
+(defn details-section [{:keys [db/doc db.schema/see-also db.schema/_see-also] :as attribute}]
   (when (or doc (seq see-also) (seq _see-also))
     [:div.p-4.sm:p-6
-     [entity/doc-str entity]
-     [see-also-links entity]
-     [seen-by-links entity]]))
+     [doc-str attribute]
+     [see-also-links attribute]
+     [seen-by-links attribute]]))
 
-(defn unhandled-fields [{:keys [db/unique] :as entity}]
-  (cond-> (dissoc entity
+(defn unhandled-fields [{:keys [db/unique] :as attribute}]
+  (cond-> (dissoc attribute
                   :db/id :db/ident :db/doc :db/valueType :db/cardinality
                   :db/tupleAttrs :db/tupleType :db/tupleTypes
-                  :db.schema/part-of :db.schema/_see-also :db.schema/see-also :db.schema/deprecated? :db.schema/references :db.schema/tuple-references)
+                  :db.schema/part-of :db.schema/_see-also :db.schema/see-also :db.schema/deprecated?
+                  :db.schema/references :db.schema/tuple-references
+                  :db.schema.pseudo/type)
     (= unique :db.unique/identity) (dissoc :db/unique)))
 
-(defn additional-fields [entity]
-  (when-let [fields (seq (unhandled-fields entity))]
+(defn additional-fields [attribute]
+  (when-let [fields (seq (unhandled-fields attribute))]
     [:dl
      (for [[field value] (sort-by first fields)]
        ^{:key field}
@@ -65,37 +70,39 @@
           dest (mapcat :db.schema/references tuple-references)]
       [source dest]))])
 
-(defn header [{:keys [db/ident] :as entity} coll-type]
+(defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]
   [:h1.mb-4.font-bold
    [util/ident-name {:coll-props {:class [:font-normal]}} ident coll-type]
-   [entity/unique-span entity]
-   [entity/deprecated-span entity]])
+   (when (= :db.unique/identity unique)
+     [:span.ml-2 util/lock-closed])
+   (when deprecated?
+     [:span.ml-2 util/deprecated-pill])])
 
-(defmulti panel entity/entity-type)
+(defmulti panel :db.schema.pseudo/type)
 
-(defmethod panel :attribute [entity]
+(defmethod panel :attribute [attribute]
   [:div.max-w-4xl
    [:div.px-4.sm:px-0
     [:div.sm:flex
      [:div
-      [header entity :aggregate]
-      [part-of entity]]
+      [header attribute :aggregate]
+      [part-of attribute]]
      [:div.sm:ml-6
-      [value-type/p entity]]]]
+      [value-type/p attribute]]]]
    [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white
-    [details-section entity]
-    [additional-fields entity]]
+    [details-section attribute]
+    [additional-fields attribute]]
    [:div.mt-6
-    [diagram entity]]])
+    [diagram attribute]]])
 
-(defmethod panel :constant [entity]
+(defmethod panel :constant [constant]
   [:div.max-w-4xl
    [:div.px-4.sm:px-0
-    [header entity :enum]
-    [part-of entity]]
+    [header constant :enum]
+    [part-of constant]]
    [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white
-    [details-section entity]
-    [additional-fields entity]]])
+    [details-section constant]
+    [additional-fields constant]]])
 
 (defn page [parameters]
   (let [attr (by-ident (keyword (:id (:path parameters))))]

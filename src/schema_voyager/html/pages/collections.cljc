@@ -7,15 +7,16 @@
 (defn collections [db collection-type]
   (->> (d/q '[:find [?coll ...]
               :in $ ?collection-type
-              :where [?coll :db.schema.collection/type ?collection-type]]
+              :where
+              [?coll :db.schema.collection/type ?collection-type]
+              [?coll :db.schema.pseudo/type :collection]]
             db collection-type)
        (d/pull-many db '[*])
        (sort-by :db.schema.collection/name)))
 
 (defn entity-specs [db]
   (->> (d/q '[:find [?spec ...]
-              :where (or [?spec :db.entity/attrs]
-                         [?spec :db.entity/preds])]
+              :where [?spec :db.schema.pseudo/type :entity-spec]]
             db)
        (d/pull-many db '[*])
        (sort-by :db/ident)))
@@ -32,8 +33,10 @@
               (not [?source-attr :db.schema/deprecated? true])
               [?source :db.schema.collection/name ?source-name]
               [?source :db.schema.collection/type ?source-type]
+              [?source :db.schema.pseudo/type :collection]
               [?dest :db.schema.collection/name ?dest-name]
-              [?dest :db.schema.collection/type ?dest-type]]
+              [?dest :db.schema.collection/type ?dest-type]
+              [?dest :db.schema.pseudo/type :collection]]
             db)
        (map (fn [[source-name source-type dest-name dest-type]]
               [{:db.schema.collection/name source-name

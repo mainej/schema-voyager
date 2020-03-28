@@ -31,23 +31,34 @@
                                 :db/cardinality :db.cardinality/many}
    })
 
-(defn entity-derive-collection-type [e]
-  (if (:db/valueType e)
+(defn derive-element-type [e]
+  (cond
+    (:db.schema.collection/name e) :collection
+    (:db/valueType e)              :attribute
+    (or (:db.entity/attrs e)
+        (:db.entity/preds e))      :entity-spec
+    :else                          :constant))
+
+(defn attribute-derive-collection-type [attribute]
+  (if (:db/valueType attribute)
     :aggregate
     :enum))
 
-(defn entity-derive-collection-name [e]
-  (keyword (namespace (:db/ident e))))
+(defn attribute-derive-collection-name [attribute]
+  (keyword (namespace (:db/ident attribute))))
 
-(defn entity-derive-collection [e]
-  {:db.schema.collection/type (entity-derive-collection-type e)
-   :db.schema.collection/name (entity-derive-collection-name e)})
+(defn attribute-derive-collection [attribute]
+  {:db.schema.collection/type (attribute-derive-collection-type attribute)
+   :db.schema.collection/name (attribute-derive-collection-name attribute)})
 
-(defn entity-derive-part-of [e]
-  (get e :db.schema/part-of [(entity-derive-collection e)]))
+(defn attribute-derive-part-of [attribute]
+  (get attribute :db.schema/part-of [(attribute-derive-collection attribute)]))
 
-(defn entity-with-part-of [e]
-  (assoc e :db.schema/part-of (entity-derive-part-of e)))
+(defn attribute-with-part-of [attribute]
+  (assoc attribute :db.schema/part-of (attribute-derive-part-of attribute)))
+
+(defn element-with-element-type [e]
+  (assoc e :db.schema.pseudo/type (derive-element-type e)))
 
 (defn- merge-by [f items]
   (->> items
@@ -70,21 +81,28 @@
                              x))
                    entities)))
 
-(defn process [attributes]
-  (let [entities     (->> attributes
-                          (filter :db/ident)
-                          (remove entity-spec?)
-                          (map entity-with-part-of))
-        entity-specs (->> attributes
-                          (filter entity-spec?))
-        collections  (->> (concat (mapcat :db.schema/part-of entities)
-                                  (filter :db.schema.collection/name attributes))
+(defn elements-of-type [types]
+  (comp types :db.schema.pseudo/type))
+
+(defn process [elements]
+  (let [elements     (->> elements
+                          (map element-with-element-type))
+        attributes   (->> elements
+                          (filter (elements-of-type #{:attribute :constant}))
+                          (map attribute-with-part-of))
+        entity-specs (->> elements
+                          (filter (elements-of-type #{:entity-spec})))
+        collections  (->> (concat (->> attributes
+                                       (mapcat :db.schema/part-of)
+                                       (map element-with-element-type))
+                                  (->> elements
+                                       (filter (elements-of-type #{:collection}))))
                           (merge-by coll-identity)
                           (map-indexed (fn [idx coll]
                                          (assoc coll :db/id (* -1 (inc idx))))))]
     (concat collections
             entity-specs
-            (replace-collections-by-temp-ids collections entities))))
+            (replace-collections-by-temp-ids collections attributes))))
 
 (defn join [& schemas]
   (->> schemas
