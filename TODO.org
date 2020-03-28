@@ -83,7 +83,8 @@
    CLOSED: [2020-03-10 Tue 23:22]
 ** DONE to live HTML, with inlined data
    CLOSED: [2020-03-10 Tue 23:23]
-** to static HTML, with inlined JS and CSS
+** DONE to static HTML, with inlined JS and CSS
+   CLOSED: [2020-03-28 Sat 15:21]
 ** DONE to svg
    CLOSED: [2020-03-25 Wed 17:10]
 Done by Vega, see toolbox to upper right of diagram
@@ -115,6 +116,10 @@ Done by Vega, see toolbox to upper right of diagram
 *** yarn run css
 *** yarn run watch-js
 *** open https://localhost:8080
+** how to create standalone web page
+*** generate schema database
+*** yarn --prod run standalone
+*** open target/standalone.html
 ** how to host web page
 *** generate schema database
 *** yarn --prod run clean
