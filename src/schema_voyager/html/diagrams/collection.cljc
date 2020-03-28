@@ -98,15 +98,40 @@
                                      :targetX "datum.target.x"
                                      :targetY "datum.target.y"}]}
                        ;; arrow-heads
-                       {:type   "symbol"
-                        :from   {:data "link-data"}
-                        :encode {:enter  {:fill        {:value "#4299e1"} ;; blue-500
-                                          :size        {:value 300}
-                                          :strokeWidth {:value 0}
-                                          :shape       {:value "wedge"}}
-                                 :update {:x     {:signal "datum.target.x - ((datum.target.x - datum.source.x) / 5)"}
-                                          :y     {:signal "datum.target.y - ((datum.target.y - datum.source.y) / 5)"}
-                                          :angle {:signal "90 + 180 * atan2((datum.target.y - datum.source.y), (datum.target.x - datum.source.x)) / PI"}}}}
+                       {:type      "symbol"
+                        :from      {:data "link-data"}
+                        :transform [{:type "formula"
+                                     :as   "offset"
+                                     :expr "15"}
+                                    {:type "formula"
+                                     :as   "dx"
+                                     :expr "datum.datum.target.x - datum.datum.source.x"}
+                                    {:type "formula"
+                                     :as   "dy"
+                                     :expr "datum.datum.target.y - datum.datum.source.y"}
+                                    {:type "formula"
+                                     :as   "r"
+                                     :expr "sqrt(pow(datum.dx, 2) + pow(datum.dy, 2))"}
+                                    {:type "formula"
+                                     :as   "x"
+                                     :expr "datum.datum.target.x - (datum.offset * (datum.dx / datum.r))"}
+                                    {:type "formula"
+                                     :as   "y"
+                                     :expr "datum.datum.target.y - (datum.offset * (datum.dy / datum.r))"}
+                                    {:type "formula"
+                                     :as   "thetaRadians"
+                                     :expr "atan2(datum.dy, datum.dx)"}
+                                    {:type "formula"
+                                     :as   "thetaDegrees"
+                                     :expr "180 * datum.thetaRadians / PI"}
+                                    {:type "formula"
+                                     :as   "angle"
+                                     :expr "90 + datum.thetaDegrees"}]
+                        :encode    {:enter  {:fill        {:value "#4299e1"} ;; blue-500
+                                             :size        {:value 300}
+                                             :strokeWidth {:value 0}
+                                             :shape       {:value "wedge"}}
+                                    :update {}}}
                        ;; nodes
                        {:type   "text"
                         :from   {:data "forces"}

@@ -74,7 +74,8 @@
 ** DONE connections graph for one agregate/enum, force directed, including inbound references
    CLOSED: [2020-03-19 Thu 23:33]
 ** pannable connections graph
-** keep arrow tips close to the target
+** DONE keep arrow tips close to the target
+   CLOSED: [2020-03-28 Sat 10:21]
 ** DONE toggle enums in diagrams
    CLOSED: [2020-03-27 Fri 18:22]
 * export data
