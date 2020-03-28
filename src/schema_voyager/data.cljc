@@ -58,6 +58,10 @@
 (defn coll-identity [coll]
   (select-keys coll [:db.schema.collection/type :db.schema.collection/name]))
 
+(defn entity-spec? [attribute]
+  (or (:db.entity/attrs attribute)
+      (:db.entity/preds attribute)))
+
 (defn replace-collections-by-temp-ids [collections entities]
   (let [coll-to-temp-id (zipmap (map coll-identity collections)
                                 (map :db/id collections))]
@@ -67,15 +71,19 @@
                    entities)))
 
 (defn process [attributes]
-  (let [entities    (->> attributes
-                         (filter :db/ident)
-                         (map entity-with-part-of))
-        collections (->> (concat (mapcat :db.schema/part-of entities)
-                                 (filter :db.schema.collection/name attributes))
-                         (merge-by coll-identity)
-                         (map-indexed (fn [idx coll]
-                                        (assoc coll :db/id (* -1 (inc idx))))))]
+  (let [entities     (->> attributes
+                          (filter :db/ident)
+                          (remove entity-spec?)
+                          (map entity-with-part-of))
+        entity-specs (->> attributes
+                          (filter entity-spec?))
+        collections  (->> (concat (mapcat :db.schema/part-of entities)
+                                  (filter :db.schema.collection/name attributes))
+                          (merge-by coll-identity)
+                          (map-indexed (fn [idx coll]
+                                         (assoc coll :db/id (* -1 (inc idx))))))]
     (concat collections
+            entity-specs
             (replace-collections-by-temp-ids collections entities))))
 
 (defn join [& schemas]

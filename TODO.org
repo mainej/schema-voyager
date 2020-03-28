@@ -22,8 +22,10 @@
    CLOSED: [2020-03-09 Mon 16:42]
 ** DONE with explicit aggregate/enum
    CLOSED: [2020-03-09 Mon 16:42]
-** with attribute predicates
-** with entity specs
+** CANCELED with attribute predicates
+   CLOSED: [2020-03-27 Fri 16:51]
+** DONE with entity specs
+   CLOSED: [2020-03-27 Fri 17:56]
 ** DONE allow doc strings on collections
    CLOSED: [2020-03-10 Tue 18:06]
 * inspect data
@@ -73,6 +75,7 @@
    CLOSED: [2020-03-19 Thu 23:33]
 ** pannable connections graph
 ** keep arrow tips close to the target
+** toggle enums in diagrams
 * export data
 ** DONE to static datascript db
    CLOSED: [2020-03-10 Tue 23:22]
@@ -95,6 +98,7 @@ Done by Vega, see toolbox to upper right of diagram
 *** collections, aggregates, enums, attributes, constants
 ** supplemental schema
 *** references, part-of, see-also, deprecated, collections (and db/doc)
+*** tuple-references, tuple/position
 ** how to generate data
 *** dev/projects/* folders
 *** :ingest alias

@@ -12,6 +12,14 @@
        (d/pull-many db '[*])
        (sort-by :db.schema.collection/name)))
 
+(defn entity-specs [db]
+  (->> (d/q '[:find [?spec ...]
+              :where (or [?spec :db.entity/attrs]
+                         [?spec :db.entity/preds])]
+            db)
+       (d/pull-many db '[*])
+       (sort-by :db/ident)))
+
 (defn references [db]
   (->> (d/q '[:find ?source-name ?source-type ?dest-name ?dest-type
               :where
@@ -41,23 +49,35 @@
       [util/link {:href (util/coll-href coll)}
        [util/coll-name* coll]]])])
 
-(defn list-section [title description collections]
+(defn spec-list [specs]
+  [:ul
+   (for [{:keys [db/id] :as spec} specs]
+     ^{:key id}
+     [:li
+      [util/link {:href (util/spec-href spec)}
+       [util/spec-name spec]]])])
+
+(defn list-section [title description l]
   [:div.md:flex.mb-6
    [:div.md:w-1of4
     [:h1.small-caps title]
     [:p.my-4.font-light.text-gray-700.mr-4 description]]
-   [:div.md:w-3of4
-    [collection-list collections]]])
+   [:div.md:w-3of4 l]])
 
 (defn page []
   [:div.px-4.sm:px-0
    [list-section
     "Aggregates"
     "Aggregates are collections of attributes that often co-exist on an entity. They are analogous to a SQL table, though some attributes may appear on many aggregates."
-    (collections db/db :aggregate)]
+    [collection-list (collections db/db :aggregate)]]
    [list-section
     "Enums"
     "Enums are collections of named constants. They usually specify the various values that an attribute may take."
-    (collections db/db :enum)]
+    [collection-list (collections db/db :enum)]]
+   (when-let [specs (seq (entity-specs db/db))]
+     [list-section
+      "Entity Specs"
+      "Entity specs are constraints that can be placed on an entity during a transaction. They require attributes, run predicate functions for validation, or both."
+      [spec-list specs]])
    [:div.mt-10
     [diagrams.collection/force-graph [800 600] (references db/db)]]])

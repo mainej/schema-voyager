@@ -23,6 +23,9 @@
 (defn attr-href [attr]
   (apply href (attr-route attr)))
 
+(defn spec-href [{:keys [db/ident]}]
+  (href :route/spec {:id ident}))
+
 (defn char-abbr [opts title]
   [:span.inline-flex.items-center.justify-center.w-6.h-6.leading-none.text-xs.font-bold.rounded-full
    opts
@@ -51,6 +54,9 @@
                 :db.schema.collection/type coll-type}]
     "/"
     [:span.text-blue-500 (name ident)]]))
+
+(defn spec-name [spec]
+  [:span.text-orange-500 (pr-str (:db/ident spec))])
 
 (defn pipe-list [items]
   (->> items

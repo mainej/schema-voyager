@@ -7,7 +7,7 @@
 
 (defn doc-str [{:keys [db/doc]}]
   (when doc
-    [:p.text-gray-600 doc]))
+    [:p.text-gray-600.italic doc]))
 
 (defn unique-span [{:keys [db/unique]}]
   (when (= :db.unique/identity unique)

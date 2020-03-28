@@ -3,8 +3,9 @@
             [schema-voyager.html.pages.enum :as pages.enum]
             [schema-voyager.html.pages.attribute :as pages.attribute]
             [schema-voyager.html.pages.aggregate :as pages.aggregate]
-            [schema-voyager.html.db :as db]
-            #?@(:cljs [[reitit.frontend :as rf]
+            [schema-voyager.html.pages.spec :as pages.spec]
+            #?@(:cljs [[schema-voyager.html.db :as db]
+                       [reitit.frontend :as rf]
                        [reitit.frontend.easy :as rfe]]
                 :clj [[reitit.core :as r]])))
 
@@ -16,14 +17,16 @@
                 :view pages.enum/page}]
    ["aggregate/:id" {:name :route/aggregate
                      :view pages.aggregate/page}]
+   ["spec/:id" {:name :route/spec
+                :view pages.spec/page}]
    ["attribute/:id" {:name :route/attribute
                      :view pages.attribute/page}]])
 
-(def ^:private router
+(def router
   #?(:cljs (rf/router routes)
      :clj (r/router routes)))
 
-(defn ^:dev/after-load initialize
-  []
-  #?(:cljs
+#?(:cljs
+   (defn ^:dev/after-load initialize
+     []
      (rfe/start! router db/save-route {:use-fragment true})))
