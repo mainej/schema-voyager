@@ -32,6 +32,13 @@
      (:db.schema.collection/type source)
      (:db.schema.collection/type target)))
 
+(defn to-nodes [colls]
+  (->> colls
+       (map #(select-keys % [:db.schema.collection/name
+                             :db.schema.collection/type]))
+       distinct
+       (map coll-datum)))
+
 (defn force-graph
   "Generates a force-directed graph of collections and their relationships.
   `references` is a seq of pairs of related collections: `[source-collection
@@ -43,15 +50,19 @@
         (let [references          (filter (if (show?) identity agg-to-agg?) all-references)
               nodes               (->> references
                                        (mapcat identity)
-                                       (map #(select-keys % [:db.schema.collection/name
-                                                             :db.schema.collection/type]))
-                                       distinct
-                                       (map coll-datum))
+                                       to-nodes)
               node-idx-by-node-id (zipmap (map :id nodes) (range))
+              self-link?          (fn [[source target]]
+                                    (= (coll-id source) (coll-id target)))
               links               (->> references
+                                       (remove self-link?)
                                        (map (fn [[source target]]
                                               {:source (get node-idx-by-node-id (coll-id source))
-                                               :target (get node-idx-by-node-id (coll-id target))})))]
+                                               :target (get node-idx-by-node-id (coll-id target))})))
+              self-references     (->> references
+                                       (filter self-link?)
+                                       (map first)
+                                       to-nodes)]
           [:div
            [vega
             {:$schema "https://vega.github.io/schema/vega/v5.json"
@@ -79,70 +90,97 @@
                                                       :strength -45}
                                                      {:force    "link"
                                                       :links    "link-data"
-                                                      :distance {:signal "jiggle"}}]}]}]
-             :scales  [{:name   "color"
-                        :type   "ordinal"
-                        :range  ["#6b46c1" "#38a169"] ;; purple-700 green-600
-                        :domain ["aggregate" "enum"]}]
-             :marks   [;; edges
-                       {:type      "path"
-                        :from      {:data "link-data"}
-                        :encode    {:enter  {:stroke      {:value "#4299e1"} ;; blue-500
-                                             :strokeWidth {:value 0.5}}
-                                    ;; :update required, but why?
-                                    :update {}}
-                        :transform [{:type    "linkpath"
-                                     :shape   "line"
-                                     :sourceX "datum.source.x"
-                                     :sourceY "datum.source.y"
-                                     :targetX "datum.target.x"
-                                     :targetY "datum.target.y"}]}
-                       ;; arrow-heads
-                       {:type      "symbol"
-                        :from      {:data "link-data"}
-                        :transform [{:type "formula"
-                                     :as   "offset"
-                                     :expr "15"}
-                                    {:type "formula"
-                                     :as   "dx"
-                                     :expr "datum.datum.target.x - datum.datum.source.x"}
-                                    {:type "formula"
-                                     :as   "dy"
-                                     :expr "datum.datum.target.y - datum.datum.source.y"}
-                                    {:type "formula"
-                                     :as   "r"
-                                     :expr "sqrt(pow(datum.dx, 2) + pow(datum.dy, 2))"}
-                                    {:type "formula"
-                                     :as   "x"
-                                     :expr "datum.datum.target.x - (datum.offset * (datum.dx / datum.r))"}
-                                    {:type "formula"
-                                     :as   "y"
-                                     :expr "datum.datum.target.y - (datum.offset * (datum.dy / datum.r))"}
-                                    {:type "formula"
-                                     :as   "thetaRadians"
-                                     :expr "atan2(datum.dy, datum.dx)"}
-                                    {:type "formula"
-                                     :as   "thetaDegrees"
-                                     :expr "180 * datum.thetaRadians / PI"}
-                                    {:type "formula"
-                                     :as   "angle"
-                                     :expr "90 + datum.thetaDegrees"}]
-                        :encode    {:enter  {:fill        {:value "#4299e1"} ;; blue-500
-                                             :size        {:value 300}
-                                             :strokeWidth {:value 0}
-                                             :shape       {:value "wedge"}}
-                                    :update {}}}
-                       ;; nodes
-                       {:type   "text"
-                        :from   {:data "forces"}
-                        :encode {:enter  {:fontSize {:value 12}
-                                          :fill     {:scale "color", :field "colltype"}
-                                          :href     {:field "href"}
-                                          :text     {:field "name"}
-                                          :baseline {:value "middle"}
-                                          :cursor   {:value "pointer"}}
-                                 :update {:x {:field "x"}
-                                          :y {:field "y"}}}}]}]
+                                                      :distance {:signal "jiggle"}}]}]}
+
+                       {:name      "self-references"
+                        :values    self-references
+                        :transform [{:type   "lookup"
+                                     :from   "forces"
+                                     :fields ["id"]
+                                     :key    "id"
+                                     :values ["x" "y"]}]}]
+             :scales [{:name   "color"
+                       :type   "ordinal"
+                       :range  ["#6b46c1" "#38a169"] ;; purple-700 green-600
+                       :domain ["aggregate" "enum"]}]
+             :marks  [;; edges
+                      {:type      "path"
+                       :from      {:data "link-data"}
+                       :encode    {:enter  {:stroke      {:value "#4299e1"} ;; blue-500
+                                            :strokeWidth {:value 0.5}}
+                                   ;; :update required, but why?
+                                   :update {}}
+                       :transform [{:type    "linkpath"
+                                    :shape   "line"
+                                    :sourceX "datum.source.x"
+                                    :sourceY "datum.source.y"
+                                    :targetX "datum.target.x"
+                                    :targetY "datum.target.y"}]}
+                      ;; arrow-heads
+                      {:type      "symbol"
+                       :from      {:data "link-data"}
+                       :transform [{:type "formula"
+                                    :as   "offset"
+                                    :expr "-15"}
+                                   {:type "formula"
+                                    :as   "dx"
+                                    :expr "datum.datum.target.x - datum.datum.source.x"}
+                                   {:type "formula"
+                                    :as   "dy"
+                                    :expr "datum.datum.target.y - datum.datum.source.y"}
+                                   {:type "formula"
+                                    :as   "r"
+                                    :expr "sqrt(pow(datum.dx, 2) + pow(datum.dy, 2))"}
+                                   {:type "formula"
+                                    :as   "x"
+                                    :expr "datum.datum.target.x + (datum.offset * (datum.dx / datum.r))"}
+                                   {:type "formula"
+                                    :as   "y"
+                                    :expr "datum.datum.target.y + (datum.offset * (datum.dy / datum.r))"}
+                                   {:type "formula"
+                                    :as   "thetaRadians"
+                                    :expr "atan2(datum.dy, datum.dx)"}
+                                   {:type "formula"
+                                    :as   "thetaDegrees"
+                                    :expr "180 * datum.thetaRadians / PI"}
+                                   {:type "formula"
+                                    :as   "angle"
+                                    :expr "90 + datum.thetaDegrees"}]
+                       :encode    {:enter  {:fill        {:value "#4299e1"} ;; blue-500
+                                            :size        {:value 300}
+                                            :strokeWidth {:value 0}
+                                            :shape       {:value "wedge"}}
+                                   :update {}}}
+                      ;; self references
+                      {:type   "symbol"
+                       :from   {:data "self-references"}
+                       :encode {:enter  {:fillOpacity {:value 0}
+                                         :stroke      {:value "#4299e1"} ;; blue-500
+                                         :strokeWidth {:value 0.5}
+                                         :size        {:value 150}
+                                         :shape       {:value "circle"}}
+                                :update {:x {:field "x" :offset -6}
+                                         :y {:field "y" :offset -5}}}}
+                      {:type   "symbol"
+                       :from   {:data "self-references"}
+                       :encode {:enter  {:fill        {:value "#4299e1"} ;; blue-500
+                                         :size        {:value 300}
+                                         :strokeWidth {:value 0}
+                                         :angle       {:value 155}
+                                         :shape       {:value "wedge"}}
+                                :update {:x {:field "x"}
+                                         :y {:field "y" :offset -7}}}}
+                      ;; nodes
+                      {:type   "text"
+                       :from   {:data "forces"}
+                       :encode {:enter  {:fontSize {:value 12}
+                                         :fill     {:scale "color", :field "colltype"}
+                                         :href     {:field "href"}
+                                         :text     {:field "name"}
+                                         :baseline {:value "middle"}
+                                         :cursor   {:value "pointer"}}
+                                :update {:x {:field "x"}
+                                         :y {:field "y"}}}}]}]
            (when (and (some agg-to-agg? all-references)
                       (not-every? agg-to-agg? all-references))
              [:label.block
