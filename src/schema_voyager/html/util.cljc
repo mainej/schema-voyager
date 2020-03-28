@@ -36,11 +36,13 @@
     [char-abbr {:class [:bg-purple-200 :text-purple-800]} "Aggregate"]
     [char-abbr {:class [:bg-green-200 :text-green-800]} "Enumeration"]))
 
-(defn coll-name [{:keys [db.schema.collection/name db.schema.collection/type]}]
-  [:span {:class (if (= :aggregate type)
-                   :text-purple-700
-                   :text-green-600)}
-   (pr-str name)])
+(defn coll-name
+  ([coll] [coll-name {} coll])
+  ([props {:keys [db.schema.collection/name db.schema.collection/type]}]
+   [:span (update props :class conj (if (= :aggregate type)
+                                      :text-purple-700
+                                      :text-green-600))
+    (pr-str name)]))
 
 (defn coll-name* [coll]
   [:span.whitespace-no-wrap [coll-name coll] "/" [:span.text-blue-500 "*"]])
@@ -48,12 +50,13 @@
 (defn ident-name
   ([ident]
    [:span.text-blue-500 (pr-str ident)])
-  ([ident coll-type]
+  ([ident coll-type] [ident-name {} ident coll-type])
+  ([{:keys [coll-props ident-props]} ident coll-type]
    [:span.whitespace-no-wrap
-    [coll-name {:db.schema.collection/name (keyword (namespace ident))
-                :db.schema.collection/type coll-type}]
+    [coll-name coll-props {:db.schema.collection/name (keyword (namespace ident))
+                           :db.schema.collection/type coll-type}]
     "/"
-    [:span.text-blue-500 (name ident)]]))
+    [:span.text-blue-500 ident-props (name ident)]]))
 
 (defn spec-name [spec]
   [:span.text-orange-500 (pr-str (:db/ident spec))])

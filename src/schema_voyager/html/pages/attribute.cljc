@@ -67,7 +67,7 @@
 
 (defn header [{:keys [db/ident] :as entity} coll-type]
   [:h1.mb-4.font-bold
-   [util/ident-name ident coll-type]
+   [util/ident-name {:coll-props {:class [:font-normal]}} ident coll-type]
    [entity/unique-span entity]
    [entity/deprecated-span entity]])
 
