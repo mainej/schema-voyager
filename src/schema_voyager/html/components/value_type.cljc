@@ -12,17 +12,14 @@
 (defn angle-span [child]
   [:span "< " child " >"])
 
-(defn- tuple-span [children]
-  [angle-span
-   [util/comma-list
-    (map-indexed (fn [i child]
-                   ^{:key i}
-                   child)
-                 children)]])
-
-(defn- attrs-span [{:keys [db/tupleAttrs]}]
+(defn- tuple-attrs-span [{:keys [db/tupleAttrs]}]
   (let [attrs (d/pull-many db/db util/attr-link-pull tupleAttrs)]
-    [tuple-span (map util/attr-link attrs)]))
+    [angle-span
+     [util/comma-list
+      (map (fn [attr]
+             ^{:key (:db/ident attr)}
+             [util/attr-link attr])
+           attrs)]]))
 
 (def ^:private card-one-abbr [:abbr {:title ":db.cardinality/one"} "one"])
 (def ^:private card-many-abbr [:abbr {:title ":db.cardinality/many"} "many"])
@@ -61,13 +58,13 @@
 (defmethod p [:db.cardinality/one :db.type.tuple/composite ::default] [attribute]
   [:p
    "This attribute is " card-one-abbr " " tuple-abbr ", " composed-abbr " of other attributes "
-   [attrs-span attribute]". "
+   [tuple-attrs-span attribute]". "
    "It is managed by Datomic, and should not be set manually."])
 (defmethod p [:db.cardinality/many :db.type.tuple/composite ::default] [attribute]
   ;; NOTE: In practice a composite tuple is probably never card many.
   [:p
    "This attribute is " card-many-abbr " " tuples-abbr ", each " composed-abbr " of other attributes "
-   [attrs-span attribute]". "
+   [tuple-attrs-span attribute]". "
    "It is managed by Datomic, and should not be set manually."])
 
 ;; homogeneous tuples
@@ -78,9 +75,9 @@
 (def ^:private homogeneous-one-scalar-span [:span "Each member of the " tuple-abbr " is a scalar: "])
 (def ^:private homogeneous-many-scalar-span [:span "Each member of each " tuple-abbr " is a scalar: "])
 (defn- homogeneous-referred-span [{:keys [db.schema/references]}]
-  [:span [angle-span [:span [util/coll-links references] " {2,}"]]])
+  [angle-span [:span [util/coll-links references] " {2,}"]])
 (defn- homogeneous-not-referred-span [{:keys [db/tupleType]}]
-  [:span [angle-span [:span [keyword-abbr tupleType] " {2,}"]]])
+  [angle-span [:span [keyword-abbr tupleType] " {2,}"]])
 (defmethod p [:db.cardinality/one :db.type.tuple/homogeneous :referred] [attribute]
   [:p homogeneous-one-span homogeneous-one-ref-span [homogeneous-referred-span attribute] "."])
 (defmethod p [:db.cardinality/one :db.type.tuple/homogeneous :not-referred] [attribute]
@@ -104,14 +101,16 @@
 (defn- heterogeneous-types [{:keys [db/tupleTypes db.schema/tuple-references]}]
   (let [refs-by-position (zipmap (map :db.schema.tuple/position tuple-references)
                                  (map :db.schema/references tuple-references))]
-    [tuple-span
-     (map-indexed (fn [position kw]
-                    (let [refs (get refs-by-position position)]
-                      (if (and (= :db.type/ref kw)
-                               refs)
-                        [util/coll-links refs]
-                        [keyword-abbr kw])))
-                  tupleTypes)]))
+    [angle-span
+     [util/comma-list
+      (map-indexed (fn [position kw]
+                     ^{:key position}
+                     (let [refs (get refs-by-position position)]
+                       (if (and (= :db.type/ref kw)
+                                refs)
+                         [util/coll-links refs]
+                         [keyword-abbr kw])))
+                   tupleTypes)]]))
 (defmethod p [:db.cardinality/one :db.type.tuple/heterogeneous ::default] [attribute]
   [:p
    [heterogeneous-one-span attribute]
@@ -164,7 +163,7 @@
 
 ;; composite tuples
 (defmethod shorthand-span [:db.type.tuple/composite ::default] [attribute]
-  [attrs-span attribute])
+  [tuple-attrs-span attribute])
 
 ;; homogeneous tuples
 (defmethod shorthand-span [:db.type.tuple/homogeneous :referred] [attribute]
