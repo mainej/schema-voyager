@@ -10,3 +10,4 @@
 .nrepl-port
 resources/db.edn
 /dev/ingest/projects
+doc/readme.html

@@ -97,33 +97,57 @@ Done by Vega, see toolbox to upper right of diagram
    CLOSED: [2020-03-17 Tue 14:56]
 ** DONE try CSS purge
    CLOSED: [2020-03-11 Wed 22:30]
+** Promote :db/tupleAttrs to attribute references during `data/process`? It works OK to pull the attribute data later, by ident.
+** Convert CLJC to CLJS: no need to render from a clojure process
+** Move dev/examples.clj to dev/ingest/projects/mbrainz.clj and update README
+** Experiment with giving collections a compound :db/ident of [:aggregate :person]
+So that you can transact several times.
+** Consider switching diagrams to GraphViz
+See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * documentation
-** terminology
+** DONE terminology
+   CLOSED: [2020-03-31 Tue 16:57]
 *** collections, aggregates, enums, attributes, constants
-** supplemental schema
+** DONE supplemental schema
+   CLOSED: [2020-03-31 Tue 16:57]
 *** references, part-of, see-also, deprecated, collections (and db/doc)
 *** tuple-references, tuple/position
-** how to generate data
+*** in db, or not
+*** derived or explicit
+** DONE how to ingest data
+   CLOSED: [2020-03-31 Tue 16:57]
 *** dev/projects/* folders
 *** :ingest alias
 *** :datomic alias
+*** add annotations
 *** clj -A:ingest -m examples
 *** clj -A:ingest -m ingest.files <file>*
 *** clj -A:ingest:datomic -m ingest.projects.my-project
-** how to run local, live web page
+** DONE how to run local, live web page
+   CLOSED: [2020-03-31 Tue 16:57]
 *** generate schema database
 *** yarn run html
 *** yarn run css
 *** yarn run watch-js
 *** open https://localhost:8080
-** how to create standalone web page
+** DONE how to create standalone web page
+   CLOSED: [2020-03-31 Tue 16:57]
 *** generate schema database
 *** yarn --prod run standalone
 *** open target/standalone.html
-** how to host web page
+** DONE how to host web page
+   CLOSED: [2020-03-31 Tue 16:57]
 *** generate schema database
 *** yarn --prod run clean
 *** yarn --prod run html
 *** yarn --prod run css
 *** yarn --prod run compile-js
 *** upload assets/* to Netlify, or a server of your choice
+** DONE acknowledgements
+   CLOSED: [2020-03-31 Tue 16:57]
+*** datascript
+*** reagent
+*** oz
+*** shadow
+*** tailwindcss, postcss and purgecss
+** license

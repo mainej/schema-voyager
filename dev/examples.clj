@@ -24,9 +24,14 @@
   (require '[clojure.pprint :as pprint])
   (require '[datascript.core :as d])
 
-  (println (d/touch (d/entity mbrainz-db [:db/ident :track/artistCredit])))
-  (println (d/touch (d/entity mbrainz-db [:db/ident :track/artists])))
+  (println
+   ;; The (deprecated) :track/artistCredit attribute
+   (d/touch (d/entity mbrainz-db [:db/ident :track/artistCredit])))
+  (println
+   ;; The :track/artist attribute
+   (d/touch (d/entity mbrainz-db [:db/ident :track/artists])))
   (pprint/pprint
+   ;; A collection and the attributes that refer to it
    (d/pull mbrainz-db
            '[* {:db.schema/_references [*]}]
            (d/q '[:find ?coll .
@@ -34,6 +39,7 @@
                 mbrainz-db)))
 
   (pprint/pprint
+   ;; The :release.type enum, and the constants it includes
    (d/pull mbrainz-db
            '[* {:db.schema/_part-of [*]}]
            (d/q '[:find ?coll .
@@ -41,5 +47,6 @@
                 mbrainz-db)))
 
   (pprint/pprint
+   ;; The collections that the :track/artists attribute references
    (map d/touch (:db.schema/references (d/entity mbrainz-db [:db/ident :track/artists]))))
   )
