@@ -8,6 +8,6 @@
 .shadow-cljs/
 
 .nrepl-port
-resources/db.edn
+resources/schema_voyager_db.edn
 /dev/ingest/projects
 doc/readme.html

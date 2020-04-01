@@ -250,7 +250,8 @@ See the `comment` section of [`dev/examples.clj`](dev/examples.clj) for a sample
 
 If you want to share your schema data, you'll need to export it.
 
-`schema-voyager.export/save-db` saves the full DataScript DB in EDN format to `resources/db.edn`. You may share or commit this file elsewhere.
+`schema-voyager.export/save-db` saves the full DataScript DB in EDN format to `resources/schema_voyager_db.edn`.
+You may share or commit this file elsewhere.
 
 From the DataScript file, you can [generate a standalone HTML file](#view-schema-html) from which to view the data.
 This file is free of dependencies, so it can be committed, emailed or otherwise shared anywhere.

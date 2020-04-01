@@ -10,7 +10,7 @@
      :clj (edn/read-string {:readers ds/data-readers} db-str)))
 
 (def db
-  (read-db-str (resource/inline "db.edn")))
+  (read-db-str (resource/inline "schema_voyager_db.edn")))
 
 (defonce !active-route #?(:cljs (r/atom nil)
                           :clj (atom nil)))
