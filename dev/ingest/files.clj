@@ -5,8 +5,9 @@
             [schema-voyager.export :as export]))
 
 (defn -main [& files]
-  (-> files
-      ingest.files/ingest
-      data/process
-      ingest/into-db
-      export/save-db))
+  (->> files
+       (map ingest.files/ingest)
+       data/join-all
+       data/process
+       ingest/into-db
+       export/save-db))

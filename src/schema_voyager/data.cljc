@@ -116,7 +116,15 @@
             entity-specs
             (replace-collections-by-temp-ids collections attributes))))
 
-(defn join [& schemas]
-  (->> schemas
+(defn join
+  "Join schema from several `sources`. Data from later sources overrides earlier
+  sources."
+  [& sources]
+  (->> sources
        (apply concat)
        (merge-by #(select-keys % [:db/ident :db.schema.collection/type :db.schema.collection/name]))))
+
+(defn join-all
+  "Like [[join]], but for a `->>` context."
+  [sources]
+  (apply join sources))

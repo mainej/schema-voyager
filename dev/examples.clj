@@ -9,12 +9,13 @@
   data about references.
 
   Loaded out of resources/mbrainz-*.edn files."
-  (-> ["resources/mbrainz-schema.edn"
-       "resources/mbrainz-enums.edn"
-       "resources/mbrainz-supplemental.edn"]
-      ingest.files/ingest
-      data/process
-      ingest/into-db))
+  (->> ["resources/mbrainz-schema.edn"
+        "resources/mbrainz-enums.edn"
+        "resources/mbrainz-supplemental.edn"]
+       (map ingest.files/ingest)
+       data/join-all
+       data/process
+       ingest/into-db))
 
 (defn -main []
   (export/save-db mbrainz-db))

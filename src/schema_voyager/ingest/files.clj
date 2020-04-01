@@ -9,17 +9,7 @@
   (:require [clojure.java.io :as io]
             [schema-voyager.data :as data]))
 
-(defn join-all [data]
-  (apply data/join data))
-
-(defn read-file
+(defn ingest
   "Read a file, using the tags defined in [[schema-voyager.data/read-string]]."
   [file]
   (data/read-string (slurp (io/file file))))
-
-(defn ingest
-  "Read and join the data from many files together."
-  [files]
-  (->> files
-       (map read-file)
-       (join-all)))
