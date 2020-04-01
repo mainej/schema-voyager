@@ -1,4 +1,4 @@
-(ns examples
+(ns ingest.projects.mbrainz
   (:require [schema-voyager.ingest.files :as ingest.files]
             [schema-voyager.data :as data]
             [schema-voyager.ingest.core :as ingest]

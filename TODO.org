@@ -99,7 +99,8 @@ Done by Vega, see toolbox to upper right of diagram
    CLOSED: [2020-03-11 Wed 22:30]
 ** Promote :db/tupleAttrs to attribute references during `data/process`? It works OK to pull the attribute data later, by ident.
 ** Convert CLJC to CLJS: no need to render from a clojure process
-** Move dev/examples.clj to dev/ingest/projects/mbrainz.clj and update README
+** DONE Move dev/examples.clj to dev/ingest/projects/mbrainz.clj and update README
+   CLOSED: [2020-04-01 Wed 13:10]
 ** Experiment with giving collections a compound :db/ident of [:aggregate :person]
 So that you can transact several times.
 ** Consider switching diagrams to GraphViz
@@ -120,7 +121,7 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 *** :ingest alias
 *** :datomic alias
 *** add annotations
-*** clj -A:ingest -m examples
+*** clj -A:ingest -m ingest.projects.mbrainz
 *** clj -A:ingest -m ingest.files <file>*
 *** clj -A:ingest:datomic -m ingest.projects.my-project
 ** DONE how to run local, live web page

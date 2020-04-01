@@ -244,7 +244,7 @@ Drill further into attributes or constants, to see their doc string, details abo
 ![attribute](doc/attribute.png)
 
 More adventerous users might enjoy exploring the DataScript DB directly in a Clojure REPL.
-See the `comment` section of [`dev/examples.clj`](dev/examples.clj) for a sample.
+See the `comment` section of [`dev/ingest/projects/mbrainz.clj`](dev/ingest/projects/mbrainz.clj) for a sample.
 
 ## Export
 
@@ -278,7 +278,7 @@ After cloning the repo, create a Clojure file in Schema Voyager.
 Also, the `:ingest` alias adds the `dev/` directory to the classpath.)
 
 This file will be a scratchpad for loading your schema.
-(See [dev/examples.clj](dev/examples.clj) for an example of loading mbrainz schema.)
+(See [dev/ingest/projects/mbrainz.clj](dev/ingest/projects/mbrainz.clj) for an example of loading mbrainz schema.)
 
 This file should follow these steps:
 
