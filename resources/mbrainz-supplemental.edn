@@ -1,14 +1,19 @@
-[#:db.schema.collection{:name   :release.type
+[;; collection documentation
+ #:db.schema.collection{:name   :release.type
                         :type   :enum
                         :db/doc "A type of recording, for example an audiobook versus an album."}
  #:db.schema.collection{:name   :country
                         :type   :aggregate
                         :db/doc "A geographical country."}
- #:db{:id    "track-artists"
+
+ ;; deprecated attributes
+ #:db{:id    "attr--track-artists"
       :ident :track/artists}
  #:db.schema{:db/ident    :track/artistCredit
              :deprecated? true
-             :see-also    ["track-artists"]}
+             :see-also    ["attr--track-artists"]}
+
+ ;; reclassification of the collections an ident is part of
  #:db.schema{:db/ident :artist.type/name
              :part-of  [#schema-coll [:enum :artist.type]]}
  #:db.schema{:db/ident :artist.gender/name
@@ -21,6 +26,8 @@
              :part-of  [#schema-coll [:enum :release.packaging]]}
  #:db.schema{:db/ident :release.type/name
              :part-of  [#schema-coll [:enum :release.type]]}
+
+ ;; references
  #:db.schema{:db/ident   :artist/type
              :references [#schema-coll [:enum :artist.type]]}
  #:db.schema{:db/ident   :artist/gender
