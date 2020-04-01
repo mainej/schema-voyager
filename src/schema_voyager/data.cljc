@@ -13,23 +13,30 @@
   (edn/read-string {:readers {'schema-coll read-schema-coll}} s))
 
 (def metaschema
-  {
-   ;; Other attributes to which this attribute is related. Often used with
-   ;; :db.schema/deprecated? to point to a new way of storing some data
+  {:db.schema.collection/name  {;; :db/valueType   :db.type/keyword
+                                :db/cardinality :db.cardinality/one
+                                :db/doc         "The name of a collection. Can be any keyword, but usually matches the namespace of other idents in the schema."}
+   :db.schema.collection/type  {;; :db/valueType   :db.type/keyword
+                                :db/cardinality :db.cardinality/one
+                                :db/doc         "The type of a collection, either :aggregate or :enum."}
+   :db.schema/deprecated?      {;; :db/valueType   :db.type/boolean
+                                :db/cardinality :db.cardinality/one
+                                :db/doc         "Whether this attribute or constant fallen out of use. Often used with :db.schema/see-also, to point to a new way of storing some data."}
    :db.schema/see-also         {:db/valueType   :db.type/ref
-                                :db/cardinality :db.cardinality/many}
-   ;; Which collection(s) this attribute is a part of. Usually derived from the
-   ;; name and type of the attribute. Can be overridden for attributes that are
-   ;; used on many aggregates.
+                                :db/cardinality :db.cardinality/many
+                                :db/doc         "Other attributes to which this attribute is related. Often used with :db.schema/deprecated? to point to a new way of storing some data."}
    :db.schema/part-of          {:db/valueType   :db.type/ref
-                                :db/cardinality :db.cardinality/many}
-   ;; Which collection(s) this attribute refers to.
+                                :db/cardinality :db.cardinality/many
+                                :db/doc         "Which collection(s) this attribute or constant is a part of. Usually derived from the type and namespace of the ident. Can be overridden for attributes that are used on many aggregates."}
    :db.schema/references       {:db/valueType   :db.type/ref
-                                :db/cardinality :db.cardinality/many}
-   ;; Which collection(s) various parts of this tuple refers to.
+                                :db/cardinality :db.cardinality/many
+                                :db/doc         "Which collection(s) this attribute refers to."}
    :db.schema/tuple-references {:db/valueType   :db.type/ref
-                                :db/cardinality :db.cardinality/many}
-   })
+                                :db/cardinality :db.cardinality/many
+                                :db/doc         "Which collection(s) various parts of this heterogeneous tuple refers to."}
+   :db.schema.tuple/position   {;; :db/valueType   :db.type/long
+                                :db/cardinality :db.cardinality/one
+                                :db/doc         "The position of a ref within a heterogeneous tuple. Zero-indexed."}})
 
 (defn derive-element-type [e]
   (cond
