@@ -151,4 +151,5 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 *** oz
 *** shadow
 *** tailwindcss, postcss and purgecss
-** license
+** DONE license
+   CLOSED: [2020-04-02 Thu 12:08]
