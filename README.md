@@ -256,10 +256,6 @@ You may share or commit this file elsewhere.
 From the DataScript file, you can [generate a standalone HTML file](#view-schema-html) from which to view the data.
 This file is free of dependencies, so it can be committed, emailed or otherwise shared anywhere.
 
-Within the HTML there are diagrams of collections and their relationships.
-These can be exported to PNG or SVG.
-(Open the menu in the upper right of any diagram.)
-
 ## Usage
 
 OK, so how do you put it all together?
@@ -429,8 +425,5 @@ Whether using the single-file standalone HTML, or the multi-file option above, f
 * [Tailwind CSS](https://tailwindcss.com/) makes writing CSS _fun_.
   Along with assistance from [PostCSS](https://postcss.org/) and [PurgeCSS](https://purgecss.com/) it creates amazingly small CSS files.
   And the pages look nice, right?
-* [Oz](https://github.com/metasoarous/oz), which creates the diagrams, is a great project, as is [Vega](https://vega.github.io/vega/) which underpins it.
-  Still, I'm not certain it's the right choice for Schema Voyager.
-  Force-directed graphs are a bit messy for an ERD.
 * [shadow-cljs](http://shadow-cljs.org/) makes it a joy to write CLJS files alongside CLJ files.
   Several client/server interaction tasks I had been putting off turned out to be trivial with shadow-cljs.

@@ -1,190 +1,103 @@
 (ns schema-voyager.html.diagrams.collection
-  (:require #?@(:cljs [[oz.core :as oz]
-                       [reagent.core :as r]])
+  (:require #?@(:cljs [[graphviz]
+                       [dorothy.core :as d]
+                       [promesa.core :as p]
+                       [reagent.dom.server :as dom]])
             [schema-voyager.html.util :as util]))
 
-(defn- vega [schema]
-  #?(:cljs [oz/vega schema]
-     :clj [:div]))
+(def colors
+  {:purple-700  "#6b46c1"
+   :green-600   "#38a169"
+   :blue-500    "#4299e1"
+   :gray-300    "#e2e8f0"
+   :gray-600    "#718096"
+   :transparent "transparent"})
 
 (defn- coll-id [{coll-type :db.schema.collection/type
                 coll-name :db.schema.collection/name}]
   (str (name coll-type) "__" (name coll-name)))
 
-(defn- coll-datum [{coll-type :db.schema.collection/type
-                   coll-name :db.schema.collection/name
-                   :as       coll}]
-  {:id       (coll-id coll)
-   :name     (pr-str coll-name)
-   :colltype (name coll-type)
-   :href     (util/coll-href coll)})
+(defn- attr-id [{:keys [db/ident]}]
+  (str "attr__" (namespace ident) "__" (name ident)))
 
-(defn- toggle-state [initially-show?]
-  (let [!show #?(:cljs (r/atom initially-show?)
-                 :clj (atom initially-show?))]
-    {:show?  #(deref !show)
-     :close  #(reset! !show false)
-     :show   #(reset! !show true)
-     :toggle #(swap! !show not)}))
+(defn graphviz-svg [s]
+  #?(:clj [:div]
+     :cljs
+     [:div.overflow-auto
+      {:ref (fn [div]
+              (when div
+                ;; TODO: decide on layout engine: fdp, neato, dot
+                (p/let [svg (graphviz/graphviz.dot s)]
+                  (set! (.-innerHTML div) svg))))}]))
 
-(defn- agg-to-agg? [[source target]]
-  (= :aggregate
-     (:db.schema.collection/type source)
-     (:db.schema.collection/type target)))
+(def html
+  #?(:clj (constantly nil)
+     :cljs dom/render-to-static-markup))
 
-(defn to-nodes [colls]
-  (->> colls
-       (map #(select-keys % [:db.schema.collection/name
-                             :db.schema.collection/type]))
-       distinct
-       (map coll-datum)))
+(defn dot-node [[coll attrs]]
+  (let [id         (coll-id coll)
+        coll-color (colors (case (:db.schema.collection/type coll)
+                             :enum      :green-600
+                             :aggregate :purple-700))]
+    [id {:label (html
+                 [:table {:port        id
+                          :border      0
+                          :cellborder  1
+                          :cellspacing 0
+                          :cellpadding 4}
+                  (let [coll-name (pr-str (:db.schema.collection/name coll))]
+                    [:tr [:td {:align   "TEXT"
+                               :color   (colors :gray-300)
+                               :bgcolor "white"
+                               :sides   "br"
+                               :href    (util/coll-href coll)
+                               :title   coll-name}
+                          [:font {:color coll-color} coll-name]]])
+                  (for [attr attrs]
+                    (let [id (attr-id attr)]
+                      ^{:key id}
+                      [:tr [:td {:align   "LEFT"
+                                 :color   (colors :gray-300)
+                                 :bgcolor "white"
+                                 :sides   "br"
+                                 :port id
+                                 :href    (util/attr-href attr)
+                                 :title   (pr-str (:db/ident attr))}
+                            [:font {:color coll-color} ":" (namespace (:db/ident attr))]
+                            "/"
+                            [:font {:color (colors :blue-500)} (name (:db/ident attr))]]]))])}]))
 
-(defn force-graph
-  "Generates a force-directed graph of collections and their relationships.
-  `references` is a seq of pairs of related collections: `[source-collection
-  target-collection]`."
-  [[width height] _references]
-  (let [{:keys [show? toggle]} (toggle-state true)]
-    (fn [_dimensions all-references]
-      (when (seq all-references)
-        (let [references          (filter (if (show?) identity agg-to-agg?) all-references)
-              nodes               (->> references
-                                       (mapcat identity)
-                                       to-nodes)
-              node-idx-by-node-id (zipmap (map :id nodes) (range))
-              self-link?          (fn [[source target]]
-                                    (= (coll-id source) (coll-id target)))
-              links               (->> references
-                                       (remove self-link?)
-                                       (map (fn [[source target]]
-                                              {:source (get node-idx-by-node-id (coll-id source))
-                                               :target (get node-idx-by-node-id (coll-id target))})))
-              self-references     (->> references
-                                       (filter self-link?)
-                                       (map first)
-                                       to-nodes)]
-          [:div
-           [vega
-            {:$schema "https://vega.github.io/schema/vega/v5.json"
-             :height  height
-             :width   width
-             :padding 5
-             :signals [{:name "cx", :update "width / 2"}
-                       {:name "cy", :update "height / 2"}
-                       (cond-> {:name "jiggle" :value 100}
-                         (> (count references) 3)
-                         (assoc :bind {:input "range", :min 25, :max 500, :step 10}))]
-             :data    [{:name   "link-data"
-                        :values links}
-                       {:name      "forces"
-                        :values    nodes
-                        :transform [{:type          "force"
-                                     :iterations    300
-                                     :velocityDecay 0.4
-                                     :forces        [{:force "center"
-                                                      :x     {:signal "cx"}
-                                                      :y     {:signal "cy"}}
-                                                     {:force  "collide"
-                                                      :radius 8}
-                                                     {:force    "nbody"
-                                                      :strength -45}
-                                                     {:force    "link"
-                                                      :links    "link-data"
-                                                      :distance {:signal "jiggle"}}]}]}
+(defn dot-edge [[source target attr]]
+  [(str (coll-id source) ":" (attr-id attr))
+   (coll-id target)
+   {:arrowhead (if (= (:db/cardinality attr) :db.cardinality/one)
+                 "inv"
+                 "crow")
+    :tooltip   (pr-str (:db/ident attr))
+    :href      (util/attr-href attr)}])
 
-                       {:name      "self-references"
-                        :values    self-references
-                        :transform [{:type   "lookup"
-                                     :from   "forces"
-                                     :fields ["id"]
-                                     :key    "id"
-                                     :values ["x" "y"]}]}]
-             :scales [{:name   "color"
-                       :type   "ordinal"
-                       :range  ["#6b46c1" "#38a169"] ;; purple-700 green-600
-                       :domain ["aggregate" "enum"]}]
-             :marks  [;; edges
-                      {:type      "path"
-                       :from      {:data "link-data"}
-                       :encode    {:enter  {:stroke      {:value "#4299e1"} ;; blue-500
-                                            :strokeWidth {:value 0.5}}
-                                   ;; :update required, but why?
-                                   :update {}}
-                       :transform [{:type    "linkpath"
-                                    :shape   "line"
-                                    :sourceX "datum.source.x"
-                                    :sourceY "datum.source.y"
-                                    :targetX "datum.target.x"
-                                    :targetY "datum.target.y"}]}
-                      ;; arrow-heads
-                      {:type      "symbol"
-                       :from      {:data "link-data"}
-                       :transform [{:type "formula"
-                                    :as   "offset"
-                                    :expr "-15"}
-                                   {:type "formula"
-                                    :as   "dx"
-                                    :expr "datum.datum.target.x - datum.datum.source.x"}
-                                   {:type "formula"
-                                    :as   "dy"
-                                    :expr "datum.datum.target.y - datum.datum.source.y"}
-                                   {:type "formula"
-                                    :as   "r"
-                                    :expr "sqrt(pow(datum.dx, 2) + pow(datum.dy, 2))"}
-                                   {:type "formula"
-                                    :as   "x"
-                                    :expr "datum.datum.target.x + (datum.offset * (datum.dx / datum.r))"}
-                                   {:type "formula"
-                                    :as   "y"
-                                    :expr "datum.datum.target.y + (datum.offset * (datum.dy / datum.r))"}
-                                   {:type "formula"
-                                    :as   "thetaRadians"
-                                    :expr "atan2(datum.dy, datum.dx)"}
-                                   {:type "formula"
-                                    :as   "thetaDegrees"
-                                    :expr "180 * datum.thetaRadians / PI"}
-                                   {:type "formula"
-                                    :as   "angle"
-                                    :expr "90 + datum.thetaDegrees"}]
-                       :encode    {:enter  {:fill        {:value "#4299e1"} ;; blue-500
-                                            :size        {:value 300}
-                                            :strokeWidth {:value 0}
-                                            :shape       {:value "wedge"}}
-                                   :update {}}}
-                      ;; self references
-                      {:type   "symbol"
-                       :from   {:data "self-references"}
-                       :encode {:enter  {:fillOpacity {:value 0}
-                                         :stroke      {:value "#4299e1"} ;; blue-500
-                                         :strokeWidth {:value 0.5}
-                                         :size        {:value 150}
-                                         :shape       {:value "circle"}}
-                                :update {:x {:field "x" :offset -6}
-                                         :y {:field "y" :offset -5}}}}
-                      {:type   "symbol"
-                       :from   {:data "self-references"}
-                       :encode {:enter  {:fill        {:value "#4299e1"} ;; blue-500
-                                         :size        {:value 300}
-                                         :strokeWidth {:value 0}
-                                         :angle       {:value 155}
-                                         :shape       {:value "wedge"}}
-                                :update {:x {:field "x"}
-                                         :y {:field "y" :offset -7}}}}
-                      ;; nodes
-                      {:type   "text"
-                       :from   {:data "forces"}
-                       :encode {:enter  {:fontSize {:value 12}
-                                         :fill     {:scale "color", :field "colltype"}
-                                         :href     {:field "href"}
-                                         :text     {:field "name"}
-                                         :baseline {:value "middle"}
-                                         :cursor   {:value "pointer"}}
-                                :update {:x {:field "x"}
-                                         :y {:field "y"}}}}]}]
-           (when (and (some agg-to-agg? all-references)
-                      (not-every? agg-to-agg? all-references))
-             [:label.block
-              "Include enums?"
-              [:input.ml-2 {:checked   (show?)
-                            :on-change toggle
-                            :type      "checkbox"}]])])))))
+(defn erd [references]
+  #?(:clj [:div]
+     :cljs
+     (let [attrs-by-sources (->> references
+                                 (group-by first)
+                                 (map (fn [[source refs]]
+                                        [source (map last refs)]))
+                                 (into {}))
+           colls            (->> references
+                                 (mapcat (juxt first second))
+                                 distinct)]
+       [graphviz-svg
+        (d/dot (d/digraph
+                (concat
+                 [(d/graph-attrs {:bgcolor (colors :transparent)})
+                  (d/node-attrs {:shape "plaintext"})
+                  (d/edge-attrs {:color     (colors :gray-600)
+                                 :penwidth  0.5
+                                 :arrowsize 0.75})]
+                 (->> colls
+                      (map (fn [coll]
+                             [coll (attrs-by-sources coll)]))
+                      (map dot-node))
+                 (->> references
+                      (map dot-edge)))))])))

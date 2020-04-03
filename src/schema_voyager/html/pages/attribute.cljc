@@ -59,16 +59,15 @@
         [:dt.sm:w-1of3 (pr-str field)]
         [:dd (pr-str value)]])]))
 
-(defn diagram [{:keys [db.schema/part-of db.schema/references db.schema/tuple-references]}]
-  [diagrams.collection/force-graph
-   [400 300]
+(defn diagram [{:keys [db.schema/part-of db.schema/references db.schema/tuple-references] :as attr}]
+  [diagrams.collection/erd
    (concat
     (for [source part-of
           dest   references]
-      [source dest])
+      [source dest attr])
     (for [source part-of
           dest (mapcat :db.schema/references tuple-references)]
-      [source dest]))])
+      [source dest attr]))])
 
 (defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]
   [:h1.mb-4.font-bold

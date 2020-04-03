@@ -1,5 +1,6 @@
 (ns schema-voyager.html.pages.collections
-  (:require [datascript.core :as d]
+  (:require [clojure.walk :as walk]
+            [datascript.core :as d]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]
             [schema-voyager.html.diagrams.collection :as diagrams.collection]))
@@ -22,27 +23,21 @@
        (sort-by :db/ident)))
 
 (defn references [db]
-  (->> (d/q '[:find ?source-name ?source-type ?dest-name ?dest-type
-              :where
-              [?source-attr :db.schema/part-of ?source]
-              (or-join [?source-attr ?dest]
-                       [?source-attr :db.schema/references ?dest]
-                       (and
-                        [?source-attr :db.schema/tuple-references ?dest-tuple-ref]
-                        [?dest-tuple-ref :db.schema/references ?dest]))
-              (not [?source-attr :db.schema/deprecated? true])
-              [?source :db.schema.collection/name ?source-name]
-              [?source :db.schema.collection/type ?source-type]
-              [?source :db.schema.pseudo/type :collection]
-              [?dest :db.schema.collection/name ?dest-name]
-              [?dest :db.schema.collection/type ?dest-type]
-              [?dest :db.schema.pseudo/type :collection]]
-            db)
-       (map (fn [[source-name source-type dest-name dest-type]]
-              [{:db.schema.collection/name source-name
-                :db.schema.collection/type source-type}
-               {:db.schema.collection/name dest-name
-                :db.schema.collection/type dest-type}]))))
+  (let [refs     (d/q '[:find ?source ?dest ?source-attr
+                        :where
+                        [?source-attr :db.schema/part-of ?source]
+                        (or-join [?source-attr ?dest]
+                                 [?source-attr :db.schema/references ?dest]
+                                 (and
+                                  [?source-attr :db.schema/tuple-references ?dest-tuple-ref]
+                                  [?dest-tuple-ref :db.schema/references ?dest]))
+                        (not [?source-attr :db.schema/deprecated? true])]
+                      db)
+        eids     (mapcat identity refs)
+        entities (d/pull-many db '[*] eids)
+        entities-by-eid (zipmap (map :db/id entities)
+                                entities)]
+    (walk/postwalk-replace entities-by-eid refs)))
 
 (defn collection-list [collection]
   [:ul
@@ -83,4 +78,4 @@
       "Entity specs are constraints that can be placed on an entity during a transaction. They require attributes, run predicate functions for validation, or both."
       [spec-list specs]])
    [:div.mt-10
-    [diagrams.collection/force-graph [800 600] (references db/db)]]])
+    [diagrams.collection/erd (references db/db)]]])

@@ -108,18 +108,17 @@
         [:div.flex-1 [attribute-panel attribute]]
         [:div.ml-4.sm:ml-6 chevron-right]]])]
    [:div.mt-4
-    [diagrams.collection/force-graph
-     [400 300]
+    [diagrams.collection/erd
      (concat
       (->> referenced-by
            (remove :db.schema/deprecated?)
            (mapcat #(for [source (:db.schema/part-of %)]
-                      [source coll])))
+                      [source coll %])))
       (->> _part-of
            (remove :db.schema/deprecated?)
            (mapcat #(for [target (:db.schema/references %)]
-                      [coll target])))
+                      [coll target %])))
       (->> _part-of
            (remove :db.schema/deprecated?)
            (mapcat #(for [target (mapcat :db.schema/references (:db.schema/tuple-references %))]
-                      [coll target]))))]]])
+                      [coll target %]))))]]])

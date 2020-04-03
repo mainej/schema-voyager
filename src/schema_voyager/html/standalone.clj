@@ -26,7 +26,9 @@
           [:meta {:charset "UTF-8"}]
           [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
           [:title "Schema Voyager"]
-          [:style (slurp "target/styles.css")]]
+          [:style (slurp "target/styles.css")]
+          [:script {:src "https://unpkg.com/@hpcc-js/wasm/dist/index.min.js"}]
+          [:script "var hpccWasm = window[\"@hpcc-js/wasm\"];"]]
          [:body
           [:div#app]
           [:script {:type "text/javascript"} (slurp "target/main.js")]])))

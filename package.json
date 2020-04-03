@@ -26,10 +26,6 @@
         "react": "16.13.0",
         "react-dom": "16.13.0",
         "shadow-cljs": "^2.8.91",
-        "tailwindcss": "^1.2.0",
-        "vega": "5.9.0",
-        "vega-embed": "6.0.0",
-        "vega-lite": "4.0.2",
-        "vega-tooltip": "0.20.0"
+        "tailwindcss": "^1.2.0"
     }
 }

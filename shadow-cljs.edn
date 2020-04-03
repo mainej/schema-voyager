@@ -1,7 +1,10 @@
 {:deps     true
  :dev-http {8080 "target/"}
- :builds   {:app {:output-dir "target/"
-                  :asset-path "."
-                  :target     :browser
-                  :modules    {:main {:init-fn schema-voyager.html.live/init}}
-                  :devtools   {:after-load schema-voyager.html.live/mount-root}}}}
+ :builds   {:app {:output-dir       "target/"
+                  :asset-path       "."
+                  :target           :browser
+                  :modules          {:main {:init-fn schema-voyager.html.live/init}}
+                  :devtools         {:after-load schema-voyager.html.live/mount-root}
+                  :js-options       {:resolve {"graphviz" {:target :global, :global "hpccWasm"}}}
+                  :compiler-options {:infer-externs :auto
+                                     :externs       ["datascript/externs.js"]}}}}

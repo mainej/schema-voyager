@@ -73,7 +73,8 @@
    CLOSED: [2020-03-19 Thu 23:32]
 ** DONE connections graph for one agregate/enum, force directed, including inbound references
    CLOSED: [2020-03-19 Thu 23:33]
-** pannable connections graph
+** DONE pannable connections graph
+   CLOSED: [2020-04-02 Thu 16:00]
 ** DONE keep arrow tips close to the target
    CLOSED: [2020-03-28 Sat 10:21]
 ** DONE toggle enums in diagrams
@@ -103,7 +104,8 @@ Done by Vega, see toolbox to upper right of diagram
    CLOSED: [2020-04-01 Wed 13:10]
 ** Experiment with giving collections a compound :db/ident of [:aggregate :person]
 So that you can transact several times.
-** Consider switching diagrams to GraphViz
+** DONE Consider switching diagrams to GraphViz
+   CLOSED: [2020-04-02 Thu 16:00]
 See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * documentation
 ** DONE terminology
@@ -153,3 +155,7 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 *** tailwindcss, postcss and purgecss
 ** DONE license
    CLOSED: [2020-04-02 Thu 12:08]
+* erd config
+** toggle attr and collection
+** hide attrs
+** show non-ref attrs?
