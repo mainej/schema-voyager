@@ -67,13 +67,17 @@
                           [:font {:color (colors :blue-500)} (name ident)]]])])}]))
 
 (defn- dot-edge [[source target attr]]
-  [(str (coll-id source) ":" (attr-id attr))
-   (coll-id target)
-   {:arrowhead (if (= (:db/cardinality attr) :db.cardinality/one)
-                 "inv"
-                 "crow")
-    :tooltip   (pr-str (:db/ident attr))
-    :href      (util/attr-href attr)}])
+  (let [source-id   (coll-id source)
+        source-port (attr-id attr)
+        target-id   (coll-id target)
+        self-ref?   (= source-id target-id)]
+    [(str source-id ":" source-port (when self-ref? ":e"))
+     (str target-id (when self-ref? ":ne"))
+     {:arrowhead (if (= (:db/cardinality attr) :db.cardinality/one)
+                   "inv"
+                   "crow")
+      :tooltip   (pr-str (:db/ident attr))
+      :href      (util/attr-href attr)}]))
 
 (defn colls-with-attrs [references]
   (let [attrs-by-sources (->> references
