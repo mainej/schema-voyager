@@ -1,6 +1,5 @@
 (ns schema-voyager.html.pages.collections
-  (:require [clojure.walk :as walk]
-            [datascript.core :as d]
+  (:require [datascript.core :as d]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]
             [schema-voyager.html.diagrams.collection :as diagrams.collection]))
@@ -21,23 +20,6 @@
             db)
        (d/pull-many db '[*])
        (sort-by :db/ident)))
-
-(defn references [db]
-  (let [refs     (d/q '[:find ?source ?dest ?source-attr
-                        :where
-                        [?source-attr :db.schema/part-of ?source]
-                        (or-join [?source-attr ?dest]
-                                 [?source-attr :db.schema/references ?dest]
-                                 (and
-                                  [?source-attr :db.schema/tuple-references ?dest-tuple-ref]
-                                  [?dest-tuple-ref :db.schema/references ?dest]))
-                        (not [?source-attr :db.schema/deprecated? true])]
-                      db)
-        eids     (mapcat identity refs)
-        entities (d/pull-many db '[*] eids)
-        entities-by-eid (zipmap (map :db/id entities)
-                                entities)]
-    (walk/postwalk-replace entities-by-eid refs)))
 
 (defn collection-list [collection]
   [:ul
@@ -78,4 +60,4 @@
       "Entity specs are constraints that can be placed on an entity during a transaction. They require attributes, run predicate functions for validation, or both."
       [spec-list specs]])
    [:div.mt-10
-    [diagrams.collection/erd (references db/db)]]])
+    [diagrams.collection/erd (diagrams.collection/q-colls db/db)]]])
