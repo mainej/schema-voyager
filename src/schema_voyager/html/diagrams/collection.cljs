@@ -106,8 +106,10 @@
              [?source-attr :db.schema/references ?dest]
              (and
               [?source-attr :db.schema/tuple-references ?dest-tuple-ref]
-              [?dest-tuple-ref :db.schema/references ?dest]))
-    (not [?source-attr :db.schema/deprecated? true])])
+              [?dest-tuple-ref :db.schema/references ?dest]))])
+
+(def ^:private active-ref-q
+  (into ref-q '[(not [?source-attr :db.schema/deprecated? true])]))
 
 (defn- q-expand-eids [db refs]
   (let [eids            (distinct (mapcat identity refs))
@@ -117,7 +119,7 @@
     (walk/postwalk-replace entities-by-eid refs)))
 
 (defn q-colls [db]
-  (let [refs (d/q ref-q db)]
+  (let [refs (d/q active-ref-q db)]
     (q-expand-eids db refs)))
 
 (defn q-coll [db coll]
@@ -128,9 +130,9 @@
                         [?coll :db.schema.collection/name ?collection-name]
                         [?coll :db.schema.pseudo/type :collection]]
                       db (:db.schema.collection/type coll) (:db.schema.collection/name coll))
-        sources  (d/q (concat ref-q '[:in $ ?source])
+        sources  (d/q (concat active-ref-q '[:in $ ?source])
                       db coll-eid)
-        dests    (d/q (concat ref-q '[:in $ ?dest])
+        dests    (d/q (concat active-ref-q '[:in $ ?dest])
                       db coll-eid)
         refs     (distinct (concat sources dests))]
     (q-expand-eids db refs)))
