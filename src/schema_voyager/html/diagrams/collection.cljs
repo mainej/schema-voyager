@@ -77,7 +77,7 @@
   (let [attrs-by-sources (->> references
                               (group-by first)
                               (map (fn [[source refs]]
-                                     [source (map last refs)]))
+                                     [source (distinct (map last refs))]))
                               (into {}))
         colls            (->> references
                               (mapcat (juxt first second))
