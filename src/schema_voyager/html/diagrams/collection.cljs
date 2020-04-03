@@ -52,19 +52,18 @@
                                :href    (util/coll-href coll)
                                :title   coll-name}
                           [:font {:color coll-color} coll-name]]])
-                  (for [attr attrs]
-                    (let [id (attr-id attr)]
-                      ^{:key id}
-                      [:tr [:td {:align   "LEFT"
-                                 :color   (colors :gray-300)
-                                 :bgcolor "white"
-                                 :sides   "br"
-                                 :port id
-                                 :href    (util/attr-href attr)
-                                 :title   (pr-str (:db/ident attr))}
-                            [:font {:color coll-color} ":" (namespace (:db/ident attr))]
-                            "/"
-                            [:font {:color (colors :blue-500)} (name (:db/ident attr))]]]))])}]))
+                  (for [{:keys [db/ident] :as attr} attrs]
+                    ^{:key ident}
+                    [:tr [:td {:align   "LEFT"
+                               :color   (colors :gray-300)
+                               :bgcolor "white"
+                               :sides   "br"
+                               :port    (attr-id attr)
+                               :href    (util/attr-href attr)
+                               :title   (pr-str ident)}
+                          [:font {:color coll-color} ":" (namespace ident)]
+                          "/"
+                          [:font {:color (colors :blue-500)} (name ident)]]])])}]))
 
 (defn- dot-edge [[source target attr]]
   [(str (coll-id source) ":" (attr-id attr))
@@ -79,7 +78,7 @@
   (let [attrs-by-sources (->> references
                               (group-by first)
                               (map (fn [[source refs]]
-                                     [source (distinct (map last refs))]))
+                                     [source (sort-by :db/ident (distinct (map last refs)))]))
                               (into {}))
         colls            (->> references
                               (mapcat (juxt first second))
