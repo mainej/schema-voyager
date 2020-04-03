@@ -157,6 +157,7 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 ** DONE license
    CLOSED: [2020-04-02 Thu 12:08]
 * erd config
-** toggle attr and collection
+** DONE toggle attr and collection
+   CLOSED: [2020-04-03 Fri 15:57]
 ** hide attrs
 ** show non-ref attrs?
