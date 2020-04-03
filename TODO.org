@@ -99,7 +99,8 @@ Done by Vega, see toolbox to upper right of diagram
 ** DONE try CSS purge
    CLOSED: [2020-03-11 Wed 22:30]
 ** Promote :db/tupleAttrs to attribute references during `data/process`? It works OK to pull the attribute data later, by ident.
-** Convert CLJC to CLJS: no need to render from a clojure process
+** DONE Convert CLJC to CLJS: no need to render from a clojure process
+   CLOSED: [2020-04-03 Fri 11:08]
 ** DONE Move dev/examples.clj to dev/ingest/projects/mbrainz.clj and update README
    CLOSED: [2020-04-01 Wed 13:10]
 ** Experiment with giving collections a compound :db/ident of [:aggregate :person]

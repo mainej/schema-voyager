@@ -1,8 +1,8 @@
 (ns schema-voyager.html.diagrams.collection
-  (:require #?@(:cljs [[graphviz]
-                       [dorothy.core :as d]
-                       [promesa.core :as p]
-                       [reagent.dom.server :as dom]])
+  (:require [graphviz]
+            [dorothy.core :as d]
+            [promesa.core :as p]
+            [reagent.dom.server :as dom]
             [schema-voyager.html.util :as util]))
 
 (def colors
@@ -21,18 +21,15 @@
   (str "attr__" (namespace ident) "__" (name ident)))
 
 (defn graphviz-svg [s]
-  #?(:clj [:div]
-     :cljs
-     [:div.overflow-auto
-      {:ref (fn [div]
-              (when div
-                ;; TODO: decide on layout engine: fdp, neato, dot
-                (p/let [svg (graphviz/graphviz.dot s)]
-                  (set! (.-innerHTML div) svg))))}]))
+  [:div.overflow-auto
+   {:ref (fn [div]
+           (when div
+             ;; TODO: decide on layout engine: fdp, neato, dot
+             (p/let [svg (graphviz/graphviz.dot s)]
+               (set! (.-innerHTML div) svg))))}])
 
 (def html
-  #?(:clj (constantly nil)
-     :cljs dom/render-to-static-markup))
+  dom/render-to-static-markup)
 
 (defn dot-node [[coll attrs]]
   (let [id         (coll-id coll)
@@ -77,27 +74,25 @@
     :href      (util/attr-href attr)}])
 
 (defn erd [references]
-  #?(:clj [:div]
-     :cljs
-     (let [attrs-by-sources (->> references
-                                 (group-by first)
-                                 (map (fn [[source refs]]
-                                        [source (map last refs)]))
-                                 (into {}))
-           colls            (->> references
-                                 (mapcat (juxt first second))
-                                 distinct)]
-       [graphviz-svg
-        (d/dot (d/digraph
-                (concat
-                 [(d/graph-attrs {:bgcolor (colors :transparent)})
-                  (d/node-attrs {:shape "plaintext"})
-                  (d/edge-attrs {:color     (colors :gray-600)
-                                 :penwidth  0.5
-                                 :arrowsize 0.75})]
-                 (->> colls
-                      (map (fn [coll]
-                             [coll (attrs-by-sources coll)]))
-                      (map dot-node))
-                 (->> references
-                      (map dot-edge)))))])))
+  (let [attrs-by-sources (->> references
+                              (group-by first)
+                              (map (fn [[source refs]]
+                                     [source (map last refs)]))
+                              (into {}))
+        colls            (->> references
+                              (mapcat (juxt first second))
+                              distinct)]
+    [graphviz-svg
+     (d/dot (d/digraph
+             (concat
+              [(d/graph-attrs {:bgcolor (colors :transparent)})
+               (d/node-attrs {:shape "plaintext"})
+               (d/edge-attrs {:color     (colors :gray-600)
+                              :penwidth  0.5
+                              :arrowsize 0.75})]
+              (->> colls
+                   (map (fn [coll]
+                          [coll (attrs-by-sources coll)]))
+                   (map dot-node))
+              (->> references
+                   (map dot-edge)))))]))

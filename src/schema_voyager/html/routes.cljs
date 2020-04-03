@@ -4,15 +4,13 @@
             [schema-voyager.html.pages.attribute :as pages.attribute]
             [schema-voyager.html.pages.aggregate :as pages.aggregate]
             [schema-voyager.html.pages.spec :as pages.spec]
-            #?@(:cljs [[schema-voyager.html.db :as db]
-                       [reitit.frontend :as rf]
-                       [reitit.frontend.easy :as rfe]]
-                :clj [[reitit.core :as r]])))
+            [schema-voyager.html.db :as db]
+            [reitit.frontend :as rf]
+            [reitit.frontend.easy :as rfe]))
 
 (defn- scroll-to-top
   []
-  #?(:cljs (js/window.scrollTo 0 0)
-     :clj nil))
+  (js/window.scrollTo 0 0))
 
 (def ^:private routes
   ["/"
@@ -30,10 +28,8 @@
                      :view pages.attribute/page}]])
 
 (def router
-  #?(:cljs (rf/router routes)
-     :clj (r/router routes)))
+  (rf/router routes))
 
-#?(:cljs
-   (defn ^:dev/after-load initialize
-     []
-     (rfe/start! router db/save-route {:use-fragment true})))
+(defn ^:dev/after-load initialize
+  []
+  (rfe/start! router db/save-route {:use-fragment true}))
