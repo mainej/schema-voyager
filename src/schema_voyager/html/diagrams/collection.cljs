@@ -92,6 +92,11 @@
          (map (fn [coll]
                 [coll (attrs-by-sources coll)])))))
 
+(defn set-toggle [s item]
+  (if (contains? s item)
+    (disj s item)
+    (conj s item)))
+
 (defn dropdown-state []
   (let [!open? (r/atom false)]
     {:dropdown-open?  #(deref !open?)
@@ -99,8 +104,13 @@
      :dropdown-open   #(reset! !open? true)
      :dropdown-toggle #(swap! !open? not)}))
 
+(defn excluded-eid-state []
+  (let [!excluded-eids (r/atom #{})]
+    {:excluded-eids       #(deref !excluded-eids)
+     :excluded-eid-toggle #(swap! !excluded-eids set-toggle (:db/id %))}))
+
 (def configure-gear
-  [:svg.h-6.w-6.fill-none.stroke-current.stroke-2 {:viewbox "0 0 24 24"}
+  [:svg.h-6.w-6.fill-none.stroke-current.stroke-2 {:viewBox "0 0 24 24"}
    [:title "Configure Diagram"]
    [:g {:stroke-linejoin "round"
         :stroke-linecap  "round"}
@@ -110,17 +120,12 @@
 (defn toggle-span [checked]
   [:span.relative.inline-block.leading-none.flex-shrink-0.h-4.w-6.border-2.border-transparent.rounded-full.transition-colors.ease-in-out.duration-200.focus:outline-none.focus:shadow-outline
    {:aria-checked (pr-str checked)
-    :tabindex     "0"
+    :tabIndex     "0"
     :role         "checkbox"
     :class        (if checked :bg-teal-400 :bg-gray-200)}
    [:span.inline-block.h-3.w-3.rounded-full.bg-white.shadow.transform.transition.ease-in-out.duration-200
     {:class       (if checked :translate-x-2 :translate-x-0)
      :aria-hidden "true"}]])
-
-(defn set-toggle [s item]
-  (if (contains? s item)
-    (disj s item)
-    (conj s item)))
 
 (defn stop [e]
   (.stopPropagation e))
@@ -128,57 +133,56 @@
 (defn prevent [e]
   (.preventDefault e))
 
-(defn erd-config [_ _]
-  (let [{:keys [dropdown-open? dropdown-close dropdown-toggle]} (dropdown-state)]
-    (fn [references !excluded-eids]
-      (let [excluded? (comp @!excluded-eids :db/id)
-            toggle    #(swap! !excluded-eids set-toggle (:db/id %))
-            colls     (colls-with-attrs references)
-            handlers  (fn [entity]
-                        {:on-click    (fn [e]
-                                        (stop e)
-                                        (toggle entity))
-                         :on-key-down (fn [e]
-                                        (let [key (.-key e)]
-                                          (when (not= "Tab" key)
-                                            (prevent e))
-                                          (when (= " " key)
-                                            (toggle entity))))})]
-        [:div.relative.inline-block
-         [:button.rounded-md.border.border-gray-300.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
-          {:type     "button"
-           :on-click dropdown-toggle}
-          configure-gear]
-         (when (dropdown-open?)
-           [:<>
-            [:div.fixed.inset-0.bg-gray-900.opacity-50
-             {:on-click dropdown-close}]
-            [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
-             (for [[coll attrs] colls]
-               ^{:key (:db/id coll)}
-               [:div.p-3.border-t.border-gray-300
-                [:div.flex.items-center.cursor-pointer
-                 (assoc (handlers coll)
-                        :class (when (seq attrs) :pb-1))
-                 [toggle-span (not (excluded? coll))]
-                 [:span.ml-2 [util/coll-name coll]]]
-                (for [attr attrs]
-                  ^{:key (:db/id attr)}
-                  [:div.flex.items-center.cursor-pointer.ml-4.py-1
-                   (handlers attr)
-                   [toggle-span (not (excluded? attr))]
-                   [:span.ml-2
-                    [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]])])]])]))))
+(defn erd-config [references
+                  {:keys [excluded-eids excluded-eid-toggle]}
+                  {:keys [dropdown-open? dropdown-close dropdown-toggle]}]
+  [:div.relative.inline-block
+   [:button.rounded-md.border.border-gray-300.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
+    {:type     "button"
+     :on-click dropdown-toggle}
+    configure-gear]
+   (when (dropdown-open?)
+     [:<>
+      [:div.fixed.inset-0.bg-gray-900.opacity-50
+       {:on-click dropdown-close}]
+      (let [excluded-eid? (comp (excluded-eids) :db/id)
+            handlers      (fn [entity]
+                            {:on-click    (fn [e]
+                                            (stop e)
+                                            (excluded-eid-toggle entity))
+                             :on-key-down (fn [e]
+                                            (let [key (.-key e)]
+                                              (when (not= "Tab" key)
+                                                (prevent e))
+                                              (when (= " " key)
+                                                (excluded-eid-toggle entity))))})]
+        [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
+         (for [[coll attrs] (colls-with-attrs references)]
+           ^{:key (:db/id coll)}
+           [:div.p-3.border-t.border-gray-300
+            [:div.flex.items-center.cursor-pointer
+             (assoc (handlers coll)
+                    :class (when (seq attrs) :pb-1))
+             [toggle-span (not (excluded-eid? coll))]
+             [:span.ml-2 [util/coll-name coll]]]
+            (for [attr attrs]
+              ^{:key (:db/id attr)}
+              [:div.flex.items-center.cursor-pointer.ml-4.py-1
+               (handlers attr)
+               [toggle-span (not (excluded-eid? attr))]
+               [:span.ml-2
+                [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]])])])])])
 
-(defn erd []
-  (let [!excluded-eids (r/atom #{})]
+(defn erd [_]
+  (let [{:keys [excluded-eids] :as excluded-eid-state} (excluded-eid-state)
+        dropdown-state                                 (dropdown-state)]
     (fn [references]
-      (let [excluded?        @!excluded-eids
+      (let [excluded-eid?    (comp (excluded-eids) :db/id)
             shown-references (remove (fn [entities]
-                                       (some excluded? (map :db/id entities)))
+                                       (some excluded-eid? entities))
                                      references)]
         [:div
-         [erd-config references !excluded-eids]
+         [erd-config references excluded-eid-state dropdown-state]
          [graphviz-svg
           (dot/dot (dot/digraph
                     (concat
