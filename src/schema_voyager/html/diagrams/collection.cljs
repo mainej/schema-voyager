@@ -107,20 +107,43 @@
     [:path {:d "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"}]
     [:path {:d "M15 12a3 3 0 11-6 0 3 3 0 016 0z"}]]])
 
+(defn toggle-span [checked]
+  [:span.relative.inline-block.leading-none.flex-shrink-0.h-4.w-6.border-2.border-transparent.rounded-full.transition-colors.ease-in-out.duration-200.focus:outline-none.focus:shadow-outline
+   {:aria-checked (pr-str checked)
+    :tabindex     "0"
+    :role         "checkbox"
+    :class        (if checked :bg-teal-400 :bg-gray-200)}
+   [:span.inline-block.h-3.w-3.rounded-full.bg-white.shadow.transform.transition.ease-in-out.duration-200
+    {:class       (if checked :translate-x-2 :translate-x-0)
+     :aria-hidden "true"}]])
+
+(defn set-toggle [s item]
+  (if (contains? s item)
+    (disj s item)
+    (conj s item)))
+
+(defn stop [e]
+  (.stopPropagation e))
+
+(defn prevent [e]
+  (.preventDefault e))
+
 (defn erd-config [_ _]
   (let [{:keys [dropdown-open? dropdown-close dropdown-toggle]} (dropdown-state)]
     (fn [references !excluded-eids]
-      (let [excluded? @!excluded-eids
+      (let [excluded? (comp @!excluded-eids :db/id)
+            toggle    #(swap! !excluded-eids set-toggle (:db/id %))
             colls     (colls-with-attrs references)
-
-            checkbox-attrs (fn [entity]
-                             {:type      "checkbox"
-                              :checked   (not (excluded? (:db/id entity)))
-                              :on-change (fn [e]
-                                           (.stopPropagation e)
-                                           (swap! !excluded-eids (if (-> e .-target .-checked)
-                                                                   disj conj)
-                                                  (:db/id entity)))})]
+            handlers  (fn [entity]
+                        {:on-click    (fn [e]
+                                        (stop e)
+                                        (toggle entity))
+                         :on-key-down (fn [e]
+                                        (let [key (.-key e)]
+                                          (when (not= "Tab" key)
+                                            (prevent e))
+                                          (when (= " " key)
+                                            (toggle entity))))})]
         [:div.relative.inline-block
          [:button.rounded-md.border.border-gray-300.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
           {:type     "button"
@@ -134,15 +157,18 @@
              (for [[coll attrs] colls]
                ^{:key (:db/id coll)}
                [:div.p-3.border-t.border-gray-300
-                [:label.block
-                 {:class (when (seq attrs) :pb-1)}
-                 [:input.mr-1 (checkbox-attrs coll)]
-                 [util/coll-name coll]]
+                [:div.flex.items-center.cursor-pointer
+                 (assoc (handlers coll)
+                        :class (when (seq attrs) :pb-1))
+                 [toggle-span (not (excluded? coll))]
+                 [:span.ml-2 [util/coll-name coll]]]
                 (for [attr attrs]
                   ^{:key (:db/id attr)}
-                  [:label.block.ml-4.py-1
-                   [:input.mr-1 (checkbox-attrs attr)]
-                   [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]])])]])]))))
+                  [:div.flex.items-center.cursor-pointer.ml-4.py-1
+                   (handlers attr)
+                   [toggle-span (not (excluded? attr))]
+                   [:span.ml-2
+                    [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]])])]])]))))
 
 (defn erd []
   (let [!excluded-eids (r/atom #{})]
