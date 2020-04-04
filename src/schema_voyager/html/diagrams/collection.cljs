@@ -113,6 +113,10 @@
 (defn excluded-eid-state []
   (let [!excluded-eids (r/atom #{})]
     {:excluded-eids       #(deref !excluded-eids)
+     :exclude-eids        (fn [entities]
+                            (swap! !excluded-eids #(apply conj % (map :db/id entities))))
+     :include-eids        (fn [entities]
+                            (swap! !excluded-eids #(apply disj % (map :db/id entities))))
      :excluded-eid-toggle #(swap! !excluded-eids set-toggle (:db/id %))}))
 
 (def configure-gear
@@ -150,10 +154,25 @@
                     (when (= " " key)
                       (on-change))))})
 
-(defn erd-config [references
-                  {:keys [excluded-eids excluded-eid-toggle]}
-                  {:keys [dropdown-open? dropdown-close dropdown-toggle]}
-                  {:keys [attrs-visible? attrs-visible-toggle]}]
+(defn erd-collection-config [[coll attrs] {:keys [excluded-eids excluded-eid-toggle attrs-visible?]}]
+  (let [attrs-visible? (attrs-visible?)
+        excluded-eid?  (comp (excluded-eids) :db/id)]
+    [:div.p-3.border-t.border-gray-300
+     [:div.flex.items-center.cursor-pointer
+      (assoc (toggle-handlers #(excluded-eid-toggle coll))
+             :class (when (and attrs-visible? (seq attrs)) :pb-1))
+      [toggle-span (not (excluded-eid? coll))]
+      [:span.ml-2 [util/coll-name coll]]]
+     (when attrs-visible?
+       (for [attr attrs]
+         ^{:key (:db/id attr)}
+         [:div.flex.items-center.cursor-pointer.ml-4.py-1
+          (toggle-handlers #(excluded-eid-toggle attr))
+          [toggle-span (not (excluded-eid? attr))]
+          [:span.ml-2
+           [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]]))]))
+
+(defn- config-dropdown [{:keys [dropdown-open? dropdown-close dropdown-toggle]} body]
   [:div.relative.inline-block
    [:button.rounded-md.border.border-gray-300.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
     {:type     "button"
@@ -163,56 +182,72 @@
      [:<>
       [:div.fixed.inset-0.bg-gray-900.opacity-50
        {:on-click dropdown-close}]
-      (let [excluded-eid?  (comp (excluded-eids) :db/id)
-            attrs-visible? (attrs-visible?)]
-        [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
-         [:div.p-3
-          [:div.flex.items-center.cursor-pointer
-           (toggle-handlers attrs-visible-toggle)
-           [toggle-span attrs-visible?]
-           [:span.ml-2 "Show attributes?"]]]
-         (for [[coll attrs] (colls-with-attrs references)]
-           ^{:key (:db/id coll)}
-           [:div.p-3.border-t.border-gray-300
-            [:div.flex.items-center.cursor-pointer
-             (assoc (toggle-handlers #(excluded-eid-toggle coll))
-                    :class (when (and attrs-visible? (seq attrs)) :pb-1))
-             [toggle-span (not (excluded-eid? coll))]
-             [:span.ml-2 [util/coll-name coll]]]
-            (when attrs-visible?
-              (for [attr attrs]
-                ^{:key (:db/id attr)}
-                [:div.flex.items-center.cursor-pointer.ml-4.py-1
-                 (toggle-handlers #(excluded-eid-toggle attr))
-                 [toggle-span (not (excluded-eid? attr))]
-                 [:span.ml-2
-                  [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]]))])])])])
+      body])])
+
+(defn- config-attr-visibility [{:keys [attrs-visible? attrs-visible-toggle]}]
+  [:div.p-3
+   [:div.flex.items-center.cursor-pointer
+    (toggle-handlers attrs-visible-toggle)
+    [toggle-span (attrs-visible?)]
+    [:span.ml-2 "Show attributes?"]]])
+
+(defn config-enum-visibility [enums {:keys [excluded-eids exclude-eids include-eids]}]
+  (let [some-enums-shown? (not-every? (comp (excluded-eids) :db/id) enums)]
+    [:div.p-3.border-t.border-gray-500
+     [:div.flex.items-center.cursor-pointer
+      (toggle-handlers #(if some-enums-shown?
+                          (exclude-eids enums)
+                          (include-eids enums)))
+      [toggle-span some-enums-shown?]
+      [:span.ml-2 "Show enums?"]]]))
+
+(defn- erd-config [references config-state]
+  (let [{enums-and-attrs      :enum
+         aggregates-and-attrs :aggregate}
+        (->> references
+             colls-with-attrs
+             (group-by (comp :db.schema.collection/type first)))]
+    [config-dropdown config-state
+     [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
+      [config-attr-visibility config-state]
+      (for [[aggregate _attrs :as aggregate-and-attrs] aggregates-and-attrs]
+        ^{:key (:db/id aggregate)}
+        [erd-collection-config aggregate-and-attrs config-state])
+      (when-let [enums (seq (map first enums-and-attrs))]
+        [:<>
+         [config-enum-visibility enums config-state]
+         (for [[enum _attrs :as enum-and-attrs] enums-and-attrs]
+           ^{:key (:db/id enum)}
+           [erd-collection-config enum-and-attrs config-state])])]]))
+
+(defn erd* [references {:keys [excluded-eids attrs-visible?]}]
+  (let [excluded-eid?    (comp (excluded-eids) :db/id)
+        attrs-visible?   (attrs-visible?)
+        shown-references (remove (fn [entities]
+                                   (some excluded-eid? entities))
+                                 references)]
+    [graphviz-svg
+     (dot/dot (dot/digraph
+               (concat
+                [(dot/graph-attrs {:bgcolor (colors :transparent)})
+                 (dot/node-attrs {:shape "plaintext"})
+                 (dot/edge-attrs {:color     (colors :gray-600)
+                                  :penwidth  0.5
+                                  :arrowsize 0.75})]
+                (->> shown-references
+                     colls-with-attrs
+                     (map #(dot-node % attrs-visible?)))
+                (->> shown-references
+                     (map #(dot-edge % attrs-visible?))))))]))
 
 (defn erd [_]
-  (let [{:keys [excluded-eids] :as excluded-eid-state}   (excluded-eid-state)
-        dropdown-state                                   (dropdown-state)
-        {:keys [attrs-visible?] :as attrs-visible-state} (attrs-visible-state)]
+  (let [config-state (merge (excluded-eid-state)
+                            (dropdown-state)
+                            (attrs-visible-state))]
     (fn [references]
-      (let [excluded-eid?    (comp (excluded-eids) :db/id)
-            attrs-visible?   (attrs-visible?)
-            shown-references (remove (fn [entities]
-                                       (some excluded-eid? entities))
-                                     references)]
-        [:div
-         [erd-config references excluded-eid-state dropdown-state attrs-visible-state]
-         [graphviz-svg
-          (dot/dot (dot/digraph
-                    (concat
-                     [(dot/graph-attrs {:bgcolor (colors :transparent)})
-                      (dot/node-attrs {:shape "plaintext"})
-                      (dot/edge-attrs {:color     (colors :gray-600)
-                                       :penwidth  0.5
-                                       :arrowsize 0.75})]
-                     (->> shown-references
-                          colls-with-attrs
-                          (map #(dot-node % attrs-visible?)))
-                     (->> shown-references
-                          (map #(dot-edge % attrs-visible?))))))]]))))
+      [:div
+       [erd-config references config-state]
+       [erd* references config-state]])))
 
 (def ^:private ref-q
   '[:find ?source ?dest ?source-attr
