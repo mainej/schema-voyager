@@ -26,6 +26,19 @@
 (defn- attr-id [{:keys [db/ident]}]
   (str "attr__" (namespace ident) "__" (name ident)))
 
+(defn- colls-with-attrs [references]
+  (let [attrs-by-sources (->> references
+                              (group-by first)
+                              (map (fn [[source refs]]
+                                     [source (sort-by :db/ident (distinct (map last refs)))]))
+                              (into {}))]
+    (->> references
+         (mapcat (juxt first second))
+         distinct
+         (sort-by (juxt :db.schema.collection/type :db.schema.collection/name))
+         (map (fn [coll]
+                [coll (attrs-by-sources coll)])))))
+
 (defn- graphviz-svg [s]
   [:div.overflow-auto
    {:ref (fn [div]
@@ -83,46 +96,55 @@
       :tooltip   (pr-str (:db/ident attr))
       :href      (util/attr-href attr)}]))
 
-(defn colls-with-attrs [references]
-  (let [attrs-by-sources (->> references
-                              (group-by first)
-                              (map (fn [[source refs]]
-                                     [source (sort-by :db/ident (distinct (map last refs)))]))
-                              (into {}))]
-    (->> references
-         (mapcat (juxt first second))
-         distinct
-         (sort-by (juxt :db.schema.collection/type :db.schema.collection/name))
-         (map (fn [coll]
-                [coll (attrs-by-sources coll)])))))
+(defn- dot-graph [references {:keys [excluded-eids attrs-visible?]}]
+  (let [excluded-eid?    (comp (excluded-eids) :db/id)
+        attrs-visible?   (attrs-visible?)
+        shown-references (remove (fn [entities]
+                                   (some excluded-eid? entities))
+                                 references)]
+    (dot/dot (dot/digraph
+              (concat
+               [(dot/graph-attrs {:bgcolor (colors :transparent)})
+                (dot/node-attrs {:shape    "plaintext"
+                                 :fontname "Helvetica"
+                                 :fontsize 12})
+                (dot/edge-attrs {:color     (colors :gray-600)
+                                 :penwidth  0.5
+                                 :arrowsize 0.75})]
+               (->> shown-references
+                    colls-with-attrs
+                    (map #(dot-node % attrs-visible?)))
+               (->> shown-references
+                    (map #(dot-edge % attrs-visible?))))))))
 
-(defn set-toggle [s item]
+(defn- set-toggle [s item]
   (if (contains? s item)
     (disj s item)
     (conj s item)))
 
-(defn attrs-visible-state []
+(defn- attrs-visible-state []
   (let [!attrs-visible? (r/atom true)]
     {:attrs-visible?       #(deref !attrs-visible?)
      :attrs-visible-toggle #(swap! !attrs-visible? not)}))
 
-(defn dropdown-state []
+(defn- dropdown-state []
   (let [!open? (r/atom false)]
     {:dropdown-open?  #(deref !open?)
      :dropdown-close  #(reset! !open? false)
      :dropdown-open   #(reset! !open? true)
      :dropdown-toggle #(swap! !open? not)}))
 
-(defn excluded-eid-state []
+(defn- excluded-eid-state []
   (let [!excluded-eids (r/atom #{})]
-    {:excluded-eids       #(deref !excluded-eids)
-     :exclude-eids        (fn [entities]
-                            (swap! !excluded-eids #(apply conj % (map :db/id entities))))
-     :include-eids        (fn [entities]
-                            (swap! !excluded-eids #(apply disj % (map :db/id entities))))
-     :excluded-eid-toggle #(swap! !excluded-eids set-toggle (:db/id %))}))
+    {:excluded-eids #(deref !excluded-eids)
+     :exclude-eids  (fn [entities]
+                      (swap! !excluded-eids #(apply conj % (map :db/id entities))))
+     :include-eids  (fn [entities]
+                      (swap! !excluded-eids #(apply disj % (map :db/id entities))))
+     :toggle-eid    (fn [entity]
+                      (swap! !excluded-eids set-toggle (:db/id entity)))}))
 
-(def configure-gear
+(def ^:private configure-gear
   [:svg.h-6.w-6.fill-none.stroke-current.stroke-2 {:viewBox "0 0 24 24"}
    [:title "Configure Diagram"]
    [:g {:stroke-linejoin "round"
@@ -130,7 +152,7 @@
     [:path {:d "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"}]
     [:path {:d "M15 12a3 3 0 11-6 0 3 3 0 016 0z"}]]])
 
-(defn toggle-span [checked]
+(defn- toggle-span [checked]
   [:span.relative.inline-block.leading-none.flex-shrink-0.h-4.w-6.border-2.border-transparent.rounded-full.transition-colors.ease-in-out.duration-200.focus:outline-none.focus:shadow-outline
    {:aria-checked (pr-str checked)
     :tabIndex     "0"
@@ -140,13 +162,13 @@
     {:class       (if checked :translate-x-2 :translate-x-0)
      :aria-hidden "true"}]])
 
-(defn stop [e]
+(defn- stop [e]
   (.stopPropagation e))
 
-(defn prevent [e]
+(defn- prevent [e]
   (.preventDefault e))
 
-(defn toggle-handlers [on-change]
+(defn- toggle-handlers [on-change]
   {:on-click    (fn [e]
                   (stop e)
                   (on-change))
@@ -157,12 +179,12 @@
                     (when (= " " key)
                       (on-change))))})
 
-(defn erd-collection-config [[coll attrs] {:keys [excluded-eids excluded-eid-toggle attrs-visible?]}]
+(defn- erd-collection-config [[coll attrs] {:keys [excluded-eids toggle-eid attrs-visible?]}]
   (let [attrs-visible? (attrs-visible?)
         excluded-eid?  (comp (excluded-eids) :db/id)]
     [:div.p-3.border-b.border-gray-300
      [:div.flex.items-center.cursor-pointer
-      (assoc (toggle-handlers #(excluded-eid-toggle coll))
+      (assoc (toggle-handlers #(toggle-eid coll))
              :class (when (and attrs-visible? (seq attrs)) :pb-1))
       [toggle-span (not (excluded-eid? coll))]
       [:span.ml-2 [util/coll-name coll]]]
@@ -170,7 +192,7 @@
        (for [attr attrs]
          ^{:key (:db/id attr)}
          [:div.flex.items-center.cursor-pointer.ml-4.py-1
-          (toggle-handlers #(excluded-eid-toggle attr))
+          (toggle-handlers #(toggle-eid attr))
           [toggle-span (not (excluded-eid? attr))]
           [:span.ml-2
            [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]]))]))
@@ -194,7 +216,7 @@
     [toggle-span (attrs-visible?)]
     [:span.ml-2 "Show attributes on aggregates?"]]])
 
-(defn config-enum-visibility [enums {:keys [excluded-eids exclude-eids include-eids]}]
+(defn- config-enum-visibility [enums {:keys [excluded-eids exclude-eids include-eids]}]
   (let [some-enums-shown? (not-every? (comp (excluded-eids) :db/id) enums)]
     [:div.p-3.border-b.border-t.border-gray-500.-mt-px
      [:div.flex.items-center.cursor-pointer
@@ -223,28 +245,6 @@
            ^{:key (:db/id enum)}
            [erd-collection-config enum-and-attrs config-state])])]]))
 
-(defn erd* [references {:keys [excluded-eids attrs-visible?]}]
-  (let [excluded-eid?    (comp (excluded-eids) :db/id)
-        attrs-visible?   (attrs-visible?)
-        shown-references (remove (fn [entities]
-                                   (some excluded-eid? entities))
-                                 references)]
-    [graphviz-svg
-     (dot/dot (dot/digraph
-               (concat
-                [(dot/graph-attrs {:bgcolor (colors :transparent)})
-                 (dot/node-attrs {:shape    "plaintext"
-                                  :fontname "Helvetica"
-                                  :fontsize 12})
-                 (dot/edge-attrs {:color     (colors :gray-600)
-                                  :penwidth  0.5
-                                  :arrowsize 0.75})]
-                (->> shown-references
-                     colls-with-attrs
-                     (map #(dot-node % attrs-visible?)))
-                (->> shown-references
-                     (map #(dot-edge % attrs-visible?))))))]))
-
 (defn erd [_]
   (let [config-state (merge (excluded-eid-state)
                             (dropdown-state)
@@ -253,7 +253,7 @@
       (when (seq references)
         [:div
          [erd-config references config-state]
-         [erd* references config-state]]))))
+         [graphviz-svg (dot-graph references config-state)]]))))
 
 (def ^:private ref-q
   '[:find ?source ?dest ?source-attr
