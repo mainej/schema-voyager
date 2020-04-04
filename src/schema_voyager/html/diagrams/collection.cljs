@@ -250,9 +250,10 @@
                             (dropdown-state)
                             (attrs-visible-state))]
     (fn [references]
-      [:div
-       [erd-config references config-state]
-       [erd* references config-state]])))
+      (when (seq references)
+        [:div
+         [erd-config references config-state]
+         [erd* references config-state]]))))
 
 (def ^:private ref-q
   '[:find ?source ?dest ?source-attr
