@@ -34,7 +34,7 @@
 (def ^:private html
   dom/render-to-static-markup)
 
-(defn- dot-node [[coll attrs]]
+(defn- dot-node [[coll attrs] attrs-visible?]
   (let [id         (coll-id coll)
         coll-color (colors (case (:db.schema.collection/type coll)
                              :enum      :green-600
@@ -53,25 +53,26 @@
                                :href    (util/coll-href coll)
                                :title   coll-name}
                           [:font {:color coll-color} coll-name]]])
-                  (for [{:keys [db/ident] :as attr} attrs]
-                    ^{:key ident}
-                    [:tr [:td {:align   "LEFT"
-                               :color   (colors :gray-300)
-                               :bgcolor "white"
-                               :sides   "br"
-                               :port    (attr-id attr)
-                               :href    (util/attr-href attr)
-                               :title   (pr-str ident)}
-                          [:font {:color coll-color} ":" (namespace ident)]
-                          "/"
-                          [:font {:color (colors :blue-500)} (name ident)]]])])}]))
+                  (when attrs-visible?
+                    (for [{:keys [db/ident] :as attr} attrs]
+                      ^{:key ident}
+                      [:tr [:td {:align   "LEFT"
+                                 :color   (colors :gray-300)
+                                 :bgcolor "white"
+                                 :sides   "br"
+                                 :port    (attr-id attr)
+                                 :href    (util/attr-href attr)
+                                 :title   (pr-str ident)}
+                            [:font {:color coll-color} ":" (namespace ident)]
+                            "/"
+                            [:font {:color (colors :blue-500)} (name ident)]]]))])}]))
 
-(defn- dot-edge [[source target attr]]
+(defn- dot-edge [[source target attr] attrs-visible?]
   (let [source-id   (coll-id source)
         source-port (attr-id attr)
         target-id   (coll-id target)
         self-ref?   (= source-id target-id)]
-    [(str source-id ":" source-port (when self-ref? ":e"))
+    [(str source-id (when attrs-visible? (str ":" source-port)) (when self-ref? ":e"))
      (str target-id (when self-ref? ":ne"))
      {:arrowhead (if (= (:db/cardinality attr) :db.cardinality/one)
                    "inv"
@@ -96,6 +97,11 @@
   (if (contains? s item)
     (disj s item)
     (conj s item)))
+
+(defn attrs-visible-state []
+  (let [!attrs-visible? (r/atom true)]
+    {:attrs-visible?       #(deref !attrs-visible?)
+     :attrs-visible-toggle #(swap! !attrs-visible? not)}))
 
 (defn dropdown-state []
   (let [!open? (r/atom false)]
@@ -133,9 +139,21 @@
 (defn prevent [e]
   (.preventDefault e))
 
+(defn toggle-handlers [on-change]
+  {:on-click    (fn [e]
+                  (stop e)
+                  (on-change))
+   :on-key-down (fn [e]
+                  (let [key (.-key e)]
+                    (when (not= "Tab" key)
+                      (prevent e))
+                    (when (= " " key)
+                      (on-change))))})
+
 (defn erd-config [references
                   {:keys [excluded-eids excluded-eid-toggle]}
-                  {:keys [dropdown-open? dropdown-close dropdown-toggle]}]
+                  {:keys [dropdown-open? dropdown-close dropdown-toggle]}
+                  {:keys [attrs-visible? attrs-visible-toggle]}]
   [:div.relative.inline-block
    [:button.rounded-md.border.border-gray-300.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
     {:type     "button"
@@ -145,44 +163,43 @@
      [:<>
       [:div.fixed.inset-0.bg-gray-900.opacity-50
        {:on-click dropdown-close}]
-      (let [excluded-eid? (comp (excluded-eids) :db/id)
-            handlers      (fn [entity]
-                            {:on-click    (fn [e]
-                                            (stop e)
-                                            (excluded-eid-toggle entity))
-                             :on-key-down (fn [e]
-                                            (let [key (.-key e)]
-                                              (when (not= "Tab" key)
-                                                (prevent e))
-                                              (when (= " " key)
-                                                (excluded-eid-toggle entity))))})]
+      (let [excluded-eid?  (comp (excluded-eids) :db/id)
+            attrs-visible? (attrs-visible?)]
         [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
+         [:div.p-3
+          [:div.flex.items-center.cursor-pointer
+           (toggle-handlers attrs-visible-toggle)
+           [toggle-span attrs-visible?]
+           [:span.ml-2 "Show attributes?"]]]
          (for [[coll attrs] (colls-with-attrs references)]
            ^{:key (:db/id coll)}
            [:div.p-3.border-t.border-gray-300
             [:div.flex.items-center.cursor-pointer
-             (assoc (handlers coll)
-                    :class (when (seq attrs) :pb-1))
+             (assoc (toggle-handlers #(excluded-eid-toggle coll))
+                    :class (when (and attrs-visible? (seq attrs)) :pb-1))
              [toggle-span (not (excluded-eid? coll))]
              [:span.ml-2 [util/coll-name coll]]]
-            (for [attr attrs]
-              ^{:key (:db/id attr)}
-              [:div.flex.items-center.cursor-pointer.ml-4.py-1
-               (handlers attr)
-               [toggle-span (not (excluded-eid? attr))]
-               [:span.ml-2
-                [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]])])])])])
+            (when attrs-visible?
+              (for [attr attrs]
+                ^{:key (:db/id attr)}
+                [:div.flex.items-center.cursor-pointer.ml-4.py-1
+                 (toggle-handlers #(excluded-eid-toggle attr))
+                 [toggle-span (not (excluded-eid? attr))]
+                 [:span.ml-2
+                  [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]]))])])])])
 
 (defn erd [_]
-  (let [{:keys [excluded-eids] :as excluded-eid-state} (excluded-eid-state)
-        dropdown-state                                 (dropdown-state)]
+  (let [{:keys [excluded-eids] :as excluded-eid-state}   (excluded-eid-state)
+        dropdown-state                                   (dropdown-state)
+        {:keys [attrs-visible?] :as attrs-visible-state} (attrs-visible-state)]
     (fn [references]
       (let [excluded-eid?    (comp (excluded-eids) :db/id)
+            attrs-visible?   (attrs-visible?)
             shown-references (remove (fn [entities]
                                        (some excluded-eid? entities))
                                      references)]
         [:div
-         [erd-config references excluded-eid-state dropdown-state]
+         [erd-config references excluded-eid-state dropdown-state attrs-visible-state]
          [graphviz-svg
           (dot/dot (dot/digraph
                     (concat
@@ -193,9 +210,9 @@
                                        :arrowsize 0.75})]
                      (->> shown-references
                           colls-with-attrs
-                          (map dot-node))
+                          (map #(dot-node % attrs-visible?)))
                      (->> shown-references
-                          (map dot-edge)))))]]))))
+                          (map #(dot-edge % attrs-visible?))))))]]))))
 
 (def ^:private ref-q
   '[:find ?source ?dest ?source-attr

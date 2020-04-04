@@ -159,5 +159,6 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * erd config
 ** DONE toggle attr and collection
    CLOSED: [2020-04-03 Fri 15:57]
-** hide attrs
+** DONE hide attrs
+   CLOSED: [2020-04-04 Sat 00:33]
 ** show non-ref attrs?
