@@ -3,6 +3,9 @@
 
 (def nbsp "\u00A0")
 
+(def slash [:span.text-gray-500 "/"])
+(def asterisk [:span.text-blue-500 "*"])
+
 (def href rfe/href)
 
 (defn visit [route]
@@ -40,7 +43,7 @@
     (pr-str name)]))
 
 (defn coll-name* [coll]
-  [:span.whitespace-no-wrap [coll-name coll] "/" [:span.text-blue-500 "*"]])
+  [:span.whitespace-no-wrap [coll-name coll] slash asterisk])
 
 (defn ident-name
   ([ident]
@@ -50,7 +53,7 @@
    [:span.whitespace-no-wrap
     [coll-name coll-props {:db.schema.collection/name (keyword (namespace ident))
                            :db.schema.collection/type coll-type}]
-    "/"
+    slash
     [:span.text-blue-500 ident-props (name ident)]]))
 
 (defn spec-name [spec]
@@ -95,7 +98,7 @@
       [:span.whitespace-no-wrap
        [link {:href (coll-href coll)}
         [coll-name coll]]
-       "/"
+       slash
        [link {:href (attr-href attr)}
         [:span.text-blue-500 (name ident)]]
        [attr-deprecated-abbr attr]])

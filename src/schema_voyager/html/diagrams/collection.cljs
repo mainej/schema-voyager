@@ -12,7 +12,10 @@
   {:purple-700  "#6b46c1"
    :green-600   "#38a169"
    :blue-500    "#4299e1"
+   :white       "#ffffff"
+   :gray-100    "#f7fafc"
    :gray-300    "#e2e8f0"
+   :gray-500    "#a0aec0"
    :gray-600    "#718096"
    :transparent "transparent"})
 
@@ -47,9 +50,9 @@
                           :cellpadding 4}
                   (let [coll-name (pr-str (:db.schema.collection/name coll))]
                     [:tr [:td {:align   "TEXT"
-                               :color   (colors :gray-300)
-                               :bgcolor "white"
-                               :sides   "br"
+                               :color   (colors :gray-300) ;; border color
+                               :bgcolor (colors :white)
+                               :sides   "brl"
                                :href    (util/coll-href coll)
                                :title   coll-name}
                           [:font {:color coll-color} coll-name]]])
@@ -57,14 +60,14 @@
                     (for [{:keys [db/ident] :as attr} attrs]
                       ^{:key ident}
                       [:tr [:td {:align   "LEFT"
-                                 :color   (colors :gray-300)
-                                 :bgcolor "white"
-                                 :sides   "br"
+                                 :color   (colors :gray-300) ;; border color
+                                 :bgcolor (colors :gray-100)
+                                 :sides   "brl"
                                  :port    (attr-id attr)
                                  :href    (util/attr-href attr)
                                  :title   (pr-str ident)}
                             [:font {:color coll-color} ":" (namespace ident)]
-                            "/"
+                            [:font {:color (colors :gray-500)} "/"]
                             [:font {:color (colors :blue-500)} (name ident)]]]))])}]))
 
 (defn- dot-edge [[source target attr] attrs-visible?]
@@ -157,7 +160,7 @@
 (defn erd-collection-config [[coll attrs] {:keys [excluded-eids excluded-eid-toggle attrs-visible?]}]
   (let [attrs-visible? (attrs-visible?)
         excluded-eid?  (comp (excluded-eids) :db/id)]
-    [:div.p-3.border-t.border-gray-300
+    [:div.p-3.border-b.border-gray-300
      [:div.flex.items-center.cursor-pointer
       (assoc (toggle-handlers #(excluded-eid-toggle coll))
              :class (when (and attrs-visible? (seq attrs)) :pb-1))
@@ -185,15 +188,15 @@
       body])])
 
 (defn- config-attr-visibility [{:keys [attrs-visible? attrs-visible-toggle]}]
-  [:div.p-3
+  [:div.p-3.border-b.border-gray-500
    [:div.flex.items-center.cursor-pointer
     (toggle-handlers attrs-visible-toggle)
     [toggle-span (attrs-visible?)]
-    [:span.ml-2 "Show attributes?"]]])
+    [:span.ml-2 "Show attributes on aggregates?"]]])
 
 (defn config-enum-visibility [enums {:keys [excluded-eids exclude-eids include-eids]}]
   (let [some-enums-shown? (not-every? (comp (excluded-eids) :db/id) enums)]
-    [:div.p-3.border-t.border-gray-500
+    [:div.p-3.border-b.border-t.border-gray-500.-mt-px
      [:div.flex.items-center.cursor-pointer
       (toggle-handlers #(if some-enums-shown?
                           (exclude-eids enums)
@@ -230,7 +233,9 @@
      (dot/dot (dot/digraph
                (concat
                 [(dot/graph-attrs {:bgcolor (colors :transparent)})
-                 (dot/node-attrs {:shape "plaintext"})
+                 (dot/node-attrs {:shape    "plaintext"
+                                  :fontname "Helvetica"
+                                  :fontsize 12})
                  (dot/edge-attrs {:color     (colors :gray-600)
                                   :penwidth  0.5
                                   :arrowsize 0.75})]
