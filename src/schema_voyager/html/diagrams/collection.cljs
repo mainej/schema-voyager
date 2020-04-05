@@ -155,7 +155,7 @@
    [:path {:d "M15 12a3 3 0 11-6 0 3 3 0 016 0z"}]])
 
 (def ^:private download-icon
-  [:svg.inline-block.w-4.h-4.fill-none.stroke-current.stroke-2
+  [:svg.inline-block.w-4.h-4.fill-none.stroke-current.text-teal-500.group-hover:text-teal-400.stroke-2.transition-colors.ease-in-out.duration-200
    {:viewBox         "0 0 24 24"
     :stroke-linejoin "round"
     :stroke-linecap  "round"}
@@ -264,7 +264,7 @@
                  (p/let [svg (graphviz/graphviz.dot dot-s)]
                    (with-svg-url svg
                      #(download-url % "erd.svg"))))}
-    [:div.flex.items-center
+    [:div.flex.items-center.group
      [:span.mr-1 "Export SVG"]
      download-icon]]])
 
