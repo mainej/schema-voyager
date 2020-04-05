@@ -14,6 +14,7 @@
    :blue-500    "#4299e1"
    :white       "#ffffff"
    :gray-100    "#f7fafc"
+   :gray-200    "#edf2f7"
    :gray-300    "#e2e8f0"
    :gray-500    "#a0aec0"
    :gray-600    "#718096"
@@ -104,7 +105,7 @@
                                  references)]
     (dot/dot (dot/digraph
               (concat
-               [(dot/graph-attrs {:bgcolor (colors :transparent)})
+               [(dot/graph-attrs {:bgcolor (colors :gray-200)})
                 (dot/node-attrs {:shape    "plaintext"
                                  :fontname "Helvetica"
                                  :fontsize 12})
@@ -145,12 +146,21 @@
                       (swap! !excluded-eids set-toggle (:db/id entity)))}))
 
 (def ^:private configure-gear
-  [:svg.h-6.w-6.fill-none.stroke-current.stroke-2 {:viewBox "0 0 24 24"}
+  [:svg.h-6.w-6.fill-none.stroke-current.stroke-2
+   {:viewBox         "0 0 24 24"
+    :stroke-linejoin "round"
+    :stroke-linecap  "round"}
    [:title "Configure Diagram"]
-   [:g {:stroke-linejoin "round"
-        :stroke-linecap  "round"}
-    [:path {:d "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"}]
-    [:path {:d "M15 12a3 3 0 11-6 0 3 3 0 016 0z"}]]])
+   [:path {:d "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"}]
+   [:path {:d "M15 12a3 3 0 11-6 0 3 3 0 016 0z"}]])
+
+(def ^:private download-icon
+  [:svg.inline-block.w-4.h-4.fill-none.stroke-current.stroke-2
+   {:viewBox         "0 0 24 24"
+    :stroke-linejoin "round"
+    :stroke-linecap  "round"}
+   [:title "Download"]
+   [:path {:d "M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"}]])
 
 (defn- toggle-span [checked]
   [:span.relative.inline-block.leading-none.flex-shrink-0.h-4.w-6.border-2.border-transparent.rounded-full.transition-colors.ease-in-out.duration-200.focus:outline-none.focus:shadow-outline
@@ -226,7 +236,39 @@
       [toggle-span some-enums-shown?]
       [:span.ml-2 "Show enums?"]]]))
 
-(defn- erd-config [references config-state]
+(defn svg-to-url [svg]
+  (let [blob (js/Blob. #js [svg] #js {:type "image/svg+xml"})]
+    (js/URL.createObjectURL blob)))
+
+(defn release-url [url]
+  (js/URL.revokeObjectURL url))
+
+(defn with-svg-url [svg f]
+  (let [url (svg-to-url svg)]
+    (f url)
+    (release-url url)))
+
+(defn download-url [url doc-name]
+  (let [link (js/document.createElement "a")]
+    (.setAttribute link "href" url)
+    (.setAttribute link "download" doc-name)
+    (js/document.body.appendChild link)
+    (.click link)
+    (js/document.body.removeChild link)))
+
+(defn download [dot-s]
+  [:div.p-3.border-b.border-gray-500
+   [:button
+    {:type     "button"
+     :on-click (fn [_e]
+                 (p/let [svg (graphviz/graphviz.dot dot-s)]
+                   (with-svg-url svg
+                     #(download-url % "erd.svg"))))}
+    [:div.flex.items-center
+     [:span.mr-1 "Export SVG"]
+     download-icon]]])
+
+(defn- erd-config [references config-state dot-s]
   (let [{enums-and-attrs      :enum
          aggregates-and-attrs :aggregate}
         (->> references
@@ -234,6 +276,7 @@
              (group-by (comp :db.schema.collection/type first)))]
     [config-dropdown config-state
      [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
+      [download dot-s]
       [config-attr-visibility config-state]
       (for [[aggregate _attrs :as aggregate-and-attrs] aggregates-and-attrs]
         ^{:key (:db/id aggregate)}
@@ -251,9 +294,10 @@
                             (attrs-visible-state))]
     (fn [references]
       (when (seq references)
-        [:div
-         [erd-config references config-state]
-         [graphviz-svg (dot-graph references config-state)]]))))
+        (let [dot-s (dot-graph references config-state)]
+          [:div
+           [erd-config references config-state dot-s]
+           [graphviz-svg dot-s]])))))
 
 (def ^:private ref-q
   '[:find ?source ?dest ?source-attr
