@@ -108,4 +108,5 @@
         [:div.flex-1 [attribute-panel attribute]]
         [:div.ml-4.sm:ml-6 chevron-right]]])]
    [:div.mt-4
+    ^{:key (:db/id coll)}
     [diagrams.collection/erd (diagrams.collection/q-coll db/db coll)]]])

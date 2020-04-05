@@ -60,6 +60,7 @@
         [:dd (pr-str value)]])]))
 
 (defn diagram [attr]
+  ^{:key (:db/id attr)}
   [diagrams.collection/erd (diagrams.collection/q-attr db/db attr)])
 
 (defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]

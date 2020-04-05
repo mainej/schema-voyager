@@ -60,4 +60,5 @@
       "Entity specs are constraints that can be placed on an entity during a transaction. They require attributes, run predicate functions for validation, or both."
       [spec-list specs]])
    [:div.mt-10
+    ^{:key :collections}
     [diagrams.collection/erd (diagrams.collection/q-colls db/db)]]])
