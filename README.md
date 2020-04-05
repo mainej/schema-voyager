@@ -3,9 +3,9 @@
 Schema Voyager is a tool for exploring the schema of your [Datomic](https://www.datomic.com/) databases.
 It aims to facilitate conversation about, spur design of and ease documentation of your schema.
 
-Try exploring the [mbrainz schema](https://5e8a39a903b80b0006f2b2f1--focused-kepler-9497ed.netlify.com/) with Schema Voyager.
-
 After you [annotate](#annotate) your schema, Schema Voyager [ingests](#ingest) it, then provides several ways to [explore](#explore) and [export](#export) it.
+
+Try exploring the [mbrainz schema](https://5e8a39a903b80b0006f2b2f1--focused-kepler-9497ed.netlify.com/) with Schema Voyager.
 
 ## Annotate
 
@@ -257,6 +257,10 @@ You may share or commit this file elsewhere.
 
 From the DataScript file, you can [generate a standalone HTML file](#view-schema-html) from which to view the data.
 This file is free of dependencies, so it can be committed, emailed or otherwise shared anywhere.
+
+Within the HTML there are diagrams of collections and their relationships.
+These can be exported as SVG files.
+(Open the configuration menu in the upper left of any diagram.)
 
 ## Usage
 
