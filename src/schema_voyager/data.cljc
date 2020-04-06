@@ -54,7 +54,7 @@
 (defn- attribute-derive-collection-name [attribute]
   (keyword (namespace (:db/ident attribute))))
 
-(defn- attribute-derive-collection [attribute]
+(defn attribute-derive-collection [attribute]
   {:db.schema.collection/type (attribute-derive-collection-type attribute)
    :db.schema.collection/name (attribute-derive-collection-name attribute)})
 

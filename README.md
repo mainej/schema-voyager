@@ -339,6 +339,20 @@ If you intend to load data from a running Datomic database, use `schema-voyager.
         export/save-db)))
 ```
 
+You can ask Schema Voyager to infer `:db.schema/references` and `:db.schema/deprecated?` by inspecting how attributes are used.
+
+```clojure
+(data/join (ingest.db/ingest db)
+           (ingest.db/infer-references db)
+           (ingest.db/infer-deprecations db))
+```
+
+Note that `schema-voyager.ingest.db/infer-references` does not currently infer either homogeneous or heterogeneous tuple references.
+These tools may help kick start your supplemental schema, but they are imperfect.
+Often you will need domain knowledge to identify missing references or to add or remove deprecations.
+Also, as a warning, they have not been tested on large databases, and so may have performance implications.
+So, consider running them once, caching the results in a file, then maintaing it by hand.
+
 NOTE: If you require `schema-voyager.ingest.db`, you will need to have `datomic.client.api` on your classpath.
 This project provides an alias `:datomic` which will pull in a version of `com.datomic/client-cloud`.
 

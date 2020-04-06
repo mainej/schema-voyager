@@ -3,6 +3,15 @@
    CLOSED: [2020-03-09 Mon 16:44]
 ** DONE from db
    CLOSED: [2020-03-25 Wed 17:04]
+** DONE Infer references
+   CLOSED: [2020-04-06 Mon 14:56]
+** Infer references for tuples
+** DONE Infer deprecations
+   CLOSED: [2020-04-06 Mon 14:56]
+** from db with a command line tool
+The tool should be a 'quick view' of an unfamiliar database, one that hasn't yet been annotated with supplemental schema.
+The tool should parse command line args for the client config and db name.
+Then it should ingest the db, inferring references and deprecations.
 * process data into datascript db
 ** DONE basic schema
    CLOSED: [2020-03-09 Mon 14:17]
