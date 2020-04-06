@@ -57,7 +57,7 @@
 (def base-coll-exclusions
   "These are collections installed by Datomic itself, as of release 480-8770.
   Typically, you don't want to document them, so they are excluded by default.
-  You can control which collections are excluded, either more or less, by
+  You can control which collections are excluded, either more or fewer, by
   passing `coll-exclusions` to [[ingest]]."
   #{#:db.schema.collection{:type :aggregate, :name :db.alter}
     #:db.schema.collection{:type :aggregate, :name :db.attr}
