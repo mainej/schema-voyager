@@ -1,4 +1,4 @@
-(ns schema-voyager.ingest.db
+(ns schema-voyager.ingest.datomic
   "Tools for extracting schema information directly from a Datomic database.
 
   This can be useful if your schema files are hard to collate, or when you want
@@ -16,13 +16,13 @@
   The most basic usage of this namespace would look like:
 
   ```clojure
-  (let [db (ingest.db/datomic-db {:server-type :ion
-                                  :region      \"us-east-1\"
-                                  :system      \"my-system\"
-                                  :endpoint    \"http://entry.my-system.us-east-1.datomic.net:8182/\"
-                                  :proxy-port  8182}
-                                 \"my-system-db\")]
-    (-> (ingest.db/ingest db)
+  (let [db (ingest.datomic/datomic-db {:server-type :ion
+                                       :region      \"us-east-1\"
+                                       :system      \"my-system\"
+                                       :endpoint    \"http://entry.my-system.us-east-1.datomic.net:8182/\"
+                                       :proxy-port  8182}
+                                      \"my-system-db\")]
+    (-> (ingest.datomic/ingest db)
         data/process
         ingest/into-db
         export/save-db))
@@ -32,7 +32,7 @@
   want to join the DB data with data from another source:
 
   ```clojure
-  (-> (data/join (ingest.db/ingest db)
+  (-> (data/join (ingest.datomic/ingest db)
                  supplemental-data)
       data/process
       ingest/into-db

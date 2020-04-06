@@ -285,7 +285,7 @@ This file will be a scratchpad for loading your schema.
 This file should follow these steps:
 
 1. Ingest from all sources
-    1. Use `schema-voyager.ingest.db/ingest` to ingest from a Datomic DB.
+    1. Use `schema-voyager.ingest.datomic/ingest` to ingest from a Datomic DB.
     1. Use `schema-voyager.ingest.files/ingest` to ingest from a file.
     1. Use static txn data.
 1. Join multiple sources with `schema-voyager.data/join` or `schema-voyager.data/join-all`.
@@ -317,23 +317,23 @@ By giving the namespace a `-main` function, you will be able to reload the schem
 clj -A:ingest -m ingest.projects.my-project
 ```
 
-If you intend to load data from a running Datomic database, use `schema-voyager.ingest.db/ingest`.
+If you intend to load data from a running Datomic database, use `schema-voyager.ingest.datomic/ingest`.
 
 ```clojure
 (ns ingest.projects.my-project
   (:require [schema-voyager.export :as export]
             [schema-voyager.data :as data]
-            [schema-voyager.ingest.db :as ingest.db]
+            [schema-voyager.ingest.datomic :as ingest.datomic]
             [schema-voyager.ingest.core :as ingest]))
 
 (defn -main []
-  (let [db (ingest.db/datomic-db {:server-type :ion
-                                  :region      "us-east-1"
-                                  :system      "my-system"
-                                  :endpoint    "http://entry.my-system.us-east-1.datomic.net:8182/"
-                                  :proxy-port  8182}
-                                 "my-system-db")]
-    (-> (ingest.db/ingest db)
+  (let [db (ingest.datomic/datomic-db {:server-type :ion
+                                       :region      "us-east-1"
+                                       :system      "my-system"
+                                       :endpoint    "http://entry.my-system.us-east-1.datomic.net:8182/"
+                                       :proxy-port  8182}
+                                      "my-system-db")]
+    (-> (ingest.datomic/ingest db)
         data/process
         ingest/into-db
         export/save-db)))
@@ -342,18 +342,18 @@ If you intend to load data from a running Datomic database, use `schema-voyager.
 You can ask Schema Voyager to infer `:db.schema/references` and `:db.schema/deprecated?` by inspecting how attributes are used.
 
 ```clojure
-(data/join (ingest.db/ingest db)
-           (ingest.db/infer-references db)
-           (ingest.db/infer-deprecations db))
+(data/join (ingest.datomic/ingest db)
+           (ingest.datomic/infer-references db)
+           (ingest.datomic/infer-deprecations db))
 ```
 
-Note that `schema-voyager.ingest.db/infer-references` does not currently infer either homogeneous or heterogeneous tuple references.
+Note that `schema-voyager.ingest.datomic/infer-references` does not currently infer either homogeneous or heterogeneous tuple references.
 These tools may help kick start your supplemental schema, but they are imperfect.
 Often you will need domain knowledge to identify missing references or to add or remove deprecations.
 Also, as a warning, they have not been tested on large databases, and so may have performance implications.
 So, consider running them once, caching the results in a file, then maintaing it by hand.
 
-NOTE: If you require `schema-voyager.ingest.db`, you will need to have `datomic.client.api` on your classpath.
+NOTE: If you require `schema-voyager.ingest.datomic`, you will need to have `datomic.client.api` on your classpath.
 This project provides an alias `:datomic` which will pull in a version of `com.datomic/client-cloud`.
 
 ```sh
@@ -366,7 +366,7 @@ If the provided version of `datomic.client.api` isn't right for your project, co
 Join data from several sources with `schema-voyager.data/join`:
 
 ```clojure
-    (-> (data/join (ingest.db/ingest db)
+    (-> (data/join (ingest.datomic/ingest db)
                    supplemental-data)
         data/process
         ingest/into-db
