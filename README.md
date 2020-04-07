@@ -347,8 +347,7 @@ You can ask Schema Voyager to infer `:db.schema/references` and `:db.schema/depr
            (ingest.datomic/infer-deprecations db))
 ```
 
-Note that `schema-voyager.ingest.datomic/infer-references` does not currently infer either homogeneous or heterogeneous tuple references.
-These tools may help kick start your supplemental schema, but they are imperfect.
+These inference tools may help kick start your supplemental schema, but they are imperfect.
 Often you will need domain knowledge to identify missing references or to add or remove deprecations.
 Also, as a warning, they have not been tested on large databases, and so may have performance implications.
 So, consider running them once, caching the results in a file, then maintaing it by hand.

@@ -5,7 +5,8 @@
    CLOSED: [2020-03-25 Wed 17:04]
 ** DONE Infer references
    CLOSED: [2020-04-06 Mon 14:56]
-** Infer references for tuples
+** DONE Infer references for tuples
+   CLOSED: [2020-04-07 Tue 15:45]
 ** DONE Infer deprecations
    CLOSED: [2020-04-06 Mon 14:56]
 ** from db with a command line tool

@@ -128,15 +128,12 @@
        (map (fn [[refers-attr referred-colls]]
               (assoc refers-attr :db.schema/references referred-colls)))))
 
-(defn infer-references
-  "Infer references between attributes by inspecting the things to which they
-  refer.
+(defn infer-plain-references
+  "Infer references between `:db.type/ref` attributes by inspecting the things
+  to which they refer.
 
-  Ignores attributes that are not in-use. Does not (currently) infer
-  either homogeneous or heterogeneous tuple references.
-
-  Ignores attributes that are excluded per the `exclusions`. See
-  [[excluded-attr?]].
+  Ignores attributes that are not in-use and attributes that are excluded per
+  the `exclusions`. See [[excluded-attr?]].
 
   WARNING: This has not been tested on large databases, where it may have
   performance impacts. Use at your own risk.
@@ -144,7 +141,7 @@
   This may help kick start your supplemental schema, but consider running it
   once, caching the results in a file, then maintaing it by hand."
 
-  ([db] (infer-references db {}))
+  ([db] (infer-plain-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?refers-attr [:db/ident :db/valueType]) (pull ?referred-attr [:db/ident :db/valueType])
                :in $ %
@@ -159,7 +156,8 @@
   "Infer references from homogeneous tuple attributes by inspecting the things
   to which they refer.
 
-  Ignores attributes that are not in-use.
+  Ignores attributes that are not in-use and attributes that are excluded per
+  the `exclusions`. See [[excluded-attr?]].
 
   NOTE: Makes a (large) assumption. Each item in the tuple could refer to
   different types of entities. This function assumes that the first item in the
@@ -167,9 +165,6 @@
   collection-a never appears in the first item of the tuple, this will fail to
   infer that collection-a is a reference. Of course, if your data is structured
   that way, perhaps you would be better suited by a heterogeneous tuple.
-
-  Ignores attributes that are excluded per the `exclusions`. See
-  [[excluded-attr?]].
 
   This may help kick start your supplemental schema, but consider running it
   once, caching the results in a file, then maintaing it by hand."
@@ -188,10 +183,8 @@
   "Infer references from heterogeneous tuple attributes by inspecting the things
   to which they refer.
 
-  Ignores attributes that are not in-use.
-
-  Ignores attributes that are excluded per the `exclusions`. See
-  [[excluded-attr?]].
+  Ignores attributes that are not in-use and attributes that are excluded per
+  the `exclusions`. See [[excluded-attr?]].
 
   WARNING: This has not been tested on large databases, where it may have
   performance impacts. This is even more true than [[infer-references]] because
@@ -240,6 +233,25 @@
                                            seq)]
                   {:db/ident                   (:db/ident refers-attr)
                    :db.schema/tuple-references tuple-refs}))))))
+
+(defn infer-references
+  "Infer references between ref and tuple attributes by inspecting the things
+  to which they refer.
+
+  Ignores attributes that are not in-use and attributes that are excluded per
+  the `exclusions`. See [[excluded-attr?]].
+
+  Be sure to see WARNINGS on [[infer-plain-references]],
+  [[infer-homogeneous-tuple-references]] and
+  [[infer-heterogeneous-tuple-references]].
+
+  This may help kick start your supplemental schema, but consider running it
+  once, caching the results in a file, then maintaing it by hand."
+  ([db] (infer-references db {}))
+  ([db exclusions]
+   (data/join (infer-plain-references db {})
+              (infer-homogeneous-tuple-references db {})
+              (infer-heterogeneous-tuple-references db {}))))
 
 (defn infer-deprecations
   "Infer deprecated attributes and constants, based on whether they are used.
