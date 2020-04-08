@@ -149,10 +149,10 @@ You may have to use tempids to create see-also references between attributes.
 
 
 > ```clojure
-> #:db{:id    "attr--track-artists"
->      :ident :track/artists}
-> #:db.schema{:db/ident    :track/artistCredit
->             :see-also    ["attr--track-artists"]}
+> {:db/id    "attr--track-artists"
+>  :db/ident :track/artists}
+> {:db/ident           :track/artistCredit
+>  :db.schema/see-also ["attr--track-artists"]}
 > ```
 
 #### :db.schema/references
@@ -297,12 +297,15 @@ These can be exported as SVG files.
 
 ## Quick Start
 
-There are two tools to help you quickly [ingest your schema](#ingest).
+There are two tools to help you quickly view your schema.
 
 If you have a running Datomic database:
 
 ```sh
-clj -A:ingest:datomic -m ingest.datomic <db-name> <datomic-client-config-edn>
+clj -A:ingest:datomic -m ingest.datomic my-db-name  \
+  '{:server-type :ion, :region "us-east-1", :system "my-system", :endpoint "http://entry.my-system.us-east-1.datomic.net:8182/", :proxy-port 8182}'
+yarn --prod run standalone
+open target/standalone.html
 ```
 
 > **WARNING** `ingest.datomic` tries to infer details about attributes by inspecting the data in your database.
@@ -314,11 +317,10 @@ Or, preferably, avoid inference using the [tools described below](#load-schema).
 If instead your schema is in one or more files:
 
 ```sh
-clj -A:ingest -m ingest.files <file>+
+clj -A:ingest -m ingest.files resources/db/schema-1.edn resources/db/schema-2.edn
+yarn --prod run standalone
+open target/standalone.html
 ```
-
-After ingesting schema, you will want to view it in a web page.
-Read on for [details](#view-schema-html).
 
 ## Usage
 
