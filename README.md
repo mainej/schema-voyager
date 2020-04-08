@@ -302,17 +302,22 @@ There are two tools to help you quickly view your schema.
 If you have a running Datomic database:
 
 ```sh
-clj -A:ingest:datomic -m ingest.datomic my-db-name  \
+clj -A:ingest:datomic -m ingest.datomic my-db-name \
   '{:server-type :ion, :region "us-east-1", :system "my-system", :endpoint "http://entry.my-system.us-east-1.datomic.net:8182/", :proxy-port 8182}'
 yarn --prod run standalone
 open target/standalone.html
 ```
 
-> **WARNING** `ingest.datomic` tries to infer details about attributes by inspecting the data in your database.
-This can be a slow and expensive process.
+Alternatively, you can ask Schema Voyager to infer `:db.schema/references`, `:db.schema/tuple-references`, and `:db.schema/deprecated?` by inspecting how attributes are used in Datomic.
+```
+clj -A:ingest:datomic -m ingest.datomic my-db-name \
+  '{:server-type :ion, :region "us-east-1", :system "my-system", :endpoint "http://entry.my-system.us-east-1.datomic.net:8182/", :proxy-port 8182} \
+  --infer references --infer deprecations'
+```
+> **WARNING** Inference can be a slow and expensive process.
 It may run several long queries.
 Avoid running it on a query group that is serving critical traffic.
-Or, preferably, avoid inference using the [tools described below](#load-schema).
+Or, preferably, annotate schema while avoiding inference using the [tools described below](#load-schema).
 
 If instead your schema is in one or more files:
 
