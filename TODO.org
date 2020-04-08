@@ -9,7 +9,8 @@
    CLOSED: [2020-04-07 Tue 15:45]
 ** DONE Infer deprecations
    CLOSED: [2020-04-06 Mon 14:56]
-** from db with a command line tool
+** DONE from db with a command line tool
+   CLOSED: [2020-04-07 Tue 16:00]
 The tool should be a 'quick view' of an unfamiliar database, one that hasn't yet been annotated with supplemental schema.
 The tool should parse command line args for the client config and db name.
 Then it should ingest the db, inferring references and deprecations.

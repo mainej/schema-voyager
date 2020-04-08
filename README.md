@@ -6,10 +6,43 @@ It aims to facilitate conversation about, spur design of and ease documentation 
 After you [annotate](#annotate) your schema, Schema Voyager [ingests](#ingest) it, then provides several ways to [explore](#explore) and [export](#export) it.
 
 Try exploring the [mbrainz schema](https://5e8a39a903b80b0006f2b2f1--focused-kepler-9497ed.netlify.com/) with Schema Voyager.
+Or get a [quick preview](#quick-start) of how Schema Voyager will interpret of your schema.
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Annotate](#annotate)
+  - [Terminology](#terminology)
+    - [idents](#idents)
+    - [collections](#collections)
+  - [Supplemental Schema](#supplemental-schema)
+    - [:db.schema/part-of](#dbschemapart-of)
+    - [:db.schema/deprecated?](#dbschemadeprecated)
+    - [:db.schema/see-also](#dbschemasee-also)
+    - [:db.schema/references](#dbschemareferences)
+    - [:db.schema/tuple-references](#dbschematuple-references)
+    - [:db.schema.tuple/position](#dbschematupleposition)
+    - [:db.schema.collection/type and :db.schema.collection/name](#dbschemacollectiontype-and-dbschemacollectionname)
+- [Ingest](#ingest)
+- [Explore](#explore)
+- [Export](#export)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+  - [Load schema](#load-schema)
+  - [View schema HTML](#view-schema-html)
+  - [Hosting HTML](#hosting-html)
+- [Alternatives](#alternatives)
+- [Acknowlegements](#acknowlegements)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Annotate
 
-Datomic recommends that you [annotate schema](https://docs.datomic.com/cloud/best.html#annotate-schema) with information that Datomic doesn't need to run, but which helps explain the history and structure of the database.
+The core data for Schema Voyager are the [attributes](https://docs.datomic.com/cloud/schema/defining-schema.html) that have been (or will be) transacted into a Datomic database.
+
+However, Datomic recommends that you [annotate schema](https://docs.datomic.com/cloud/best.html#annotate-schema) with information that Datomic doesn't need to run, but which helps explain the history and structure of the database.
+
 Without any annotation, Schema Voyager will show the name, type, cardinality, uniqueness constraints and other properties of attributes included in any Datomic schema.
 But with annotation, it can show much more—which attributes have been deprecated, how attributes are grouped and how attributes and tuples reference each other.
 
@@ -84,12 +117,12 @@ Others are used on many different aggregates.
 So, if you need to, you can override the default collection:
 
 ```clojure
-    ;; :timestamp/updated-at appears on both posts and comments
-    {:db/ident          :timestamp/updated-at
-     :db.schema/part-of [{:db.schema.collection/type :aggregate
-                          :db.schema.collection/name :post}
-                         {:db.schema.collection/type :aggregate
-                          :db.schema.collection/name :comment}]}
+;; :timestamp/updated-at appears on both posts and comments
+{:db/ident          :timestamp/updated-at
+ :db.schema/part-of [{:db.schema.collection/type :aggregate
+                      :db.schema.collection/name :post}
+                     {:db.schema.collection/type :aggregate
+                      :db.schema.collection/name :comment}]}
 ```
 
 #### :db.schema/deprecated?
@@ -107,20 +140,20 @@ It may help to understand an attribute by learning about one or more other attri
 
 
 ```clojure
-    {:db/ident           :track/artistCredit
-     :db.schema/see-also [:track/artist]}
+{:db/ident           :track/artistCredit
+ :db.schema/see-also [:track/artist]}
 ```
 
-NOTE: you can refer to collections without predefining them, but the same is not true of attribute references.
+> **NOTE**: you can refer to collections without predefining them, but the same is not true of attribute references.
 You may have to use tempids to create see-also references between attributes.
 
 
-```clojure
-    #:db{:id    "attr--track-artists"
-         :ident :track/artists}
-    #:db.schema{:db/ident    :track/artistCredit
-                :see-also    ["attr--track-artists"]}
-```
+> ```clojure
+> #:db{:id    "attr--track-artists"
+>      :ident :track/artists}
+> #:db.schema{:db/ident    :track/artistCredit
+>             :see-also    ["attr--track-artists"]}
+> ```
 
 #### :db.schema/references
 
@@ -129,19 +162,19 @@ Adding references is one of the best ways to enrich your schema, and will enable
 To specify that `:address/country` refers to an entity with `:country/name` and `:country/alpha-3`, supplement your schema thus:
 
 ```clojure
-    {:db/ident             :address/country
-     :db.schema/references [{:db.schema.collection/type :aggregate
-                             :db.schema.collection/name :country}]}
+{:db/ident             :address/country
+ :db.schema/references [{:db.schema.collection/type :aggregate
+                         :db.schema.collection/name :country}]}
 ```
 
 To indicate that `:address/region` might refer to either a U.S. state like `:region.usa/new-york` or Canadian province like `:region.can/quebec`.
 
 ```clojure
-    {:db/ident             :address/region
-     :db.schema/references [{:db.schema.collection/type :enum
-                             :db.schema.collection/name :region.usa}
-                            {:db.schema.collection/type :enum
-                             :db.schema.collection/name :region.can}]}
+{:db/ident             :address/region
+ :db.schema/references [{:db.schema.collection/type :enum
+                         :db.schema.collection/name :region.usa}
+                        {:db.schema.collection/type :enum
+                         :db.schema.collection/name :region.can}]}
 ```
 
 #### :db.schema/tuple-references
@@ -150,27 +183,27 @@ To indicate that `:address/region` might refer to either a U.S. state like `:reg
 To annotate the collections to which those refs refer, use `:db.schema/tuple-references`:
 
 ```clojure
-    {:db/ident                   :post/ranked-comments
-     :db/valueType               :db.type/tuple
-     :db/tupleTypes              [:db.type/long :db.type/ref]
-     :db/cardinality             :db.cardinality/many
-     :db/doc                     "Pairs where the first element is a rank for a comment and the second element is a link to the comment itself. Used to sort the comments within a post."
-     :db.schema/tuple-references [{:db.schema.tuple/position 1
-                                   :db.schema/references     [{:db.schema.collection/type :aggregate
-                                                               :db.schema.collection/name :comment}]}]}
+{:db/ident                   :post/ranked-comments
+ :db/valueType               :db.type/tuple
+ :db/tupleTypes              [:db.type/long :db.type/ref]
+ :db/cardinality             :db.cardinality/many
+ :db/doc                     "Pairs where the first element is a rank for a comment and the second element is a link to the comment itself. Used to sort the comments within a post."
+ :db.schema/tuple-references [{:db.schema.tuple/position 1
+                               :db.schema/references     [{:db.schema.collection/type :aggregate
+                                                           :db.schema.collection/name :comment}]}]}
 ```
 
-**NOTE**: Use `:db.schema/references` to define the references of a [homogeneous tuple](https://docs.datomic.com/cloud/schema/schema-reference.html#homogeneous-tuples):
+> **NOTE**: Use `:db.schema/references` to define the references of a [homogeneous tuple](https://docs.datomic.com/cloud/schema/schema-reference.html#homogeneous-tuples):
 
-```clojure
-    {:db/ident             :label/top-artists
-     :db/valueType         :db.type/tuple
-     :db/tupleType         :db.type/ref
-     :db/cardinality       :db.cardinality/one
-     :db/doc               "References to the top selling 0-5 artists signed to this label."
-     :db.schema/references [{:db.schema.collection/type :aggregate
-                             :db.schema.collection/name :artist}]}
-```
+> ```clojure
+> {:db/ident             :label/top-artists
+>  :db/valueType         :db.type/tuple
+>  :db/tupleType         :db.type/ref
+>  :db/cardinality       :db.cardinality/one
+>  :db/doc               "References to the top selling 0-5 artists signed to this label."
+>  :db.schema/references [{:db.schema.collection/type :aggregate
+>                          :db.schema.collection/name :artist}]}
+> ```
 
 #### :db.schema.tuple/position
 
@@ -189,23 +222,23 @@ Both are keywords.
 An example is:
 
 ```clojure
-    {:db.schema.collection/type :aggregate
-     :db.schema.collection/name :artist}
+{:db.schema.collection/type :aggregate
+ :db.schema.collection/name :artist}
 ```
 
-**NOTE**: Since it is common to reference collections in supplemental schema, Schema Voyager provides an EDN reader, most commonly accessed via `schema-voyager.ingest.files/ingest`.
+> **NOTE**: Since it is common to reference collections in supplemental schema, Schema Voyager provides an EDN reader, most commonly accessed via `schema-voyager.ingest.files/ingest`.
 In an EDN file, the above could be re-written:
 
-```clojure
-    #schema-coll[:aggregate :artist]
-```
+> ```clojure
+> #schema-coll[:aggregate :artist]
+> ```
 
 You can also add `:db/doc` strings to collections:
 
 ```clojure
-    {:db.schema.collection/type :aggregate
-     :db.schema.collection/name :artist
-     :db/doc                    "A person or group who contributed to a release or track."}
+{:db.schema.collection/type :aggregate
+ :db.schema.collection/name :artist
+ :db/doc                    "A person or group who contributed to a release or track."}
 ```
 
 ## Ingest
@@ -261,6 +294,31 @@ This file is free of dependencies, so it can be committed, emailed or otherwise 
 Within the HTML there are diagrams of collections and their relationships.
 These can be exported as SVG files.
 (Open the configuration menu in the upper left of any diagram.)
+
+## Quick Start
+
+There are two tools to help you quickly [ingest your schema](#ingest).
+
+If you have a running Datomic database:
+
+```sh
+clj -A:ingest:datomic -m ingest.datomic <db-name> <datomic-client-config-edn>
+```
+
+> **WARNING** `ingest.datomic` tries to infer details about attributes by inspecting the data in your database.
+This can be a slow and expensive process.
+It may run several long queries.
+Avoid running it on a query group that is serving critical traffic.
+Or, preferably, avoid inference using the [tools described below](#load-schema).
+
+If instead your schema is in one or more files:
+
+```sh
+clj -A:ingest -m ingest.files <file>+
+```
+
+After ingesting schema, you will want to view it in a web page.
+Read on for [details](#view-schema-html).
 
 ## Usage
 
@@ -339,7 +397,17 @@ If you intend to load data from a running Datomic database, use `schema-voyager.
         export/save-db)))
 ```
 
-You can ask Schema Voyager to infer `:db.schema/references` and `:db.schema/deprecated?` by inspecting how attributes are used.
+Join data from several sources with `schema-voyager.data/join`:
+
+```clojure
+(-> (data/join (ingest.datomic/ingest db)
+               supplemental-data)
+    data/process
+    ingest/into-db
+    export/save-db)
+```
+
+You can ask Schema Voyager to infer `:db.schema/references`, `:db.schema/tuple-references`, and `:db.schema/deprecated?` by inspecting how attributes are used.
 
 ```clojure
 (data/join (ingest.datomic/ingest db)
@@ -352,25 +420,15 @@ Often you will need domain knowledge to identify missing references or to add or
 Also, as a warning, they have not been tested on large databases, and so may have performance implications.
 So, consider running them once, caching the results in a file, then maintaing it by hand.
 
-NOTE: If you require `schema-voyager.ingest.datomic`, you will need to have `datomic.client.api` on your classpath.
+> **NOTE**: If you require `schema-voyager.ingest.datomic`, you will need to have `datomic.client.api` on your classpath.
 This project provides an alias `:datomic` which will pull in a version of `com.datomic/client-cloud`.
 
-```sh
-clj -A:ingest:datomic -m ingest.projects.my-project
-```
+> ```sh
+> clj -A:ingest:datomic -m ingest.projects.my-project
+> ```
 
-If the provided version of `datomic.client.api` isn't right for your project, consider using `-Sdeps` to get the appropriate version.
+> If the provided version of `datomic.client.api` isn't right for your project, consider using `-Sdeps` to get the appropriate version.
 
-
-Join data from several sources with `schema-voyager.data/join`:
-
-```clojure
-    (-> (data/join (ingest.datomic/ingest db)
-                   supplemental-data)
-        data/process
-        ingest/into-db
-        export/save-db)
-```
 
 ### View schema HTML
 
@@ -414,8 +472,8 @@ After everything is loaded, open [http://localhost:8080](http://localhost:8080).
 ### Hosting HTML
 
 The HTML, CSS and compiled JS can be hosted on Netlify or a server of your choice.
-The compiled JS is completely static.
-It contains a copy of the DataScript DB (via `shadow.resource/inline`), so it does not need to fetch that data from anywhere.
+The compiled JS does not need to talk to a server.
+It contains a copy of the DataScript DB (via `shadow.resource/inline`).
 
 You have the option of hosting the standalone HTML file generated above, or an HTML file that references JS and CSS on the same server.
 For the second option:
@@ -438,7 +496,7 @@ Whether using the single-file standalone HTML, or the multi-file option above, f
 ## Acknowlegements
 
 * [DataScript](https://github.com/tonsky/datascript) makes it much easier to design and import deeply interconnected data without worrying about how those connections might later be explored.
-  It is very useful to use export an entire database from Clojure, then read and manipulate it from ClojureScript.
+  It is very useful to export an entire database from Clojure, then read and manipulate it from ClojureScript.
   Also, it feels right to use Datalog to navigate Datomic data.
 * Though the HTML app isn't very dynamic, it was nice, as always, to build it with [reagent](https://reagent-project.github.io/) and [reitit](https://metosin.github.io/reitit/).
 * [Tailwind CSS](https://tailwindcss.com/) makes writing CSS _fun_.
