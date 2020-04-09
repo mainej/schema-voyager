@@ -17,11 +17,11 @@
         "compile-js": "shadow-cljs release app",
         "standalone": "clj -A:export -m build.standalone"
     },
-    "devDependencies": {
-    },
+    "devDependencies": {},
     "dependencies": {
         "@fullhuman/postcss-purgecss": "^2.0.6",
         "create-react-class": "^15.6.3",
+        "file-saver": "^2.0.2",
         "postcss-cli": "^7.1.0",
         "postcss-import": "^12.0.1",
         "postcss-preset-env": "^6.7.0",

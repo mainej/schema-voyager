@@ -5,6 +5,7 @@
             [reagent.core :as r]
             [reagent.dom.server :as dom]
             [clojure.walk :as walk]
+            ["file-saver" :as file-saver]
             [datascript.core :as d]
             [schema-voyager.html.util :as util]))
 
@@ -236,34 +237,16 @@
       [toggle-span some-enums-shown?]
       [:span.ml-2 "Show enums?"]]]))
 
-(defn svg-to-url [svg]
-  (let [blob (js/Blob. #js [svg] #js {:type "image/svg+xml"})]
-    (js/URL.createObjectURL blob)))
+(defn- svg-to-blob [svg]
+  (js/Blob. #js [svg] #js {:type "image/svg+xml"}))
 
-(defn release-url [url]
-  (js/URL.revokeObjectURL url))
-
-(defn with-svg-url [svg f]
-  (let [url (svg-to-url svg)]
-    (f url)
-    (release-url url)))
-
-(defn download-url [url doc-name]
-  (let [link (js/document.createElement "a")]
-    (.setAttribute link "href" url)
-    (.setAttribute link "download" doc-name)
-    (js/document.body.appendChild link)
-    (.click link)
-    (js/document.body.removeChild link)))
-
-(defn download [dot-s]
+(defn- download [dot-s]
   [:div.p-3.border-b.border-gray-500
    [:button
     {:type     "button"
      :on-click (fn [_e]
                  (p/let [svg (graphviz/graphviz.dot dot-s)]
-                   (with-svg-url svg
-                     #(download-url % "erd.svg"))))}
+                   (file-saver/saveAs (svg-to-blob svg) "erd.svg")))}
     [:div.flex.items-center.group
      [:span.mr-1 "Export SVG"]
      download-icon]]])
