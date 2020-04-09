@@ -27,11 +27,6 @@ Or see the [quick start guide](#quick-start) to preview _your_ schema in Schema 
   - [Explore](#explore)
     - [Explore Standalone Web Page](#explore-standalone-web-page)
     - [Explore Live Web Page](#explore-live-web-page)
-  - [Export](#export)
-    - [Export DataScript](#export-datascript)
-    - [Export Standalone Web Page](#export-standalone-web-page)
-    - [Export ERD Diagrams](#export-erd-diagrams)
-    - [Host Web App](#host-web-app)
 - [Annotate](#annotate)
   - [Terminology](#terminology)
     - [idents](#idents)
@@ -43,6 +38,11 @@ Or see the [quick start guide](#quick-start) to preview _your_ schema in Schema 
     - [:db.schema/part-of](#dbschemapart-of)
     - [:db.schema/see-also](#dbschemasee-also)
     - [:db.schema.collection](#dbschemacollection)
+- [Export](#export)
+  - [Export DataScript](#export-datascript)
+  - [Export Standalone Web Page](#export-standalone-web-page)
+  - [Export ERD Diagrams](#export-erd-diagrams)
+  - [Host Web App](#host-web-app)
 - [Alternatives](#alternatives)
 - [Acknowlegements](#acknowlegements)
 - [License](#license)
@@ -112,8 +112,9 @@ You should find details about all the attributes in your schema.
 If you asked Schema Voyager to `--infer references`, you can also navigate between and see diagrams of the references within your database.
 
 Where do you go from here?
-The [usage](#usage) section explains other ways to ingest, explore and export data.
-And the [annotation](#annotate) section explains how you can enrich Schema Voyager with references and many other details about your schema.
+The [usage](#usage) section explains other ways to ingest and explore.
+The [annotation](#annotate) section explains how you can enrich Schema Voyager with references and many other details about your schema.
+And the [export](#export) section explains how you can save and share your schema.
 
 ## Usage
 
@@ -362,44 +363,6 @@ Trigger a run of the [ingestion script](#ingestion-scripts), presumably from a R
 After everything is loaded, open [http://localhost:8080](http://localhost:8080).
 When the ingestion script is re-run, changes will be reflected on the page after a short delay.
 
-### Export
-
-If you want to share your schema data, you'll need to export it.
-
-#### Export DataScript
-
-[Ingestion scripts](#ingestion-scripts) save the full DataScript DB in EDN format to `resources/schema_voyager_db.edn`.
-You may share or commit this file elsewhere.
-
-#### Export Standalone Web Page
-
-After saving the DataScript file, you can [generate a standalone HTML document](#explore-standalone-web-page), a web app to explore the data.
-This file, which is named `target/standalone.html`, embeds the data from `resources/schema_voyager_db.edn` (via `shadow.resource/inline`).
-Since it doesn't need to communicate with a server, it can be committed, emailed or otherwise shared anywhere.
-
-#### Export ERD Diagrams
-
-Within the HTML there are diagrams of collections and their relationships.
-These can be exported as SVG files.
-Open the configuration menu in the upper left of any diagram.
-
-#### Host Web App
-
-The HTML, CSS and compiled JS can be hosted on Netlify or a server of your choice.
-
-You can host the standalone file, or seperate HTML, JS and CSS files.
-For the second option:
-
-```sh
-yarn --prod run clean
-yarn --prod run html # generates index.html
-yarn --prod run css # generates a purge-css-optimized version of the CSS
-yarn --prod run compile-js # generates a Closure-optimized version of the JS
-```
-
-Whether using a single file or multiple files, they will all be stored in `assets/*`.
-So, finally, upload that directory to the server.
-
 ## Annotate
 
 The core data for Schema Voyager are the [properties of an attribute](https://docs.datomic.com/cloud/schema/defining-schema.html), like `:db/valueType` and `:db/cardinality`, that have been (or will be) transacted into a Datomic database.
@@ -438,10 +401,10 @@ They are used to trigger entity-level validations within the transactor.
 
 Datomic attributes that share a namespace (e.g. `:track/artist` and `:track/duration`) often appear together on an entity.
 In the majority of the database world, the namespace `:artist` would be called a "table".
-The attributes would be called "columns" and the entities that use them "rows".
+(The attributes would be called "columns" and the entities that use them "rows".)
 However, Datomic itself does not use the word "table", nor does it introduce its own terminology for idents that share a namespace.
 
-Schema Voyager calls collections of idents, unsurprisingly, **collections**.
+Schema Voyager calls collections of idents that share a namespace, unsurprisingly, **collections**.
 There are two types.
 
 An **aggregate** is a collection of attributes, what the SQL world would call a "table".
@@ -633,6 +596,46 @@ You can also add `:db/doc` strings to collections:
  :db.schema.collection/name :artist
  :db/doc                    "A person or group who contributed to a release or track."}
 ```
+
+## Export
+
+So, you've ingested some carefully annotated schema and have been exploring it.
+You'll want to share the insights you're having.
+There are several ways to export data from Schema Voyager.
+
+### Export DataScript
+
+[Ingestion scripts](#ingestion-scripts) save the full DataScript DB in EDN format to `resources/schema_voyager_db.edn`.
+You may share or commit this file elsewhere.
+
+### Export Standalone Web Page
+
+After saving the DataScript file, you can [generate a standalone HTML document](#explore-standalone-web-page), a web app to explore the data.
+This file, which is named `target/standalone.html`, embeds the data from `resources/schema_voyager_db.edn` (via `shadow.resource/inline`).
+Since it doesn't need to communicate with a server, it can be committed, emailed or otherwise shared anywhere.
+
+### Export ERD Diagrams
+
+Within the HTML there are diagrams of collections and their relationships.
+These can be exported as SVG files.
+Open the configuration menu in the upper left of any diagram.
+
+### Host Web App
+
+The HTML, CSS and compiled JS can be hosted on Netlify or a server of your choice.
+
+You can host the standalone file, or seperate HTML, JS and CSS files.
+For the second option:
+
+```sh
+yarn --prod run clean
+yarn --prod run html # generates index.html
+yarn --prod run css # generates a purge-css-optimized version of the CSS
+yarn --prod run compile-js # generates a Closure-optimized version of the JS
+```
+
+Whether using a single file or multiple files, they will all be stored in `assets/*`.
+So, finally, upload that directory to the server.
 
 ## Alternatives
 
