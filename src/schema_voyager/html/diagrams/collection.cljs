@@ -6,7 +6,7 @@
             [reagent.dom.server :as dom]
             [clojure.walk :as walk]
             ["file-saver" :as file-saver]
-            [datascript.core :as d]
+            [datascript.core :as ds]
             [schema-voyager.html.util :as util]))
 
 (def ^:private colors
@@ -297,32 +297,32 @@
 
 (defn- q-expand-eids [db refs]
   (let [eids            (distinct (mapcat identity refs))
-        entities        (d/pull-many db '[*] eids)
+        entities        (ds/pull-many db '[*] eids)
         entities-by-eid (zipmap (map :db/id entities)
                                 entities)]
     (walk/postwalk-replace entities-by-eid refs)))
 
 (defn q-colls [db]
-  (let [refs (d/q active-ref-q db)]
+  (let [refs (ds/q active-ref-q db)]
     (q-expand-eids db refs)))
 
 (defn q-coll [db coll]
-  (let [coll-eid (d/q '[:find ?coll .
-                        :in $ ?collection-type ?collection-name
-                        :where
-                        [?coll :db.schema.collection/type ?collection-type]
-                        [?coll :db.schema.collection/name ?collection-name]
-                        [?coll :db.schema.pseudo/type :collection]]
-                      db (:db.schema.collection/type coll) (:db.schema.collection/name coll))
-        sources  (d/q (concat active-ref-q '[:in $ ?source])
-                      db coll-eid)
-        dests    (d/q (concat active-ref-q '[:in $ ?dest])
-                      db coll-eid)
+  (let [coll-eid (ds/q '[:find ?coll .
+                         :in $ ?collection-type ?collection-name
+                         :where
+                         [?coll :db.schema.collection/type ?collection-type]
+                         [?coll :db.schema.collection/name ?collection-name]
+                         [?coll :db.schema.pseudo/type :collection]]
+                       db (:db.schema.collection/type coll) (:db.schema.collection/name coll))
+        sources  (ds/q (concat active-ref-q '[:in $ ?source])
+                       db coll-eid)
+        dests    (ds/q (concat active-ref-q '[:in $ ?dest])
+                       db coll-eid)
         refs     (distinct (concat sources dests))]
     (q-expand-eids db refs)))
 
 (defn q-attr [db attr]
-  (let [attr-eid (:db/id (d/pull db [:db/id] (:db/ident attr)))
-        refs     (d/q (concat ref-q '[:in $ ?source-attr])
-                      db attr-eid)]
+  (let [attr-eid (:db/id (ds/pull db [:db/id] (:db/ident attr)))
+        refs     (ds/q (concat ref-q '[:in $ ?source-attr])
+                       db attr-eid)]
     (q-expand-eids db refs)))

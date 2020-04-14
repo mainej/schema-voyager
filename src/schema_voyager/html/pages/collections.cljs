@@ -1,24 +1,24 @@
 (ns schema-voyager.html.pages.collections
-  (:require [datascript.core :as d]
+  (:require [datascript.core :as ds]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]
             [schema-voyager.html.diagrams.collection :as diagrams.collection]))
 
 (defn collections [db collection-type]
-  (->> (d/q '[:find [?coll ...]
-              :in $ ?collection-type
-              :where
-              [?coll :db.schema.collection/type ?collection-type]
-              [?coll :db.schema.pseudo/type :collection]]
-            db collection-type)
-       (d/pull-many db '[*])
+  (->> (ds/q '[:find [?coll ...]
+               :in $ ?collection-type
+               :where
+               [?coll :db.schema.collection/type ?collection-type]
+               [?coll :db.schema.pseudo/type :collection]]
+             db collection-type)
+       (ds/pull-many db '[*])
        (sort-by :db.schema.collection/name)))
 
 (defn entity-specs [db]
-  (->> (d/q '[:find [?spec ...]
-              :where [?spec :db.schema.pseudo/type :entity-spec]]
-            db)
-       (d/pull-many db '[*])
+  (->> (ds/q '[:find [?spec ...]
+               :where [?spec :db.schema.pseudo/type :entity-spec]]
+             db)
+       (ds/pull-many db '[*])
        (sort-by :db/ident)))
 
 (defn collection-list [collection]

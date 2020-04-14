@@ -1,10 +1,10 @@
 (ns schema-voyager.html.pages.spec
-  (:require [datascript.core :as d]
+  (:require [datascript.core :as ds]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]))
 
 (defn- by-ident [ident]
-  (d/pull db/db ['*] [:db/ident ident]))
+  (ds/pull db/db ['*] [:db/ident ident]))
 
 (defn- preds-list [preds]
   [:ul.list-disc.m-4.font-mono
@@ -32,7 +32,7 @@
     (when attrs
       [:div.mb-8
        "Requires the attributes:"
-       [attrs-list (d/pull-many db/db util/attr-link-pull attrs)]])
+       [attrs-list (ds/pull-many db/db util/attr-link-pull attrs)]])
     (when preds
       [:div
        "Validates:"

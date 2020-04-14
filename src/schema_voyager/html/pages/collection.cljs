@@ -1,29 +1,29 @@
 (ns schema-voyager.html.pages.collection
   (:require [schema-voyager.html.db :as db]
-            [datascript.core :as d]
+            [datascript.core :as ds]
             [schema-voyager.html.components.value-type :as value-type]
             [schema-voyager.html.diagrams.collection :as diagrams.collection]
             [schema-voyager.html.util :as util]))
 
 (defn- eid-by-type-and-name [db collection-type collection-name]
-  (d/q '[:find ?collection .
-         :in $ ?collection-type ?collection-name
-         :where
-         [?collection :db.schema.collection/type ?collection-type]
-         [?collection :db.schema.collection/name ?collection-name]
-         [?collection :db.schema.pseudo/type :collection]]
-       db collection-type collection-name))
+  (ds/q '[:find ?collection .
+          :in $ ?collection-type ?collection-name
+          :where
+          [?collection :db.schema.collection/type ?collection-type]
+          [?collection :db.schema.collection/name ?collection-name]
+          [?collection :db.schema.pseudo/type :collection]]
+        db collection-type collection-name))
 
 (defn- by-type-and-name [db collection-type collection-name]
-  (let [collection    (d/pull db
-                              ['*
-                               {:db.schema/_references (into util/attr-link-pull
-                                                             [{:db.schema/_tuple-references util/attr-link-pull}])
-                                :db.schema/_part-of    ['*
-                                                        {:db.schema/references       ['*]
-                                                         :db.schema/tuple-references ['*
-                                                                                      {:db.schema/references ['*]}]}]}]
-                              (eid-by-type-and-name db collection-type collection-name))
+  (let [collection    (ds/pull db
+                               ['*
+                                {:db.schema/_references (into util/attr-link-pull
+                                                              [{:db.schema/_tuple-references util/attr-link-pull}])
+                                 :db.schema/_part-of    ['*
+                                                         {:db.schema/references       ['*]
+                                                          :db.schema/tuple-references ['*
+                                                                                       {:db.schema/references ['*]}]}]}]
+                               (eid-by-type-and-name db collection-type collection-name))
         referenced-by (sort-by :db/ident
                                (concat (->> collection
                                             :db.schema/_references

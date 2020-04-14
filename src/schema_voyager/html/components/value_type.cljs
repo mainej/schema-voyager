@@ -1,5 +1,5 @@
 (ns schema-voyager.html.components.value-type
-  (:require [datascript.core :as d]
+  (:require [datascript.core :as ds]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]))
 
@@ -13,7 +13,7 @@
   [:span "< " child " >"])
 
 (defn- tuple-attrs-span [{:keys [db/tupleAttrs]}]
-  (let [attrs (d/pull-many db/db util/attr-link-pull tupleAttrs)]
+  (let [attrs (ds/pull-many db/db util/attr-link-pull tupleAttrs)]
     [angle-span
      [util/comma-list
       (map (fn [attr]

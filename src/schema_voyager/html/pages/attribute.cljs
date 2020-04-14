@@ -1,20 +1,20 @@
 (ns schema-voyager.html.pages.attribute
-  (:require [datascript.core :as d]
+  (:require [datascript.core :as ds]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.components.value-type :as value-type]
             [schema-voyager.html.diagrams.collection :as diagrams.collection]
             [schema-voyager.html.util :as util]))
 
 (defn by-ident [ident]
-  (d/pull db/db
-          ['*
-           {:db.schema/part-of          ['*]
-            :db.schema/references       ['*]
-            :db.schema/tuple-references ['*
-                                         {:db.schema/references ['*]}]
-            :db.schema/see-also         util/attr-link-pull
-            :db.schema/_see-also        util/attr-link-pull}]
-          [:db/ident ident]))
+  (ds/pull db/db
+           ['*
+            {:db.schema/part-of          ['*]
+             :db.schema/references       ['*]
+             :db.schema/tuple-references ['*
+                                          {:db.schema/references ['*]}]
+             :db.schema/see-also         util/attr-link-pull
+             :db.schema/_see-also        util/attr-link-pull}]
+           [:db/ident ident]))
 
 (defn doc-str [{:keys [db/doc]}]
   (when doc
