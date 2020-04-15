@@ -45,20 +45,21 @@
    [:div.md:w-3of4 l]])
 
 (defn page []
-  [:div.px-4.sm:px-0
-   [list-section
-    "Aggregates"
-    "Aggregates are collections of attributes that often co-exist on an entity. They are analogous to a SQL table, though some attributes may appear on many aggregates."
-    [collection-list (collections db/db :aggregate)]]
-   [list-section
-    "Enums"
-    "Enums are collections of named constants. They usually specify the various values that an attribute may take."
-    [collection-list (collections db/db :enum)]]
-   (when-let [specs (seq (entity-specs db/db))]
-     [list-section
-      "Entity Specs"
-      "Entity specs are constraints that can be placed on an entity during a transaction. They require attributes, run predicate functions for validation, or both."
-      [spec-list specs]])
+  [:div
+   [:div.px-4.sm:px-0
+    [list-section
+     "Aggregates"
+     "Aggregates are collections of attributes that often co-exist on an entity. They are analogous to a SQL table, though some attributes may appear on many aggregates."
+     [collection-list (collections db/db :aggregate)]]
+    [list-section
+     "Enums"
+     "Enums are collections of named constants. They usually specify the various values that an attribute may take."
+     [collection-list (collections db/db :enum)]]
+    (when-let [specs (seq (entity-specs db/db))]
+      [list-section
+       "Entity Specs"
+       "Entity specs are constraints that can be placed on an entity during a transaction. They require attributes, run predicate functions for validation, or both."
+       [spec-list specs]])]
    [:div.mt-10
     ^{:key :collections}
     [diagrams.collection/erd (diagrams.collection/q-colls db/db)]]])

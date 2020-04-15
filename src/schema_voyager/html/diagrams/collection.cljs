@@ -209,7 +209,7 @@
            [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]]))]))
 
 (defn- config-dropdown [{:keys [dropdown-open? dropdown-close dropdown-toggle]} body]
-  [:div.relative.inline-block
+  [:div.relative.inline-block.ml-4.sm:ml-0
    [:button.rounded-md.border.border-gray-300.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
     {:type     "button"
      :on-click dropdown-toggle}
