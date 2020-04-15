@@ -69,14 +69,14 @@
 (defmulti attribute-panel :db.schema.pseudo/type)
 
 (defmethod attribute-panel :attribute [attribute]
-  [:div.sm:flex.justify-between
-   [:div
+  [:div
+   [:div.sm:flex.justify-between
     [:div.font-medium
      [attribute-header attribute :aggregate]]
-    [:div.hidden.sm:block.mt-4
-     [doc-str attribute]]]
-   [:div.sm:text-right.mt-4.sm:mt-0
-    [value-type/shorthand attribute]]])
+    [:div.mt-4.sm:mt-0
+     [value-type/shorthand attribute]]]
+   [:div.hidden.sm:block.mt-4
+    [doc-str attribute]]])
 
 (defmethod attribute-panel :constant [constant]
   [:div
