@@ -192,7 +192,7 @@
 
 (defn- erd-collection-config [[coll attrs] {:keys [excluded-eids toggle-eid attrs-visible?]}]
   (let [excluded-eid? (comp (excluded-eids) :db/id)]
-    [:div.p-3.border-gray-300.stack-my-2
+    [:div.p-3.stack-my-2
      [:div.flex.items-center.stack-mx-2.cursor-pointer
       (toggle-handlers #(toggle-eid coll))
       [toggle-span (not (excluded-eid? coll))]
@@ -208,7 +208,7 @@
 
 (defn- config-dropdown [{:keys [dropdown-open? dropdown-close dropdown-toggle]} body]
   [:div.relative.inline-block.ml-4.sm:ml-0
-   [:button.rounded-md.border.border-gray-300.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
+   [:button.rounded-md.border.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
     {:type     "button"
      :on-click dropdown-toggle}
     configure-gear]
