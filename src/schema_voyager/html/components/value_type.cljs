@@ -179,7 +179,7 @@
 (defmethod shorthand-span [:db.type/ref :referred] [{:keys [db.schema/references]}]
   [util/coll-links references])
 (defmethod shorthand-span [:db.type/ref :not-referred] [attribute]
-  "ref")
+  [keyword-abbr :db.type/ref])
 
 ;; scalars
 (defmethod shorthand-span [::default ::default] [{:keys [db/valueType]}]
