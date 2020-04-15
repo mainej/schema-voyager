@@ -54,10 +54,10 @@
 
 (defn doc-str [{:keys [db/doc]}]
   (when doc
-    [:p.text-gray-600.italic doc]))
+    [:p.text-gray-600.italic.hidden.sm:block.mt-4 doc]))
 
 (defn- attribute-header [{:keys [db/ident db/unique db.schema/deprecated?] :as attribute} coll-type]
-  [:h1.mb-4
+  [:h1.font-medium
    [:a.group-hover:underline
     {:href (util/attr-href attribute)}
     [util/ident-name ident coll-type]]
@@ -71,19 +71,15 @@
 (defmethod attribute-panel :attribute [attribute]
   [:div
    [:div.sm:flex.justify-between
-    [:div.font-medium
-     [attribute-header attribute :aggregate]]
+    [attribute-header attribute :aggregate]
     [:div.mt-4.sm:mt-0
      [value-type/shorthand attribute]]]
-   [:div.hidden.sm:block.mt-4
-    [doc-str attribute]]])
+   [doc-str attribute]])
 
 (defmethod attribute-panel :constant [constant]
   [:div
-   [:div.font-medium
-    [attribute-header constant :enum]]
-   [:div.hidden.sm:block.mt-4
-    [doc-str constant]]])
+   [attribute-header constant :enum]
+   [doc-str constant]])
 
 (defn page [{:keys [db.schema/_part-of db.schema.pseudo/referenced-by db/doc] :as coll}]
   [:div
