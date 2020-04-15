@@ -1,3 +1,6 @@
+const _ = require('lodash');
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
     theme: {
         width: (theme) => ({
@@ -55,5 +58,26 @@ module.exports = {
         textColor: ['responsive', 'hover', 'focus', 'group-hover'],
         textDecoration: ['responsive', 'hover', 'focus', 'group-hover'],
     },
-    plugins: [],
+    plugins: [
+        /* https://every-layout.dev/layouts/stack/ */
+        plugin(function ({ addUtilities, e, theme, variants }) {
+            const utilities = _.flatMap(theme('padding'), (size, modifier) => ({
+                [`.${e(`stack-my-${modifier}`)} > * + *`]: { marginTop: `${size}` },
+                [`.${e(`stack-mx-${modifier}`)} > * + *`]: { marginLeft: `${size}` },
+                [`.${e(`stack-py-${modifier}`)} > * + *`]: { paddingTop: `${size}` },
+                [`.${e(`stack-px-${modifier}`)} > * + *`]: { paddingLeft: `${size}` },
+            }));
+            addUtilities(utilities, variants('padding'));
+        }),
+        plugin(function ({ addUtilities, e, theme, variants }) {
+            const generator = (value, modifier) => ({
+                [`.${e(`stack-border-y${modifier}`)} > * + *`]: { borderTopWidth: `${value}` },
+                [`.${e(`stack-border-x${modifier}`)} > * + *`]: { borderLeftWidth: `${value}` },
+            });
+            const utilities = _.flatMap(theme('borderWidth'), (value, modifier) => {
+                return generator(value, modifier === 'default' ? '' : `-${modifier}`);
+            });
+            addUtilities(utilities, variants('borderWidth'));
+        }),
+    ],
 };

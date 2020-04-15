@@ -21,22 +21,19 @@
     [:p.italic doc]))
 
 (defn part-of [{:keys [db.schema/part-of]}]
-  [:div.text-gray-600 "Part of "
-   [util/coll-links part-of]])
+  [:div.text-gray-600 "Part of " [util/coll-links part-of]])
 
 (defn see-also-links [{:keys [db.schema/see-also]}]
   (when (seq see-also)
-    [:div.mt-6 "See also "
-     [util/attr-links see-also]]))
+    [:div "See also " [util/attr-links see-also]]))
 
 (defn seen-by-links [{:keys [db.schema/_see-also]}]
   (when (seq _see-also)
-    [:div.mt-6 "Noted by "
-     [util/attr-links _see-also]]))
+    [:div "Noted by " [util/attr-links _see-also]]))
 
 (defn details-section [{:keys [db/doc db.schema/see-also db.schema/_see-also] :as attribute}]
   (when (or doc (seq see-also) (seq _see-also))
-    [:div.p-4.sm:p-6
+    [:div.p-4.sm:p-6.stack-my-6
      [doc-str attribute]
      [see-also-links attribute]
      [seen-by-links attribute]]))
@@ -52,10 +49,10 @@
 
 (defn additional-fields [attribute]
   (when-let [fields (seq (unhandled-fields attribute))]
-    [:dl
+    [:dl.stack-border-y
      (for [[field value] (sort-by first fields)]
        ^{:key field}
-       [:div.sm:flex.border-t.p-4.sm:p-6
+       [:div.sm:flex.p-4.sm:p-6
         [:dt.sm:w-1of3 (pr-str field)]
         [:dd (pr-str value)]])]))
 
@@ -64,7 +61,7 @@
   [diagrams.collection/erd (diagrams.collection/q-attr db/db attr)])
 
 (defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]
-  [:h1.mb-4.font-bold.flex.items-center.stack-x-2
+  [:h1.font-bold.flex.items-center.stack-mx-2
    [util/ident-name {:coll-props {:class [:font-normal]}} ident coll-type]
    (when (= :db.unique/identity unique)
      util/lock-closed)
@@ -74,26 +71,24 @@
 (defmulti panel :db.schema.pseudo/type)
 
 (defmethod panel :attribute [attribute]
-  [:div.max-w-4xl
+  [:div.max-w-4xl.stack-my-6
    [:div.px-4.sm:px-0
-    [:div.sm:flex
-     [:div
+    [:div.sm:flex.sm:stack-mx-6
+     [:div.stack-my-4
       [header attribute :aggregate]
       [part-of attribute]]
-     [:div.sm:ml-6
-      [value-type/p attribute]]]]
-   [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white
+     [value-type/p attribute]]]
+   [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.stack-border-y
     [details-section attribute]
     [additional-fields attribute]]
-   [:div.mt-6
-    [diagram attribute]]])
+   [diagram attribute]])
 
 (defmethod panel :constant [constant]
-  [:div.max-w-4xl
-   [:div.px-4.sm:px-0
+  [:div.max-w-4xl.stack-my-6
+   [:div.px-4.sm:px-0.stack-my-4
     [header constant :enum]
     [part-of constant]]
-   [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white
+   [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.stack-border-y
     [details-section constant]
     [additional-fields constant]]])
 

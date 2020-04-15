@@ -191,22 +191,20 @@
                       (on-change))))})
 
 (defn- erd-collection-config [[coll attrs] {:keys [excluded-eids toggle-eid attrs-visible?]}]
-  (let [attrs-visible? (attrs-visible?)
-        excluded-eid?  (comp (excluded-eids) :db/id)]
-    [:div.p-3.border-b.border-gray-300
-     [:div.flex.items-center.cursor-pointer
-      (assoc (toggle-handlers #(toggle-eid coll))
-             :class (when (and attrs-visible? (seq attrs)) :pb-1))
+  (let [excluded-eid? (comp (excluded-eids) :db/id)]
+    [:div.p-3.border-gray-300.stack-my-2
+     [:div.flex.items-center.stack-mx-2.cursor-pointer
+      (toggle-handlers #(toggle-eid coll))
       [toggle-span (not (excluded-eid? coll))]
-      [:span.ml-2 [util/coll-name coll]]]
-     (when attrs-visible?
-       (for [attr attrs]
-         ^{:key (:db/id attr)}
-         [:div.flex.items-center.cursor-pointer.ml-4.py-1
-          (toggle-handlers #(toggle-eid attr))
-          [toggle-span (not (excluded-eid? attr))]
-          [:span.ml-2
-           [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]]))]))
+      [util/coll-name coll]]
+     (when (and (attrs-visible?) (seq attrs))
+       [:div.ml-4.stack-my-2
+        (for [attr attrs]
+          ^{:key (:db/id attr)}
+          [:div.flex.items-center.stack-mx-2.cursor-pointer
+           (toggle-handlers #(toggle-eid attr))
+           [toggle-span (not (excluded-eid? attr))]
+           [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]])])]))
 
 (defn- config-dropdown [{:keys [dropdown-open? dropdown-close dropdown-toggle]} body]
   [:div.relative.inline-block.ml-4.sm:ml-0
@@ -221,27 +219,27 @@
       body])])
 
 (defn- config-attr-visibility [{:keys [attrs-visible? attrs-visible-toggle]}]
-  [:div.p-3.border-b.border-gray-500
-   [:div.flex.items-center.cursor-pointer
+  [:div.p-3.border-b.border-t.border-gray-500
+   [:div.flex.items-center.stack-mx-2.cursor-pointer
     (toggle-handlers attrs-visible-toggle)
     [toggle-span (attrs-visible?)]
-    [:span.ml-2 "Show attributes on aggregates?"]]])
+    [:span "Show attributes on aggregates?"]]])
 
 (defn- config-enum-visibility [enums {:keys [excluded-eids exclude-eids include-eids]}]
   (let [some-enums-shown? (not-every? (comp (excluded-eids) :db/id) enums)]
-    [:div.p-3.border-b.border-t.border-gray-500.-mt-px
-     [:div.flex.items-center.cursor-pointer
+    [:div.p-3.border-b.border-t.border-gray-500
+     [:div.flex.items-center.stack-mx-2.cursor-pointer
       (toggle-handlers #(if some-enums-shown?
                           (exclude-eids enums)
                           (include-eids enums)))
       [toggle-span some-enums-shown?]
-      [:span.ml-2 "Show enums?"]]]))
+      [:span "Show enums?"]]]))
 
 (defn- svg-to-blob [svg]
   (js/Blob. #js [svg] #js {:type "image/svg+xml"}))
 
 (defn- download [dot-s]
-  [:div.p-3.border-b.border-gray-500
+  [:div.p-3
    [:button
     {:type     "button"
      :on-click (fn [_e]
@@ -261,15 +259,17 @@
      [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
       [download dot-s]
       [config-attr-visibility config-state]
-      (for [[aggregate _attrs :as aggregate-and-attrs] aggregates-and-attrs]
-        ^{:key (:db/id aggregate)}
-        [erd-collection-config aggregate-and-attrs config-state])
+      [:div.stack-border-y
+       (for [[aggregate _attrs :as aggregate-and-attrs] aggregates-and-attrs]
+         ^{:key (:db/id aggregate)}
+         [erd-collection-config aggregate-and-attrs config-state])]
       (when-let [enums (seq (map first enums-and-attrs))]
         [:<>
          [config-enum-visibility enums config-state]
-         (for [[enum _attrs :as enum-and-attrs] enums-and-attrs]
-           ^{:key (:db/id enum)}
-           [erd-collection-config enum-and-attrs config-state])])]]))
+         [:div.stack-border-y
+          (for [[enum _attrs :as enum-and-attrs] enums-and-attrs]
+            ^{:key (:db/id enum)}
+            [erd-collection-config enum-and-attrs config-state])]])]]))
 
 (defn erd [_]
   (let [config-state (merge (excluded-eid-state)

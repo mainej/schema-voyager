@@ -23,14 +23,14 @@
     [:p.italic doc]))
 
 (defn- details-section [{:keys [db/doc db.entity/attrs db.entity/preds] :as spec}]
-  [:div
+  [:div.stack-border-y
    (when doc
-     [:div.px-4.py-6.sm:p-8.border-b
+     [:div.px-4.py-6.sm:p-8
       [doc-str spec]])
-   [:div.px-4.py-6.sm:p-8
-    [:div.mb-8 "When placed on an entity, " [util/spec-name spec] "..."]
+   [:div.px-4.py-6.sm:p-8.stack-my-8
+    [:div "When placed on an entity, " [util/spec-name spec] "..."]
     (when attrs
-      [:div.mb-8
+      [:div
        "Requires the attributes:"
        [attrs-list (ds/pull-many db/db util/attr-link-pull attrs)]])
     (when preds
@@ -42,13 +42,13 @@
           preds               [preds])]])]])
 
 (defn- header [spec]
-  [:h1.mb-4.font-bold
+  [:h1.font-bold
    [util/spec-name spec]])
 
 (defn page [parameters]
   (let [spec (by-ident (keyword (:id (:path parameters))))]
-    [:div.max-w-4xl
+    [:div.max-w-4xl.stack-my-6
      [:div.px-4.sm:px-0
       [header spec]]
-     [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white
+     [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white
       [details-section spec]]]))

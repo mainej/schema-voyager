@@ -7,10 +7,3 @@
  * .bg-pattern-graph-paper { ... }
  * .skew-45 { ... }
  */
-
-/* https://every-layout.dev/layouts/stack/ */
-
-.stack-x-2 > * + * {
-    @apply ml-2;
-}
-

@@ -54,10 +54,10 @@
 
 (defn doc-str [{:keys [db/doc]}]
   (when doc
-    [:p.text-gray-600.italic.hidden.sm:block.mt-4 doc]))
+    [:p.text-gray-600.italic.hidden.sm:block doc]))
 
 (defn- attribute-header [{:keys [db/ident db/unique db.schema/deprecated?] :as attribute} coll-type]
-  [:h1.font-medium.flex.items-center.stack-x-2
+  [:h1.font-medium.flex.items-center.stack-mx-2
    [:a.group-hover:underline
     {:href (util/attr-href attribute)}
     [util/ident-name ident coll-type]]
@@ -69,22 +69,21 @@
 (defmulti attribute-panel :db.schema.pseudo/type)
 
 (defmethod attribute-panel :attribute [attribute]
-  [:div
-   [:div.sm:flex.justify-between
+  [:div.stack-my-4
+   [:div.sm:flex.justify-between.stack-my-4.sm:stack-my-0
     [attribute-header attribute :aggregate]
-    [:div.mt-4.sm:mt-0
-     [value-type/shorthand attribute]]]
+    [:div [value-type/shorthand attribute]]]
    [doc-str attribute]])
 
 (defmethod attribute-panel :constant [constant]
-  [:div
+  [:div.stack-my-4
    [attribute-header constant :enum]
    [doc-str constant]])
 
 (defn page [{:keys [db.schema/_part-of db.schema.pseudo/referenced-by db/doc] :as coll}]
-  [:div
-   [:div.px-4.sm:px-0
-    [:h1.mb-4.font-bold.whitespace-no-wrap
+  [:div.stack-my-6
+   [:div.px-4.sm:px-0.stack-my-6
+    [:h1.font-bold.whitespace-no-wrap
      [util/coll-name* coll]
      " "
      [util/aggregate-abbr coll]]
@@ -93,16 +92,16 @@
     (when (seq referenced-by)
       [:div.text-gray-600 "Referenced by "
        [util/attr-links referenced-by]])]
-   [:div.mt-6.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl
+   [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl.stack-border-y
     (for [attribute (sort-by attribute-comparable _part-of)]
       ^{:key (:db/id attribute)}
-      [:section.border-b
+      [:section
        {:class (when (:db.schema/deprecated? attribute)
                  :bg-gray-300)}
-       [:div.p-4.sm:p-6.flex.items-center.justify-between.cursor-pointer.hover:bg-gray-100.transition.duration-150.ease-in-out.group
+       [:div.p-4.sm:p-6.flex.items-center.justify-between.stack-mx-4.sm:stack-mx-6.cursor-pointer.hover:bg-gray-100.transition.duration-150.ease-in-out.group
         {:on-click #(util/visit (util/attr-route attribute))}
         [:div.flex-1 [attribute-panel attribute]]
-        [:div.ml-4.sm:ml-6 chevron-right]]])]
-   [:div.mt-4
+        chevron-right]])]
+   [:div
     ^{:key (:db/id coll)}
     [diagrams.collection/erd (diagrams.collection/q-coll db/db coll)]]])
