@@ -64,12 +64,12 @@
   [diagrams.collection/erd (diagrams.collection/q-attr db/db attr)])
 
 (defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]
-  [:h1.mb-4.font-bold
+  [:h1.mb-4.font-bold.flex.items-center.stack-x-2
    [util/ident-name {:coll-props {:class [:font-normal]}} ident coll-type]
    (when (= :db.unique/identity unique)
-     [:span.ml-2 util/lock-closed])
+     util/lock-closed)
    (when deprecated?
-     [:span.ml-2 util/deprecated-pill])])
+     util/deprecated-pill)])
 
 (defmulti panel :db.schema.pseudo/type)
 

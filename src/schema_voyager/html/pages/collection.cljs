@@ -57,14 +57,14 @@
     [:p.text-gray-600.italic.hidden.sm:block.mt-4 doc]))
 
 (defn- attribute-header [{:keys [db/ident db/unique db.schema/deprecated?] :as attribute} coll-type]
-  [:h1.font-medium
+  [:h1.font-medium.flex.items-center.stack-x-2
    [:a.group-hover:underline
     {:href (util/attr-href attribute)}
     [util/ident-name ident coll-type]]
    (when (= :db.unique/identity unique)
-     [:span.ml-2 util/lock-closed])
+     util/lock-closed)
    (when deprecated?
-     [:span.ml-2 util/deprecated-pill])])
+     util/deprecated-pill)])
 
 (defmulti attribute-panel :db.schema.pseudo/type)
 

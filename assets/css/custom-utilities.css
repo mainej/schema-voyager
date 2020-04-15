@@ -10,7 +10,7 @@
 
 /* https://every-layout.dev/layouts/stack/ */
 
-.stack > * + * {
-    @apply mt-6;
+.stack-x-2 > * + * {
+    @apply ml-2;
 }
 
