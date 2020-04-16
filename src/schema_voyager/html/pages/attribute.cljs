@@ -2,7 +2,8 @@
   (:require [datascript.core :as ds]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.components.value-type :as value-type]
-            [schema-voyager.html.diagrams.collection :as diagrams.collection]
+            [schema-voyager.html.diagrams.core :as diagrams]
+            [schema-voyager.html.diagrams.query :as diagrams.query]
             [schema-voyager.html.util :as util]))
 
 (defn by-ident [ident]
@@ -58,7 +59,7 @@
 
 (defn diagram [attr]
   ^{:key (:db/id attr)}
-  [diagrams.collection/erd (diagrams.collection/q-attr db/db attr)])
+  [diagrams/erd (diagrams.query/attr db/db attr)])
 
 (defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]
   [:h1.font-bold.flex.items-center.stack-mx-2

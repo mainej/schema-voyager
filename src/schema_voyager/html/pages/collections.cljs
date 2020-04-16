@@ -2,7 +2,8 @@
   (:require [datascript.core :as ds]
             [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]
-            [schema-voyager.html.diagrams.collection :as diagrams.collection]))
+            [schema-voyager.html.diagrams.core :as diagrams]
+            [schema-voyager.html.diagrams.query :as diagrams.query]))
 
 (defn collections [db collection-type]
   (->> (ds/q '[:find [?coll ...]
@@ -61,4 +62,4 @@
       [spec-list specs]])
    [:div
     ^{:key :collections}
-    [diagrams.collection/erd (diagrams.collection/q-colls db/db)]]])
+    [diagrams/erd (diagrams.query/colls db/db)]]])

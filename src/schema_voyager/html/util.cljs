@@ -6,6 +6,12 @@
 (def slash [:span.text-gray-500 "/"])
 (def asterisk [:span.text-blue-500 "*"])
 
+(defn stop [e]
+  (.stopPropagation e))
+
+(defn prevent [e]
+  (.preventDefault e))
+
 (def href rfe/href)
 
 (defn visit [route]
@@ -74,7 +80,7 @@
 (defn coll-link [coll]
   [link {:href     (coll-href coll)
          :class    :whitespace-no-wrap
-         :on-click #(.stopPropagation %)}
+         :on-click stop}
    [coll-name* coll]
    " "
    [aggregate-abbr coll]])

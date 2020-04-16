@@ -2,7 +2,8 @@
   (:require [schema-voyager.html.db :as db]
             [datascript.core :as ds]
             [schema-voyager.html.components.value-type :as value-type]
-            [schema-voyager.html.diagrams.collection :as diagrams.collection]
+            [schema-voyager.html.diagrams.core :as diagrams]
+            [schema-voyager.html.diagrams.query :as diagrams.query]
             [schema-voyager.html.util :as util]))
 
 (defn- eid-by-type-and-name [db collection-type collection-name]
@@ -104,4 +105,4 @@
         chevron-right]])]
    [:div
     ^{:key (:db/id coll)}
-    [diagrams.collection/erd (diagrams.collection/q-coll db/db coll)]]])
+    [diagrams/erd (diagrams.query/coll db/db coll)]]])
