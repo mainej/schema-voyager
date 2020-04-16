@@ -190,7 +190,7 @@
                     (when (= " " key)
                       (on-change))))})
 
-(defn- erd-collection-config [[coll attrs] {:keys [excluded-eids toggle-eid attrs-visible?]}]
+(defn- config-collection [{:keys [excluded-eids toggle-eid attrs-visible?]} [coll attrs]]
   (let [excluded-eid? (comp (excluded-eids) :db/id)]
     [:div.p-3.stack-my-2
      [:div.flex.items-center.stack-mx-2.cursor-pointer
@@ -205,6 +205,12 @@
            (toggle-handlers #(toggle-eid attr))
            [toggle-span (not (excluded-eid? attr))]
            [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]])])]))
+
+(defn- config-collections [config-state colls-and-attrs]
+  [:div.stack-border-y
+   (for [[coll _attrs :as coll-and-attrs] colls-and-attrs]
+     ^{:key (:db/id coll)}
+     [config-collection config-state coll-and-attrs])])
 
 (defn- config-dropdown [{:keys [dropdown-open? dropdown-close dropdown-toggle]} body]
   [:div.relative.inline-block.ml-4.sm:ml-0
@@ -225,7 +231,7 @@
     [toggle-span (attrs-visible?)]
     [:span "Show attributes on aggregates?"]]])
 
-(defn- config-enum-visibility [enums {:keys [excluded-eids exclude-eids include-eids]}]
+(defn- config-enum-visibility [{:keys [excluded-eids exclude-eids include-eids]} enums]
   (let [some-enums-shown? (not-every? (comp (excluded-eids) :db/id) enums)]
     [:div.p-3.border-b.border-t.border-gray-500
      [:div.flex.items-center.stack-mx-2.cursor-pointer
@@ -239,17 +245,16 @@
   (js/Blob. #js [svg] #js {:type "image/svg+xml"}))
 
 (defn- download [dot-s]
-  [:div.p-3
-   [:button
-    {:type     "button"
-     :on-click (fn [_e]
-                 (p/let [svg (graphviz/graphviz.dot dot-s)]
-                   (file-saver/saveAs (svg-to-blob svg) "erd.svg")))}
-    [:div.flex.items-center.group
-     [:span.mr-1 "Export SVG"]
-     download-icon]]])
+  [:button.p-3
+   {:type     "button"
+    :on-click (fn [_e]
+                (p/let [svg (graphviz/graphviz.dot dot-s)]
+                  (file-saver/saveAs (svg-to-blob svg) "erd.svg")))}
+   [:div.flex.items-center.group
+    [:span.mr-1 "Export SVG"]
+    download-icon]])
 
-(defn- erd-config [references config-state dot-s]
+(defn- config [config-state references dot-s]
   (let [{enums-and-attrs      :enum
          aggregates-and-attrs :aggregate}
         (->> references
@@ -259,17 +264,11 @@
      [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
       [download dot-s]
       [config-attr-visibility config-state]
-      [:div.stack-border-y
-       (for [[aggregate _attrs :as aggregate-and-attrs] aggregates-and-attrs]
-         ^{:key (:db/id aggregate)}
-         [erd-collection-config aggregate-and-attrs config-state])]
+      [config-collections config-state aggregates-and-attrs]
       (when-let [enums (seq (map first enums-and-attrs))]
         [:<>
-         [config-enum-visibility enums config-state]
-         [:div.stack-border-y
-          (for [[enum _attrs :as enum-and-attrs] enums-and-attrs]
-            ^{:key (:db/id enum)}
-            [erd-collection-config enum-and-attrs config-state])]])]]))
+         [config-enum-visibility config-state enums]
+         [config-collections config-state enums-and-attrs]])]]))
 
 (defn erd [_]
   (let [config-state (merge (excluded-eid-state)
@@ -279,7 +278,7 @@
       (when (seq references)
         (let [dot-s (dot-graph references config-state)]
           [:div
-           [erd-config references config-state dot-s]
+           [config config-state references dot-s]
            [graphviz-svg dot-s]])))))
 
 (def ^:private ref-q
