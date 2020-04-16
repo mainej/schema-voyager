@@ -79,7 +79,7 @@ Alternatively, you can ask Schema Voyager to also infer deprecated attributes an
 ```sh
 clj -A:ingest:datomic -m ingest.datomic my-db-name \
   '{:server-type :ion, :region "us-east-1", :system "my-system", :endpoint "http://entry.my-system.us-east-1.datomic.net:8182/", :proxy-port 8182} \
-  --infer references --infer deprecations'
+  --infer references --infer deprecations
 ```
 > **WARNING** Inferences can be slow and expensive.
 Avoid running them on a query group that is serving critical traffic.
