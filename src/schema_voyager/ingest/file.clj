@@ -1,4 +1,4 @@
-(ns schema-voyager.ingest.files
+(ns schema-voyager.ingest.file
   "Tools for loading schema information out of EDN files.
 
   These files should contain the data that was transacted into Datomic to

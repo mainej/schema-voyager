@@ -1,8 +1,8 @@
 (ns ingest.projects.mbrainz
-  (:require [schema-voyager.ingest.files :as ingest.files]
-            [schema-voyager.data :as data]
+  (:require [schema-voyager.data :as data]
+            [schema-voyager.export :as export]
             [schema-voyager.ingest.core :as ingest]
-            [schema-voyager.export :as export]))
+            [schema-voyager.ingest.file :as ingest.file]))
 
 (def mbrainz-db
   "A datascript DB that contains the mbrainz schema, enums, and supplemental
@@ -12,7 +12,7 @@
   (->> ["resources/mbrainz-schema.edn"
         "resources/mbrainz-enums.edn"
         "resources/mbrainz-supplemental.edn"]
-       (map ingest.files/ingest)
+       (map ingest.file/ingest)
        data/join-all
        data/process
        ingest/into-db))

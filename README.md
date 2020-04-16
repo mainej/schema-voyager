@@ -212,14 +212,14 @@ You can ingest from static data, which is useful for experimenting with new sche
 
 #### Ingest from files
 
-If you have files that contain attribute definitions or [supplemental properties](#annotate), ingest with `schema-voyager.ingest.files/ingest`.
+If you have files that contain attribute definitions or [supplemental properties](#annotate), ingest with `schema-voyager.ingest.file/ingest`.
 
 ```clojure
 (ns ingest.projects.my-project
-  (:require [schema-voyager.ingest.files :as ingest.files]))
+  (:require [schema-voyager.ingest.file :as ingest.file]))
 
 (defn schema-data []
-  (ingest.files/ingest "../path/to/schema.edn"))
+  (ingest.file/ingest "../path/to/schema.edn"))
 ```
 
 #### Ingest from Datomic
@@ -279,7 +279,7 @@ Join data from several sources with `schema-voyager.data/join`:
 
 ```clojure
 (data/join (ingest.datomic/ingest db)
-           (ingest.files/ingest "supplemental-properties.edn")
+           (ingest.file/ingest "supplemental-properties.edn")
            experimental-schema)
 ```
 
@@ -287,7 +287,7 @@ Or from a sequence of sources with `schema-voyager.data/join-all`:
 
 
 ```clojure
-(data/join-all (map ingest.files/ingest file-names))
+(data/join-all (map ingest.file/ingest file-names))
 ```
 
 ### Explore
@@ -582,7 +582,7 @@ An example is:
  :db.schema.collection/name :artist}
 ```
 
-> **NOTE**: Since it is common to reference collections in supplemental property files, Schema Voyager provides an EDN reader, most commonly accessed via `schema-voyager.ingest.files/ingest`.
+> **NOTE**: Since it is common to reference collections in supplemental property files, Schema Voyager provides an EDN reader, most commonly accessed via `schema-voyager.ingest.file/ingest`.
 In an EDN file, the above could be re-written:
 
 > ```clojure
