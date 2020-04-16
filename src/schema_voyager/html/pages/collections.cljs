@@ -38,14 +38,14 @@
        [util/spec-name spec]]])])
 
 (defn list-section [title description l]
-  [:div.md:flex
+  [:div.md:flex.px-4.sm:px-0
    [:div.md:w-1of4
     [:h1.small-caps title]
     [:p.my-4.font-light.text-gray-700.mr-4 description]]
    [:div.md:w-3of4 l]])
 
 (defn page []
-  [:div.px-4.sm:px-0.stack-my-8
+  [:div.stack-my-8
    [list-section
     "Aggregates"
     "Aggregates are collections of attributes that often co-exist on an entity. They are analogous to a SQL table, though some attributes may appear on many aggregates."
