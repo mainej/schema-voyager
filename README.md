@@ -359,20 +359,21 @@ M-x cider-jack-in-cljs
 <choose :app>
 ```
 
-Trigger a run of the [ingestion script](#ingestion-scripts), presumably from a REPL connected to the JS server.
+Trigger a run of the [ingestion script](#ingestion-scripts), either from a CLJ REPL or from the command line.
 After everything is loaded, open [http://localhost:8080](http://localhost:8080).
 When the ingestion script is re-run, changes will be reflected on the page after a short delay.
 
 ## Annotate
 
 The core data for Schema Voyager are the [properties of an attribute](https://docs.datomic.com/cloud/schema/defining-schema.html), like `:db/valueType` and `:db/cardinality`, that have been (or will be) transacted into a Datomic database.
-However, Datomic [recommends](https://docs.datomic.com/cloud/best.html#annotate-schema) that you annotate schema with information that Datomic doesn't need to run, but which helps explain the history and structure of the database.
+Datomic needs these properties to run.
+However, Datomic [recommends](https://docs.datomic.com/cloud/best.html#annotate-schema) that you annotate schema with information that it doesn't need to run, but which helps explain the history and structure of the database.
 
 Schema Voyager introduces [supplemental properties](#supplemental-properties) for annotating attributes.
 
 Though the annotation step is optional, it is an excellent way to enrich and document your schema.
 Without any annotation, Schema Voyager will show the main properties of an attribute like the name, type, cardinality, uniqueness constraints and other properties.
-But with annotation, it can show much more—whether an attribute has been deprecated, what entities it appears on, and what entities to which it refers.
+But with annotation, it can show much more—whether an attribute has been deprecated, which entities it refers to, and more.
 
 To learn all the ways to annotate your schema, it is useful to understand some Schema Voyager [terminology](#terminology) first.
 
@@ -509,10 +510,11 @@ It is zero-indexed.
 #### :db.schema/part-of
 
 Attributes and constants are part of one or more collections.
-By default, Schema Voyager will derive that both the attributes `:artist/name` and `:artist/startYear` should be in the `:artist` aggregate and that the constant `:medium.format/dvd` should be in the `:medium.format` enum.
+By default, Schema Voyager will derive the appropriate collection.
+It will put both the attributes `:artist/name` and `:artist/startYear` in the `:artist` aggregate and the constant `:medium.format/dvd` in the `:medium.format` enum.
 So, most of the time you won't need to specify `:db.schema/part-of`.
 
-```
+```clojure
 ;; UNNECESSARY, this is the default for an *attribute* named :artist/name
 {:db/ident          :artist/name
  :db.schema/part-of [{:db.schema.collection/type :aggregate
@@ -624,8 +626,9 @@ Open the configuration menu in the upper left of any diagram.
 
 The HTML, CSS and compiled JS can be hosted on Netlify or a server of your choice.
 
-You can host the standalone file, or seperate HTML, JS and CSS files.
-For the second option:
+You can host the standalone file by making `target/standalone.html` the `index.html` on your server.
+Alternatively, you can serve seperate HTML, JS and CSS files.
+For this option:
 
 ```sh
 yarn --prod run clean
@@ -634,8 +637,7 @@ yarn --prod run css # generates a purge-css-optimized version of the CSS
 yarn --prod run compile-js # generates a Closure-optimized version of the JS
 ```
 
-Whether using a single file or multiple files, they will all be stored in `assets/*`.
-So, finally, upload that directory to the server.
+Then copy `target/*` into the root directory of the server.
 
 ## Alternatives
 
