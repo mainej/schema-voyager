@@ -70,7 +70,7 @@
 
 (defmethod attribute-panel :attribute [attribute]
   [:div.stack-my-4
-   [:div.sm:flex.justify-between.stack-my-4.sm:stack-my-0
+   [:div.sm:flex.justify-between.stack-my-4.sm:stack-my-0.sm:stack-mx-4
     [attribute-header attribute :aggregate]
     [:div [value-type/shorthand attribute]]]
    [doc-str attribute]])
