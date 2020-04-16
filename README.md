@@ -2,7 +2,7 @@
 
 Schema Voyager is a tool for exploring and documenting the schema of your [Datomic](https://www.datomic.com/) databases.
 
-To get a feel for Schema Voyager, try exploring the [mbrainz schema](https://5e8a39a903b80b0006f2b2f1--focused-kepler-9497ed.netlify.com/).
+To get a feel for Schema Voyager, try exploring the [mbrainz schema](https://focused-kepler-9497ed.netlify.app).
 Or see the [quick start guide](#quick-start) to preview _your_ schema in Schema Voyager.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
