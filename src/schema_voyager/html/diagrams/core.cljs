@@ -1,5 +1,6 @@
 (ns schema-voyager.html.diagrams.core
   (:require [dorothy.core :as dot]
+            [reagent.core :as r]
             [reagent.dom.server :as dom]
             [schema-voyager.html.util :as util]
             [schema-voyager.html.diagrams.config :as diagrams.config]
@@ -80,13 +81,10 @@
       :tooltip   (pr-str (:db/ident attr))
       :href      (util/attr-href attr)}]))
 
-(defn- dot-graph [references {:keys [excluded-eids attrs-visible?]}]
-  (let [excluded-entity? (comp (excluded-eids) :db/id)
-        attrs-visible?   (attrs-visible?)
+(defn- dot-graph [references]
+  (let [attrs-visible?   (diagrams.config/attrs-visible?)
         ;; do not show reference if either source, target, or attribute is marked as excluded
-        shown-references (remove (fn [entities]
-                                   (some excluded-entity? entities))
-                                 references)]
+        shown-references (remove diagrams.config/some-entities-excluded? references)]
     (dot/dot (dot/digraph
               (concat
                [(dot/graph-attrs {:bgcolor (colors :gray-200)})
@@ -102,11 +100,10 @@
                (->> shown-references
                     (map #(dot-edge % attrs-visible?))))))))
 
-(defn erd [_]
-  (let [config-state (diagrams.config/state)]
-    (fn [references]
-      (when (seq references)
-        (let [dot-s (dot-graph references config-state)]
-          [:div
-           [diagrams.config/config config-state references dot-s]
-           [graphviz-svg dot-s]])))))
+(defn erd [references]
+  (r/with-let [_ (diagrams.config/reset-state)]
+    (when (seq references)
+      (let [dot-s (dot-graph references)]
+        [:div
+         [diagrams.config/config references dot-s]
+         [graphviz-svg dot-s]]))))
