@@ -2,15 +2,12 @@
   (:require [schema-voyager.html.util :as util]))
 
 (defn handlers [on-change]
-  {:on-click    (fn [e]
-                  (util/stop e)
-                  (on-change))
+  {:on-click    on-change
    :on-key-down (fn [e]
-                  (let [key (.-key e)]
-                    (when (not= "Tab" key)
-                      (util/prevent e))
-                    (when (= " " key)
-                      (on-change))))})
+                  (when (contains? #{" " "Enter"} (.-key e))
+                    ;; prevent space from scrolling page
+                    (util/prevent e)
+                    (on-change)))})
 
 (defn span [{:keys [checked] :as props}]
   [:span.relative.inline-block.leading-none.flex-shrink-0.h-4.w-6.border-2.border-transparent.rounded-full.transition-colors.ease-in-out.duration-200.focus:outline-none.focus:shadow-outline
