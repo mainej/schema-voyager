@@ -39,13 +39,10 @@
 (defn some-entities-excluded? [entities]
   (some #(deref (r/track excluded-entity? %)) entities))
 
-(defn- toggle-eid [id] (r/rswap! !excluded-eids set-toggle id))
-(defn- exclude-eids [eids] (r/rswap! !excluded-eids #(apply conj % eids)))
-(defn- include-eids [eids] (r/rswap! !excluded-eids #(apply disj % eids)))
-
-(defn- toggle-entity [entity] (toggle-eid (:db/id entity)))
-(defn- exclude-entities [entities] (exclude-eids (map :db/id entities)))
-(defn- include-entities [entities] (include-eids (map :db/id entities)))
+(defn- toggle-entity [exclusions entity] (set-toggle exclusions (:db/id entity)))
+(defn- exclude-entities [exclusions entities] (apply conj exclusions (map :db/id entities)))
+(defn- include-entities [exclusions entities] (apply disj exclusions (map :db/id entities)))
+(defn- swap-exclusions [f & args] (apply r/rswap! !excluded-eids f args))
 
 (def ^:private gear-icon
   [:svg.h-6.w-6.fill-none.stroke-current.stroke-2
@@ -66,7 +63,7 @@
 
 (defn- attr-inclusion [coll attr]
   [:div.flex.items-center.stack-mx-2.cursor-pointer
-   (toggle/handlers #(toggle-entity attr))
+   (toggle/handlers #(swap-exclusions toggle-entity attr))
    [toggle/span {:checked    @(r/track included-entity? attr)
                  :aria-label (str "Toggle inclusion of attribute " (pr-str (:db/ident attr)))}]
    [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]])
@@ -74,7 +71,7 @@
 (defn- collection-inclusion [[coll attrs]]
   [:div.p-3.stack-my-2
    [:div.flex.items-center.stack-mx-2.cursor-pointer
-    (toggle/handlers #(toggle-entity coll))
+    (toggle/handlers #(swap-exclusions toggle-entity coll))
     [toggle/span {:checked    @(r/track included-entity? coll)
                   :aria-label (str "Toggle inclusion of " (:db.schema.collection/type coll) " " (:db.schema.collection/name coll))}]
     [util/coll-name coll]]
@@ -121,7 +118,7 @@
         toggle-entities      (if some-enums-included? exclude-entities include-entities)]
     [:div.p-3.border-b.border-t.border-gray-500
      [:div.flex.items-center.stack-mx-2.cursor-pointer
-      (toggle/handlers #(toggle-entities enums))
+      (toggle/handlers #(swap-exclusions toggle-entities enums))
       [toggle/span {:checked    some-enums-included?
                     :aria-label "Toggle inclusion of enums"}]
       [:span "Include enums?"]]]))
