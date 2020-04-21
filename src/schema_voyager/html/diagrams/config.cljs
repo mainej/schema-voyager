@@ -68,7 +68,7 @@
                  :aria-label (str "Toggle inclusion of attribute " (pr-str (:db/ident attr)))}]
    [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]])
 
-(defn- collection-inclusion [[coll attrs]]
+(defn- collection-inclusion [coll attrs]
   [:div.p-3.stack-my-2
    [:div.flex.items-center.stack-mx-2.cursor-pointer
     (toggle/handlers #(swap-exclusions toggle-entity coll))
@@ -83,10 +83,9 @@
 
 (defn- collections-inclusion [colls-and-attrs]
   [:div.stack-border-y
-   (doall
-    (for [[coll _attrs :as coll-and-attrs] colls-and-attrs]
-      ^{:key (:db/id coll)}
-      [collection-inclusion coll-and-attrs]))])
+   (for [[coll attrs] colls-and-attrs]
+     ^{:key (:db/id coll)}
+     [collection-inclusion coll attrs])])
 
 (defn- dropdown [body]
   (r/with-let [!open? (r/atom false)
