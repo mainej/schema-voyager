@@ -74,7 +74,7 @@
         target-id   (coll-id target)
         self-ref?   (= source-id target-id)]
     [(str source-id (when attrs-visible? (str ":" source-port)) (when self-ref? ":e"))
-     (str target-id (when self-ref? ":ne"))
+     (str target-id (when self-ref? ":n"))
      {:arrowhead (if (= (:db/cardinality attr) :db.cardinality/one)
                    "inv"
                    "crow")
