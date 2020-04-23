@@ -61,31 +61,48 @@
    [:title "Download"]
    [:path {:d "M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"}]])
 
+(defn- attr-visibility []
+  [:fieldset.flex.items-center.stack-mx-2.cursor-pointer
+   (toggle/handlers toggle-attrs-visible)
+   [toggle/span {:checked    @(r/track attrs-visible?)
+                 :aria-label "Toggle visibility of attributes"}]
+   [:span "Show attributes on aggregates?"]])
+
 (defn- attr-inclusion [coll attr]
-  [:div.flex.items-center.stack-mx-2.cursor-pointer
+  [:fieldset.flex.items-center.stack-mx-2.cursor-pointer
    (toggle/handlers #(swap-exclusions toggle-entity attr))
    [toggle/span {:checked    @(r/track included-entity? attr)
                  :aria-label (str "Toggle inclusion of attribute " (pr-str (:db/ident attr)))}]
    [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]])
 
-(defn- collection-inclusion [coll attrs]
-  [:div.p-3.stack-my-2
-   [:div.flex.items-center.stack-mx-2.cursor-pointer
-    (toggle/handlers #(swap-exclusions toggle-entity coll))
-    [toggle/span {:checked    @(r/track included-entity? coll)
-                  :aria-label (str "Toggle inclusion of " (:db.schema.collection/type coll) " " (:db.schema.collection/name coll))}]
-    [util/coll-name coll]]
-   (when (and (seq attrs) (attrs-visible?))
-     [:div.ml-4.stack-my-2
-      (for [attr attrs]
-        ^{:key (:db/id attr)}
-        [attr-inclusion coll attr])])])
+(defn- collection-inclusion [coll]
+  [:fieldset.flex.items-center.stack-mx-2.cursor-pointer
+   (toggle/handlers #(swap-exclusions toggle-entity coll))
+   [toggle/span {:checked    @(r/track included-entity? coll)
+                 :aria-label (str "Toggle inclusion of " (:db.schema.collection/type coll) " " (:db.schema.collection/name coll))}]
+   [util/coll-name coll]])
+
+(defn- enum-inclusion [enums]
+  (let [some-enums-included? @(r/track some-entities-included? enums)
+        toggle-entities      (if some-enums-included? exclude-entities include-entities)]
+    [:fieldset.flex.items-center.stack-mx-2.cursor-pointer
+     (toggle/handlers #(swap-exclusions toggle-entities enums))
+     [toggle/span {:checked    some-enums-included?
+                   :aria-label "Toggle inclusion of enums"}]
+     [:span "Include enums?"]]))
 
 (defn- collections-inclusion [colls-and-attrs]
-  [:div.stack-border-y
-   (for [[coll attrs] colls-and-attrs]
-     ^{:key (:db/id coll)}
-     [collection-inclusion coll attrs])])
+  (let [attrs-visible? @(r/track attrs-visible?)]
+    [:div.stack-border-y
+     (for [[coll attrs] colls-and-attrs]
+       ^{:key (:db/id coll)}
+       [:div.p-3.stack-my-2
+        [collection-inclusion coll]
+        (when (and (seq attrs) attrs-visible?)
+          [:div.ml-4.stack-my-2
+           (for [attr attrs]
+             ^{:key (:db/id attr)}
+             [attr-inclusion coll attr])])])]))
 
 (defn- dropdown [body]
   (r/with-let [!open? (r/atom false)
@@ -103,24 +120,6 @@
        [:<>
         [:div.fixed.inset-0.bg-gray-900.opacity-50 {:on-click close}]
         body])]))
-
-(defn- attr-visibility []
-  [:div.p-3.border-b.border-t.border-gray-500
-   [:div.flex.items-center.stack-mx-2.cursor-pointer
-    (toggle/handlers toggle-attrs-visible)
-    [toggle/span {:checked    (attrs-visible?)
-                  :aria-label "Toggle visibility of attributes"}]
-    [:span "Show attributes on aggregates?"]]])
-
-(defn- enum-inclusion [enums]
-  (let [some-enums-included? @(r/track some-entities-included? enums)
-        toggle-entities      (if some-enums-included? exclude-entities include-entities)]
-    [:div.p-3.border-b.border-t.border-gray-500
-     [:div.flex.items-center.stack-mx-2.cursor-pointer
-      (toggle/handlers #(swap-exclusions toggle-entities enums))
-      [toggle/span {:checked    some-enums-included?
-                    :aria-label "Toggle inclusion of enums"}]
-      [:span "Include enums?"]]]))
 
 (defn- svg-to-blob [svg]
   (js/Blob. #js [svg] #js {:type "image/svg+xml"}))
@@ -144,9 +143,11 @@
     [dropdown
      [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
       [download dot-s]
-      [attr-visibility]
+      [:div.p-3.border-b.border-t.border-gray-500
+       [attr-visibility]]
       [collections-inclusion aggregates-and-attrs]
       (when-let [enums (seq (map first enums-and-attrs))]
         [:<>
-         [enum-inclusion enums]
+         [:div.p-3.border-b.border-t.border-gray-500
+          [enum-inclusion enums]]
          [collections-inclusion enums-and-attrs]])]]))
