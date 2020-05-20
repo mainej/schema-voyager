@@ -34,7 +34,7 @@
 
 (defn details-section [{:keys [db/doc db.schema/see-also db.schema/_see-also] :as attribute}]
   (when (or doc (seq see-also) (seq _see-also))
-    [:div.p-4.sm:p-6.stack-my-6
+    [:div.p-4.sm:p-6.space-y-6
      [doc-str attribute]
      [see-also-links attribute]
      [seen-by-links attribute]]))
@@ -50,11 +50,11 @@
 
 (defn additional-fields [attribute]
   (when-let [fields (seq (unhandled-fields attribute))]
-    [:dl.stack-border-y
+    [:dl.divide-y
      (for [[field value] (sort-by first fields)]
        ^{:key field}
        [:div.sm:flex.p-4.sm:p-6
-        [:dt.sm:w-1of3 (pr-str field)]
+        [:dt.sm:w-1|3 (pr-str field)]
         [:dd (pr-str value)]])]))
 
 (defn diagram [attr]
@@ -62,7 +62,7 @@
   [diagrams/erd (diagrams.query/attr db/db attr)])
 
 (defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]
-  [:h1.font-bold.flex.items-center.stack-mx-2
+  [:h1.font-bold.flex.items-center.space-x-2
    [util/ident-name {:coll-props {:class [:font-normal]}} ident coll-type]
    (when (= :db.unique/identity unique)
      util/lock-closed)
@@ -72,24 +72,24 @@
 (defmulti panel :db.schema.pseudo/type)
 
 (defmethod panel :attribute [attribute]
-  [:div.max-w-4xl.stack-my-6
+  [:div.max-w-4xl.space-y-6
    [:div.px-4.sm:px-0
-    [:div.sm:flex.sm:stack-mx-6
-     [:div.stack-my-4
+    [:div.sm:flex.sm:space-x-6
+     [:div.space-y-4
       [header attribute :aggregate]
       [part-of attribute]]
      [value-type/p attribute]]]
-   [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.stack-border-y
+   [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.divide-y
     [details-section attribute]
     [additional-fields attribute]]
    [diagram attribute]])
 
 (defmethod panel :constant [constant]
-  [:div.max-w-4xl.stack-my-6
-   [:div.px-4.sm:px-0.stack-my-4
+  [:div.max-w-4xl.space-y-6
+   [:div.px-4.sm:px-0.space-y-4
     [header constant :enum]
     [part-of constant]]
-   [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.stack-border-y
+   [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.divide-y
     [details-section constant]
     [additional-fields constant]]])
 

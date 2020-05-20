@@ -62,21 +62,21 @@
    [:path {:d "M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"}]])
 
 (defn- attr-visibility []
-  [:fieldset.flex.items-center.stack-mx-2.cursor-pointer
+  [:fieldset.flex.items-center.space-x-2.cursor-pointer
    (toggle/handlers toggle-attrs-visible)
    [toggle/span {:checked    @(r/track attrs-visible?)
                  :aria-label "Toggle visibility of attributes"}]
    [:span "Show attributes on aggregates?"]])
 
 (defn- attr-inclusion [coll attr]
-  [:fieldset.flex.items-center.stack-mx-2.cursor-pointer
+  [:fieldset.flex.items-center.space-x-2.cursor-pointer
    (toggle/handlers #(swap-exclusions toggle-entity attr))
    [toggle/span {:checked    @(r/track included-entity? attr)
                  :aria-label (str "Toggle inclusion of attribute " (pr-str (:db/ident attr)))}]
    [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]])
 
 (defn- collection-inclusion [coll]
-  [:fieldset.flex.items-center.stack-mx-2.cursor-pointer
+  [:fieldset.flex.items-center.space-x-2.cursor-pointer
    (toggle/handlers #(swap-exclusions toggle-entity coll))
    [toggle/span {:checked    @(r/track included-entity? coll)
                  :aria-label (str "Toggle inclusion of " (:db.schema.collection/type coll) " " (:db.schema.collection/name coll))}]
@@ -85,7 +85,7 @@
 (defn- enum-inclusion [enums]
   (let [some-enums-included? @(r/track some-entities-included? enums)
         toggle-entities      (if some-enums-included? exclude-entities include-entities)]
-    [:fieldset.flex.items-center.stack-mx-2.cursor-pointer
+    [:fieldset.flex.items-center.space-x-2.cursor-pointer
      (toggle/handlers #(swap-exclusions toggle-entities enums))
      [toggle/span {:checked    some-enums-included?
                    :aria-label "Toggle inclusion of enums"}]
@@ -93,13 +93,13 @@
 
 (defn- collections-inclusion [colls-and-attrs]
   (let [attrs-visible? @(r/track attrs-visible?)]
-    [:div.stack-border-y
+    [:div.divide-y
      (for [[coll attrs] colls-and-attrs]
        ^{:key (:db/id coll)}
-       [:div.p-3.stack-my-2
+       [:div.p-3.space-y-2
         [collection-inclusion coll]
         (when (and (seq attrs) attrs-visible?)
-          [:div.ml-4.stack-my-2
+          [:div.ml-4.space-y-2
            (for [attr attrs]
              ^{:key (:db/id attr)}
              [attr-inclusion coll attr])])])]))

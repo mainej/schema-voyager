@@ -19,15 +19,14 @@
     },
     "devDependencies": {},
     "dependencies": {
-        "@fullhuman/postcss-purgecss": "^2.0.6",
         "create-react-class": "^15.6.3",
         "file-saver": "^2.0.2",
-        "postcss-cli": "^7.1.0",
+        "postcss-cli": "^7.1.1",
         "postcss-import": "^12.0.1",
         "postcss-preset-env": "^6.7.0",
         "react": "16.13.0",
         "react-dom": "16.13.0",
         "shadow-cljs": "^2.8.91",
-        "tailwindcss": "^1.2.0"
+        "tailwindcss": "^1.4.4"
     }
 }

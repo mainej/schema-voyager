@@ -23,11 +23,11 @@
     [:p.italic doc]))
 
 (defn- details-section [{:keys [db/doc db.entity/attrs db.entity/preds] :as spec}]
-  [:div.stack-border-y
+  [:div.divide-y
    (when doc
      [:div.px-4.py-6.sm:p-8
       [doc-str spec]])
-   [:div.px-4.py-6.sm:p-8.stack-my-8
+   [:div.px-4.py-6.sm:p-8.space-y-8
     [:div "When placed on an entity, " [util/spec-name spec] "..."]
     (when attrs
       [:div
@@ -47,7 +47,7 @@
 
 (defn page [parameters]
   (let [spec (by-ident (keyword (:id (:path parameters))))]
-    [:div.max-w-4xl.stack-my-6
+    [:div.max-w-4xl.space-y-6
      [:div.px-4.sm:px-0
       [header spec]]
      [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white
