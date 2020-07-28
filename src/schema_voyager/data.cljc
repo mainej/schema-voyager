@@ -21,13 +21,13 @@
                                 :db/doc         "The type of a collection, either :aggregate or :enum."}
    :db.schema/deprecated?      {;; :db/valueType   :db.type/boolean
                                 :db/cardinality :db.cardinality/one
-                                :db/doc         "Whether this attribute or constant fallen out of use. Often used with :db.schema/see-also, to point to a new way of storing some data."}
+                                :db/doc         "Whether this attribute or constant has fallen out of use. Often used with :db.schema/see-also, to point to a new way of storing some data."}
    :db.schema/see-also         {:db/valueType   :db.type/ref
                                 :db/cardinality :db.cardinality/many
                                 :db/doc         "Other attributes to which this attribute is related. Often used with :db.schema/deprecated? to point to a new way of storing some data."}
    :db.schema/part-of          {:db/valueType   :db.type/ref
                                 :db/cardinality :db.cardinality/many
-                                :db/doc         "Which collection(s) this attribute or constant is a part of. Usually derived from the type and namespace of the ident. Can be overridden for attributes that are used on many aggregates."}
+                                :db/doc         "Which collection(s) this attribute or constant is a part of. Usually derived from the type and namespace of the ident. Can be overridden for attributes that are used on many aggregates, or which have many versions."}
    :db.schema/references       {:db/valueType   :db.type/ref
                                 :db/cardinality :db.cardinality/many
                                 :db/doc         "Which collection(s) this attribute refers to."}

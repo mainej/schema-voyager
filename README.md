@@ -136,8 +136,8 @@ But it can also be used as a tool to iterate on a new schema design, or as a way
 So, to see what your schema _could be_, you can [ingest static data](#ingest-static-data) that looks essentially like what you would pass to `d/transact`, as if you were installing schema.
 
 And finally, you'll get the most value out of Schema Voyager if you [annotate](#annotate) your schema.
-The most common way to do this is to save annotations in static data or in a file.
-Schema Voyager can [ingest directly from these files](#ingest-from-files).
+The most common way to do this is to save annotations in a .clj or .edn file.
+Schema Voyager can [ingest directly from edn files](#ingest-from-files).
 It includes a [data reader](#dbschemacollection) to keep the files compact.
 
 #### Ingestion Scripts
