@@ -401,7 +401,7 @@ They are used to trigger entity-level validations within the transactor.
 #### collections
 
 Datomic attributes that share a namespace (e.g. `:track/artist` and `:track/duration`) often appear together on an entity.
-In the majority of the database world, the namespace `:artist` would be called a "table".
+In the majority of the database world, the namespace `:track` would be called a "table".
 (The attributes would be called "columns" and the entities that use them "rows".)
 However, Datomic itself does not use the word "table", nor does it introduce its own terminology for idents that share a namespace.
 
@@ -409,8 +409,10 @@ Schema Voyager calls collections of idents that share a namespace, unsurprisingl
 There are two types.
 
 An **aggregate** is a collection of attributes, what the SQL world would call a "table".
+For example, `:track` is the aggregate that contains `:track/artist` and `:track/duration`.
 
 An **enum** is a collection of constants.
+For example, `:medium.format` is the enum that contains `:medium.format/dvd` and `:medium.format/cd`.
 
 ### Supplemental Properties
 
