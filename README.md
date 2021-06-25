@@ -219,12 +219,11 @@ You can also ask Schema Voyager to infer deprecations and inter-attribute refere
 
 See the documentation for `schema-voyager.ingest.datomic` for more inference options.
 
-These inference tools may help kick start your supplemental properties, but they are imperfect.
-
-**WARNING** Inferences can be slow and expensive.
+> **WARNING** These inference tools may help kick start your supplemental properties, but they are imperfect.
+Inferences can be slow and expensive.
 Avoid running them on a query group that is serving critical traffic.
 
-Because of this caveat, and because often you will need domain knowledge to identify missing references or to audit deprecations, it is preferable to avoid inference by maintaining [references](#dbschemareferences) and [deprecations](#dbschemadeprecated) in a file by hand.
+> Because of this caveat, and because often you will need domain knowledge to identify missing references or to audit deprecations, it's preferable to avoid inference by maintaining [references](#dbschemareferences) and [deprecations](#dbschemadeprecated) in a file by hand.
 
 #### Join sources
 
@@ -250,7 +249,7 @@ Or from a sequence of sources with `schema-voyager.data/join-all`:
 
 Now the fun part!
 
-More adventerous technical users might enjoy exploring Schema Voyager's DataScript DB directly in a Clojure REPL.
+More adventurous technical users might enjoy exploring Schema Voyager's DataScript DB directly in a Clojure REPL.
 (See the `comment` section of [`dev/ingest/projects/mbrainz.clj`](dev/ingest/projects/mbrainz.clj) for a sample.)
 But most users will want something easier.
 So, after ingesting, Schema Voyager can generate a web app from which to explore the schema.
@@ -273,7 +272,7 @@ There is a diagram of references between collections.
 
 ![connections diagram](doc/collections_diagram.png)
 
-Drill into an aggregate or enum to see the attributes or constants that it contains, as well as a more focused diagram of how it is connected to other collections.
+Drill into an aggregate or enum to see the attributes or constants that it contains, as well as a more focused diagram of how it's connected to other collections.
 
 ![aggregate](doc/aggregate.png)
 
@@ -327,11 +326,11 @@ However, Datomic [recommends](https://docs.datomic.com/cloud/best.html#annotate-
 
 Schema Voyager introduces [supplemental properties](#supplemental-properties) for annotating attributes.
 
-Though the annotation step is optional, it is an excellent way to enrich and document your schema.
+Though the annotation step is optional, it's an excellent way to enrich and document your schema.
 Without any annotation, Schema Voyager will show the main properties of an attribute like the name, type, cardinality, uniqueness constraints and other properties.
 But with annotation, it can show much more—whether an attribute has been deprecated, which entities it refers to, and more.
 
-To learn all the ways to annotate your schema, it is useful to understand some Schema Voyager [terminology](#terminology) first.
+To learn all the ways to annotate your schema, it's useful to understand some Schema Voyager [terminology](#terminology) first.
 
 ### Terminology
 
@@ -440,7 +439,7 @@ Collections can be described by adding `:db/doc` strings to them in the annotati
 
 ### Supplemental Properties
 
-With this terminology in hand, it is time to learn how to annotate your schema.
+With this terminology in hand, it's time to learn how to annotate your schema.
 
 To annotate you add supplemental properties, most of which are in the `:db.schema` namespace, directly to the attributes.
 Because [sources can be joined](#join-sources) you can fetch the main properties from Datomic, but augment them with supplemental properties in a file or somewhere else.
@@ -455,8 +454,8 @@ For example, to annotate that an attribute has been deprecated and replaced by a
  :db.schema/deprecated? true
  :db.schema/see-others  [:person/full-name]}
 ```
-It is up to you whether to transact this supplemental data, or leave it in an EDN or CLJ file.
-From experience, this data stays more up-to-date if it is kept _out_ of Datomic.
+It's up to you whether to transact this supplemental data, or leave it in an EDN or CLJ file.
+From experience, this data stays more up-to-date if it's kept _out_ of Datomic.
 
 For an example of supplemental properties, see [resources/mbrainz-supplemental.edn](resources/mbrainz-supplemental.edn).
 That file augments the schema defined in [resources/mbrainz-schema.edn](resources/mbrainz-schema.edn) and [resources/mbrainz-enums.edn](resources/mbrainz-enums.edn).
@@ -475,7 +474,7 @@ Schema Voyager will de-emphasize deprecated attributes in various parts of the U
 
 #### :db.schema/references
 
-For attributes that are `{:db/valueType :db.type/ref}`, it is possible to annotate which collections the attribute references.
+For attributes that are `{:db/valueType :db.type/ref}`, it's possible to annotate which collections the attribute references.
 Adding references is one of the best ways to enrich your schema, and will enable many features when exploring your data.
 Schema Voyager uses references to link attributes to other collections, and to draw relationships in the diagrams.
 To specify that `:address/country` refers to entities with `:country/name` and `:country/alpha-3`, supplement your schema thus:
@@ -637,7 +636,7 @@ Then copy `target/*` into the root directory of the server.
 ## Acknowlegements
 
 * [DataScript](https://github.com/tonsky/datascript) makes it much easier to design and import deeply interconnected data without worrying about how those connections might later be explored.
-  It is very useful to export an entire database from Clojure, then read and manipulate it from ClojureScript.
+  It's very useful to export an entire database from Clojure, then read and manipulate it from ClojureScript.
   Also, it feels right to use Datalog to navigate Datomic data.
 * Though the HTML app isn't very dynamic, it was nice, as always, to build it with [reagent](https://reagent-project.github.io/) and [reitit](https://metosin.github.io/reitit/).
 * [Tailwind CSS](https://tailwindcss.com/) makes writing CSS _fun_.

@@ -114,7 +114,7 @@
   Each element should be an attribute, constant, entity-spec or collection.
 
   This function has two main purposes. First it gives attributes and constants
-  their default `:db.schema/part-of`. Second, it convert literal collection
+  their default `:db.schema/part-of`. Second, it converts literal collection
   references into full Datascript relationships, so that it is possible to
   navigate between collections via attributes."
   [elements]
