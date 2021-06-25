@@ -1,66 +1,50 @@
 [;; collection documentation
- #:db.schema.collection{:name   :release.type
-                        :type   :enum
-                        :db/doc "A type of recording, for example an audiobook versus an album."}
- #:db.schema.collection{:name   :country
-                        :type   :aggregate
-                        :db/doc "A geographical country."}
+ {:db.schema.collection/type :enum
+  :db.schema.collection/name :release.type
+  :db/doc                    "A type of recording, for example an audiobook versus an album."}
+ {:db.schema.collection/type :aggregate
+  :db.schema.collection/name :country
+  :db/doc                    "A geographical country."}
 
  ;; deprecated attributes
- #:db{:id    "attr--track-artists"
-      :ident :track/artists}
- #:db.schema{:db/ident    :track/artistCredit
-             :deprecated? true
-             :see-also    ["attr--track-artists"]}
+ {:db/id    "attr--track-artists"
+  :db/ident :track/artists}
+ {:db/ident              :track/artistCredit
+  :db.schema/deprecated? true
+  :db.schema/see-also    ["attr--track-artists"]}
 
  ;; reclassification of the collections an ident is part of
- #:db.schema{:db/ident :artist.type/name
-             :part-of  [#schema-coll [:enum :artist.type]]}
- #:db.schema{:db/ident :artist.gender/name
-             :part-of  [#schema-coll [:enum :artist.gender]]}
- #:db.schema{:db/ident :label.type/name
-             :part-of  [#schema-coll [:enum :label.type]]}
- #:db.schema{:db/ident :medium.format/name
-             :part-of  [#schema-coll [:enum :medium.format]]}
- #:db.schema{:db/ident :release.packaging/name
-             :part-of  [#schema-coll [:enum :release.packaging]]}
- #:db.schema{:db/ident :release.type/name
-             :part-of  [#schema-coll [:enum :release.type]]}
+ ;;
+ ;; The mbrainz schema defines an `:artist.type/name` attribute. It uses it to
+ ;; document the `:artist.type`s: `#:db{:ident :artist.type/group,
+ ;; :artist.type/name "Group"}`. It probably would have sufficed to use
+ ;; `:db/doc` to document these constants, but schemas always gather some cruft.
+ ;; Rather than make an entire web page for `:artist.type/name`, we reconfigure
+ ;; it to be documented with the `:artist.type`s:
+ {:db/ident :artist.type/name       :db.schema/part-of [#schema/enum :artist.type]}
+ ;; The following attributes all follow the same pattern as `:artist.type/name`.
+ {:db/ident :artist.gender/name     :db.schema/part-of [#schema/enum :artist.gender]}
+ {:db/ident :label.type/name        :db.schema/part-of [#schema/enum :label.type]}
+ {:db/ident :medium.format/name     :db.schema/part-of [#schema/enum :medium.format]}
+ {:db/ident :release.packaging/name :db.schema/part-of [#schema/enum :release.packaging]}
+ {:db/ident :release.type/name      :db.schema/part-of [#schema/enum :release.type]}
 
  ;; references
- #:db.schema{:db/ident   :artist/type
-             :references [#schema-coll [:enum :artist.type]]}
- #:db.schema{:db/ident   :artist/gender
-             :references [#schema-coll [:enum :artist.gender]]}
- #:db.schema{:db/ident   :artist/country
-             :references [#schema-coll [:aggregate :country]]}
- #:db.schema{:db/ident   :abstractRelease/type
-             :references [#schema-coll [:enum :release.type]]}
- #:db.schema{:db/ident   :abstractRelease/artists
-             :references [#schema-coll [:aggregate :artist]]}
- #:db.schema{:db/ident   :label/type
-             :references [#schema-coll [:enum :label.type]]}
- #:db.schema{:db/ident   :label/country
-             :references [#schema-coll [:aggregate :country]]}
- #:db.schema{:db/ident   :release/country
-             :references [#schema-coll [:aggregate :country]]}
- #:db.schema{:db/ident   :release/labels
-             :references [#schema-coll [:aggregate :label]]}
- #:db.schema{:db/ident   :release/script
-             :references [#schema-coll [:aggregate :script]]}
- #:db.schema{:db/ident   :release/language
-             :references [#schema-coll [:aggregate :language]]}
- #:db.schema{:db/ident   :release/media
-             :references [#schema-coll [:aggregate :medium]]}
- #:db.schema{:db/ident   :release/packaging
-             :references [#schema-coll [:enum :release.packaging]]}
- #:db.schema{:db/ident   :release/artists
-             :references [#schema-coll [:aggregate :artist]]}
- #:db.schema{:db/ident   :release/abstractRelease
-             :references [#schema-coll [:aggregate :abstractRelease]]}
- #:db.schema{:db/ident   :medium/tracks
-             :references [#schema-coll [:aggregate :track]]}
- #:db.schema{:db/ident   :medium/format
-             :references [#schema-coll [:enum :medium.format]]}
- #:db.schema{:db/ident   :track/artists
-             :references [#schema-coll [:aggregate :artist]]}]
+ {:db/ident :artist/type             :db.schema/references [#schema/enum :artist.type]}
+ {:db/ident :artist/gender           :db.schema/references [#schema/enum :artist.gender]}
+ {:db/ident :artist/country          :db.schema/references [#schema/agg :country]}
+ {:db/ident :abstractRelease/type    :db.schema/references [#schema/enum :release.type]}
+ {:db/ident :abstractRelease/artists :db.schema/references [#schema/agg :artist]}
+ {:db/ident :label/type              :db.schema/references [#schema/enum :label.type]}
+ {:db/ident :label/country           :db.schema/references [#schema/agg :country]}
+ {:db/ident :release/country         :db.schema/references [#schema/agg :country]}
+ {:db/ident :release/labels          :db.schema/references [#schema/agg :label]}
+ {:db/ident :release/script          :db.schema/references [#schema/agg :script]}
+ {:db/ident :release/language        :db.schema/references [#schema/agg :language]}
+ {:db/ident :release/media           :db.schema/references [#schema/agg :medium]}
+ {:db/ident :release/packaging       :db.schema/references [#schema/enum :release.packaging]}
+ {:db/ident :release/artists         :db.schema/references [#schema/agg :artist]}
+ {:db/ident :release/abstractRelease :db.schema/references [#schema/agg :abstractRelease]}
+ {:db/ident :medium/tracks           :db.schema/references [#schema/agg :track]}
+ {:db/ident :medium/format           :db.schema/references [#schema/enum :medium.format]}
+ {:db/ident :track/artists           :db.schema/references [#schema/agg :artist]}]

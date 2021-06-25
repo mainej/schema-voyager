@@ -59,19 +59,19 @@
   Typically, you don't want to document them, so they are excluded by default.
   You can control which collections are excluded, either more or fewer, by
   passing `coll-exclusions` to [[ingest]]."
-  #{#:db.schema.collection{:type :aggregate, :name :db.alter}
-    #:db.schema.collection{:type :aggregate, :name :db.attr}
-    #:db.schema.collection{:type :aggregate, :name :db.entity}
-    #:db.schema.collection{:type :aggregate, :name :db.excise}
-    #:db.schema.collection{:type :aggregate, :name :db.install}
-    #:db.schema.collection{:type :aggregate, :name :db}
-    #:db.schema.collection{:type :aggregate, :name :fressian}
-    #:db.schema.collection{:type :enum, :name :db.bootstrap}
-    #:db.schema.collection{:type :enum, :name :db.cardinality}
-    #:db.schema.collection{:type :enum, :name :db.part}
-    #:db.schema.collection{:type :enum, :name :db.type}
-    #:db.schema.collection{:type :enum, :name :db.unique}
-    #:db.schema.collection{:type :enum, :name :db}})
+  #{(data/aggregate :db.alter)
+    (data/aggregate :db.attr)
+    (data/aggregate :db.entity)
+    (data/aggregate :db.excise)
+    (data/aggregate :db.install)
+    (data/aggregate :db)
+    (data/aggregate :fressian)
+    (data/enum :db.bootstrap)
+    (data/enum :db.cardinality)
+    (data/enum :db.part)
+    (data/enum :db.type)
+    (data/enum :db.unique)
+    (data/enum :db)})
 
 (defn excluded-attr?
   "Individual attributes can be ignored by including their :db/ident in

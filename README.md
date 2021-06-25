@@ -94,7 +94,7 @@ So, to see what your schema _could be_, you can [ingest static data](#ingest-sta
 And finally, you'll get the most value out of Schema Voyager if you [annotate](#annotate) your schema.
 The most common way to do this is to save annotations in a .clj or .edn file.
 Schema Voyager can [ingest directly from edn files](#ingest-from-files).
-It includes a [data reader](#dbschemacollection) to keep the files compact.
+It includes a [data reader](#collections) to keep the files compact.
 
 #### Ingestion Scripts
 
@@ -336,39 +336,107 @@ To learn all the ways to annotate your schema, it is useful to understand some S
 ### Terminology
 
 Schema Voyager is interested in the `:db/ident`s in your schema.
+It introduces terminology for different type of idents and their various parts.
+
+```
+           aggregate ─────────────────────────────┐
+            ▲                                     │
+            │                                     │
+           ─┴─────                                ├──► collection
+{:db/ident :medium/format :db/type :db.type/ref}  │
+           ─┬────────────                         │
+            │                                     │
+            ▼                                     │
+           attribute ─────────────────────────────┼──┐
+                                                  │  │
+           enum ──────────────────────────────────┘  │
+            ▲                                        ├──► ident
+            │                                        │
+           ─┴─────                                   │
+{:db/ident :medium.format/dvd}                       │
+           ─┬────────────────                        │
+            │                                        │
+            ▼                                        │
+           constant  ────────────────────────────────┘
+```
 
 #### idents
 
-While processing the idents, Schema Voyager classifies them into one of three types.
+While processing the idents, Schema Voyager classifies them into one of three types: attributes, constants and entity specs.
 
 First, there are [**attributes**](https://docs.datomic.com/cloud/schema/defining-schema.html), the main part of any schema.
 Their defining characteristic is that they have a [`:db/valueType`](https://docs.datomic.com/cloud/schema/schema-reference.html#db-valuetype).
-An example is `:track/name`, which is a `:db.type/string`.
+An example atribute is `:track/name`, which has the following schema:
+```clojure
+{:db/ident :track/name, :db/valueType :db.type/string ,,,}
+```
 
 Second, there are [**constants**](https://docs.datomic.com/cloud/best.html#idents-for-enumerated-types), members of an enumerated type.
-They are standalone entities, with a `:db/ident` but no `:db/valueType`. An example is `:medium.format/dvd`.
+They are standalone entities, with a `:db/ident` but no `:db/valueType`. An example is `:medium.format/dvd`, with the following schema:
+```clojure
+{:db/ident :medium.format/dvd}
+```
 
 Schema Voyager treats attributes and constants very similarly, and some of this documentation refers to them collectively as attributes.
 
 Finally, there are [**entity specs**](https://docs.datomic.com/cloud/schema/schema-reference.html#entity-specs).
 These are special entities that have a `:db/ident` as well as `:db.entity/attrs` or `:db.entity/preds`.
 They are used to trigger entity-level validations within the transactor.
+```clojure
+{:db/ident :score/guard
+ :db.entity/attrs [:score/low :score/high]
+ :db.entity/preds 'datomic.samples.entity-preds/scores-are-ordered?}
+ ```
 
 #### collections
 
-Datomic attributes that share a namespace (e.g. `:track/artist` and `:track/duration`) often appear together on an entity.
+Schema Voyager groups collections of idents that share a namespace into what it calls **collections**.
+
+> In Datomic an entity usually consists of several attributes that share a namespace.
+For example, a track entity might contain the `:track/artist` and `:track/duration` attributes, among others.
 In the majority of the database world, the namespace `:track` would be called a "table".
 (The attributes would be called "columns" and the entities that use them "rows".)
-However, Datomic itself does not use the word "table", nor does it introduce its own terminology for idents that share a namespace.
+However, Datomic itself does not use the word "table" nor does it introduce its own terminology for this concept.
 
-Schema Voyager calls collections of idents that share a namespace, unsurprisingly, **collections**.
-There are two types.
+There are two types of collections.
 
 An **aggregate** is a collection of attributes, what the SQL world would call a "table".
 For example, `:track` is the aggregate that contains `:track/artist` and `:track/duration`.
 
 An **enum** is a collection of constants.
-For example, `:medium.format` is the enum that contains `:medium.format/dvd` and `:medium.format/cd`.
+For example, `:medium.format` is the enum that contains `:medium.format/cd` and `:medium.format/dvd`.
+
+Internally, when Schema Voyager needs to reference aggregates or enums they are represented as hash maps:
+```clojure
+{:db.schema.collection/type :aggregate
+ :db.schema.collection/name :artist}
+{:db.schema.collection/type :enum
+ :db.schema.collection/name :medium.format}
+```
+
+This structure is a bit verbose, so within Clojure code, there are helpers to construct collections:
+```clojure
+(schema-voyager.data/aggregate :artist) ;; =>   #:db.schema/collection{:type :aggregate, :name :artist}
+(schema-voyager.data/enum :medium.format) ;; => #:db.schema/collection{:type :enum,      :name :medium.format}
+```
+
+It's also common to reference collections from EDN files, so Schema Voyager provides tagged literals which can be read with `schema-voyager.data/read-string`.
+Because supplemental properties are often stored in EDN files, `schema-voyager.ingest.file/ingest` uses `schema-voyager.data/read-string`.
+In an EDN file:
+
+```clojure
+#schema/agg :artist         ;; => #:db.schema.collection{:type :aggregate, :name :artist}
+#schema/enum :medium.format ;; => #:db.schema.collection{:type :enum,      :name :medium.format}
+```
+
+Collections can be described by adding `:db/doc` strings to them in the annotations. In this case, you may need the long-hand:
+
+```clojure
+{:db.schema.collection/type :aggregate
+ :db.schema.collection/name :artist
+ :db/doc                    "A person or group who contributed to a release or track."}
+```
+
 
 ### Supplemental Properties
 
@@ -414,18 +482,15 @@ To specify that `:address/country` refers to entities with `:country/name` and `
 
 ```clojure
 {:db/ident             :address/country
- :db.schema/references [{:db.schema.collection/type :aggregate
-                         :db.schema.collection/name :country}]}
+ :db.schema/references [(schema-voyager.data/aggregate :country)]}
 ```
 
 To indicate that `:address/region` might refer to either a U.S. state like `:region.usa/new-york` or Canadian province like `:region.can/quebec`.
 
 ```clojure
 {:db/ident             :address/region
- :db.schema/references [{:db.schema.collection/type :enum
-                         :db.schema.collection/name :region.usa}
-                        {:db.schema.collection/type :enum
-                         :db.schema.collection/name :region.can}]}
+ :db.schema/references [(schema-voyager.data/enum :region.usa)
+                        (schema-voyager.data/enum :region.can)]}
 ```
 
 #### :db.schema/tuple-references
@@ -446,8 +511,7 @@ You might supplement it with this annotation:
 ```clojure
 {:db/ident                   :post/ranked-comments
  :db.schema/tuple-references [{:db.schema.tuple/position 1
-                               :db.schema/references     [{:db.schema.collection/type :aggregate
-                                                           :db.schema.collection/name :comment}]}]}
+                               :db.schema/references     [(schema.voyager/aggregate :comment):]}]}
 ```
 
 `:db.schema.tuple/position` is the position at which a ref appears in a tuple.
@@ -461,38 +525,38 @@ It is zero-indexed.
 >  :db/tupleType         :db.type/ref
 >  :db/cardinality       :db.cardinality/one
 >  :db/doc               "References to the top selling 0-5 artists signed to this label."
->  :db.schema/references [{:db.schema.collection/type :aggregate
->                          :db.schema.collection/name :artist}]}
+>  :db.schema/references [(schema.voyager/aggregate :artist)]}
 > ```
 
 #### :db.schema/part-of
 
 Attributes and constants are part of one or more collections.
-By default, Schema Voyager will derive the appropriate collection.
+By default, Schema Voyager will derive the appropriate collection from the ident's namespace.
 It will put both the attributes `:artist/name` and `:artist/startYear` in the `:artist` aggregate and the constant `:medium.format/dvd` in the `:medium.format` enum.
 So, most of the time you won't need to specify `:db.schema/part-of`.
 
 ```clojure
-;; UNNECESSARY, this is the default for an *attribute* named :artist/name
 {:db/ident          :artist/name
- :db.schema/part-of [{:db.schema.collection/type :aggregate
-                      :db.schema.collection/name :artist}]}
+ :db/valueType      :db.type/string
+ ;; UNNECESSARY, this is the default for an *attribute* named :artist/name
+ :db.schema/part-of [(schema-voyager.data/aggregate :artist)]}
 
-;; UNNECESSARY, this is the default for a *constant* named :medium.format/dvd
 {:db/ident          :medium.format/dvd
- :db.schema/part-of [{:db.schema.collection/type :enum
-                      :db.schema.collection/name :medium.format}]}
+ ;; UNNECESSARY, this is the default for a *constant* named :medium.format/dvd
+ :db.schema/part-of [(schema-voyager.data/enum :medium.format)]}
 ```
 
-However, the namespace of an attribute does not always match its usage. So, if you need to, you can override the default collection.
+However, there are exceptions.
+The namespace of an attribute does not always match its usage.
+So, if you need to, you can override the default collection.
 
 For example, some attributes are used alongside attributes in a different namespace:
 
 ```clojure
 ;; :car.make/name appears directly on :car entities
 {:db/ident          :car.make/name
- :db.schema/part-of [{:db.schema.collection/type :aggregate
-                      :db.schema.collection/name :car}]}
+ :db/valueType      :db.type/string
+ :db.schema/part-of [(schema-voyager.data/aggregate :car)]}
 ```
 
 Others are used on many different aggregates:
@@ -500,10 +564,9 @@ Others are used on many different aggregates:
 ```clojure
 ;; :timestamp/updated-at appears on both posts and comments
 {:db/ident          :timestamp/updated-at
- :db.schema/part-of [{:db.schema.collection/type :aggregate
-                      :db.schema.collection/name :post}
-                     {:db.schema.collection/type :aggregate
-                      :db.schema.collection/name :comment}]}
+ :db/valueType      :db.type/inst
+ :db.schema/part-of [(schema-voyager.data/aggregate :post)
+                     (schema-voyager.data/aggregate :comment)]}
 ```
 
 #### :db.schema/see-also
@@ -526,36 +589,6 @@ You may have to use tempids to create see-also references between attributes.
 > {:db/ident           :track/artistCredit
 >  :db.schema/see-also ["attr--track-artists"]}
 > ```
-
-#### :db.schema.collection
-
-By this point, you probably understand how to refer to a collection.
-But to be explicit...
-When used together, `:db.schema.collection/type` and `:db.schema.collection/name` define a collection.
-The values of both are keywords.
-`:db.schema.collection/type` can be either `:aggregate` or `:enum`.
-
-An example is:
-
-```clojure
-{:db.schema.collection/type :aggregate
- :db.schema.collection/name :artist}
-```
-
-> **NOTE**: Since it is common to reference collections in supplemental property files, Schema Voyager provides an EDN reader, most commonly accessed via `schema-voyager.ingest.file/ingest`.
-In an EDN file, the above could be re-written:
-
-> ```clojure
-> #schema-coll[:aggregate :artist]
-> ```
-
-You can also add `:db/doc` strings to collections:
-
-```clojure
-{:db.schema.collection/type :aggregate
- :db.schema.collection/name :artist
- :db/doc                    "A person or group who contributed to a release or track."}
-```
 
 ## Export
 

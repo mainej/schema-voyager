@@ -3,14 +3,36 @@
   (:require [clojure.edn :as edn]
             [clojure.walk :as walk]))
 
-(defn read-schema-coll [[type name]]
+(defn collection [type name]
   #:db.schema.collection{:type type, :name name})
 
+(defn aggregate [name]
+  (collection :aggregate name))
+
+(defn enum [name]
+  (collection :enum name))
+
+(defn read-schema-coll [[type name]]
+  (collection type name))
+
 (defn read-string
-  "Reads `s` as EDN, converting `#schema-coll[:enum :foo]` into:
-  `#:db.schema.collection{:type :enum, :name :foo}`"
+  "Reads `s` as EDN, converting
+  ```clojure
+  #schema/enum :foo ;; => #:db.schema.collection{:type :enum, :name :foo}
+  #schema/agg :foo ;; => #:db.schema.collection{:type :aggregate, :name :foo}
+  ```
+
+  Still supported, but deprecated:
+  ```
+  #schema-coll[:enum :foo] ;; => #:db.schema.collection{:type :enum, :name :foo}
+  #schema/coll[:enum :foo] ;; => #:db.schema.collection{:type :enum, :name :foo}
+  ```"
   [s]
-  (edn/read-string {:readers {'schema-coll read-schema-coll}} s))
+  (edn/read-string {:readers {'schema-coll read-schema-coll
+                              'schema/coll read-schema-coll
+                              'schema/agg  aggregate
+                              'schema/enum enum}}
+                   s))
 
 (def metaschema
   {:db.schema.collection/name  {;; :db/valueType   :db.type/keyword
@@ -55,8 +77,8 @@
   (keyword (namespace (:db/ident attribute))))
 
 (defn attribute-derive-collection [attribute]
-  {:db.schema.collection/type (attribute-derive-collection-type attribute)
-   :db.schema.collection/name (attribute-derive-collection-name attribute)})
+  (collection (attribute-derive-collection-type attribute)
+              (attribute-derive-collection-name attribute)))
 
 (defn attribute-derive-part-of [attribute]
   (get attribute :db.schema/part-of [(attribute-derive-collection attribute)]))
