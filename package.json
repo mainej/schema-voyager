@@ -7,8 +7,7 @@
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf target && mkdir target",
-        "toc": "doctoc README.md --title '**Table of Contents**'",
-        "readme": "yarn run toc && pandoc -i README.md -o readme.html",
+        "readme": "pandoc -i README.md -o readme.html",
         "html": "cp assets/index.html target/",
         "css": "postcss -c postcss.config.js -o target/styles.css assets/css/styles.css",
         "js-server": "shadow-cljs -A:test server",

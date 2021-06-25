@@ -5,50 +5,6 @@ Schema Voyager is a tool for exploring and documenting the schema of your [Datom
 To get a feel for Schema Voyager, try exploring the [mbrainz schema](https://focused-kepler-9497ed.netlify.app).
 Or see the [quick start guide](#quick-start) to preview _your_ schema in Schema Voyager.
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
-
-- [Overview](#overview)
-- [Quick Start](#quick-start)
-  - [Ingest from Datomic (Quick Start)](#ingest-from-datomic-quick-start)
-  - [Infer from Datomic (Quick Start)](#infer-from-datomic-quick-start)
-  - [Ingest from files (Quick Start)](#ingest-from-files-quick-start)
-  - [Explore data (Quick Start)](#explore-data-quick-start)
-- [Usage](#usage)
-  - [Ingest](#ingest)
-    - [Ingestion Scripts](#ingestion-scripts)
-    - [Run an ingestion script](#run-an-ingestion-script)
-    - [Ingest static data](#ingest-static-data)
-    - [Ingest from files](#ingest-from-files)
-    - [Ingest from Datomic](#ingest-from-datomic)
-    - [Infer from Datomic](#infer-from-datomic)
-    - [Join sources](#join-sources)
-  - [Explore](#explore)
-    - [Explore Standalone Web Page](#explore-standalone-web-page)
-    - [Explore Live Web Page](#explore-live-web-page)
-- [Annotate](#annotate)
-  - [Terminology](#terminology)
-    - [idents](#idents)
-    - [collections](#collections)
-  - [Supplemental Properties](#supplemental-properties)
-    - [:db.schema/deprecated?](#dbschemadeprecated)
-    - [:db.schema/references](#dbschemareferences)
-    - [:db.schema/tuple-references](#dbschematuple-references)
-    - [:db.schema/part-of](#dbschemapart-of)
-    - [:db.schema/see-also](#dbschemasee-also)
-    - [:db.schema.collection](#dbschemacollection)
-- [Export](#export)
-  - [Export DataScript](#export-datascript)
-  - [Export Standalone Web Page](#export-standalone-web-page)
-  - [Export ERD Diagrams](#export-erd-diagrams)
-  - [Host Web App](#host-web-app)
-- [Alternatives](#alternatives)
-- [Acknowlegements](#acknowlegements)
-- [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 ## Overview
 
 There are two steps to using Schema Voyager.
