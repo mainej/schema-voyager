@@ -10,7 +10,7 @@
   [[com.datomic/client-cloud]], but you may need your own version.
 
   ```bash
-  clojure -M:ingest:datomic -m ingest.projects.my-project
+  clojure -A:ingest:datomic -m ingest.projects.my-project
   ```
 
   The most basic usage of this namespace would look like:

@@ -15,7 +15,7 @@
         "watch-js": "shadow-cljs watch app",
         "build-js": "shadow-cljs compile app",
         "compile-js": "shadow-cljs release app",
-        "standalone": "clojure -M:export -m build.standalone"
+        "standalone": "clojure -A:export -m build.standalone"
     },
     "devDependencies": {
         "tailwindcss": "^2.2.2"
