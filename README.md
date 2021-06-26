@@ -25,7 +25,7 @@ These will give you a taste of Schema Voyager's capabilities, but be sure to rea
 If you have a running Datomic database:
 
 ```sh
-clj -A:ingest:datomic -m ingest.datomic my-db-name \
+clojure -M:ingest:datomic -m ingest.datomic my-db-name \
   '{:server-type :ion, :region "us-east-1", :system "my-system", :endpoint "http://entry.my-system.us-east-1.datomic.net:8182/", :proxy-port 8182}'
 ```
 
@@ -33,7 +33,7 @@ clj -A:ingest:datomic -m ingest.datomic my-db-name \
 
 Alternatively, you can ask Schema Voyager to also infer deprecated attributes and references between attributes by inspecting how they are used in a database.
 ```sh
-clj -A:ingest:datomic -m ingest.datomic my-db-name \
+clojure -M:ingest:datomic -m ingest.datomic my-db-name \
   '{:server-type :ion, :region "us-east-1", :system "my-system", :endpoint "http://entry.my-system.us-east-1.datomic.net:8182/", :proxy-port 8182} \
   --infer references --infer deprecations
 ```
@@ -43,7 +43,7 @@ Or, preferably, [avoid inference](#infer-from-datomic).
 
 For more options related to inference, refer to the command-line help:
 ```sh
-clj -A:ingest:datomic -m ingest.datomic --help
+clojure -M:ingest:datomic -m ingest.datomic --help
 ```
 
 ### Ingest from files (Quick Start)
@@ -51,7 +51,7 @@ clj -A:ingest:datomic -m ingest.datomic --help
 If instead your schema is in one or more files:
 
 ```sh
-clj -A:ingest -m ingest.files resources/db/schema-1.edn resources/db/schema-2.edn
+clojure -M:ingest -m ingest.files resources/db/schema-1.edn resources/db/schema-2.edn
 ```
 
 ### Explore data (Quick Start)
@@ -150,7 +150,7 @@ As files' content changes or as new schema gets transacted, you will need to re-
 You can do this from a REPL in your namespace. Or if the namespace has a `-main` function, you can re-run from a terminal:
 
 ```sh
-clj -A:ingest -m ingest.projects.my-project
+clojure -M:ingest -m ingest.projects.my-project
 ```
 
 #### Ingest static data
@@ -201,7 +201,7 @@ Schema Voyager can query a running Datomic for these entities with `schema-voyag
 This project provides an alias `:datomic` which will pull in a version of `com.datomic/client-cloud`.
 
 > ```sh
-> clj -A:ingest:datomic -m ingest.projects.my-project
+> clojure -M:ingest:datomic -m ingest.projects.my-project
 > ```
 
 > If the provided version of `datomic.client.api` isn't right for your project, consider using `-Sdeps` to get the appropriate version.

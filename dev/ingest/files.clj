@@ -2,7 +2,7 @@
   "A CLI for ingesting one or more schema files.
 
   ```
-  clj -A:ingest -m ingest.files <file>+
+  clojure -M:ingest -m ingest.files <file>+
   ```"
   (:require [schema-voyager.data :as data]
             [schema-voyager.export :as export]

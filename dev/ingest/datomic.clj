@@ -11,7 +11,7 @@
   performance impacts. Use at your own risk.
 
   ```
-  clj -A:ingest:datomic -m ingest.datomic <db-name> <datomic-client-config-edn>
+  clojure -M:ingest:datomic -m ingest.datomic <db-name> <datomic-client-config-edn>
   ```"
   (:require [schema-voyager.ingest.datomic :as ingest.datomic]
             [schema-voyager.data :as data]
@@ -60,7 +60,7 @@
   (fmt-desc
    ["Ingest schema into Schema Voyager from a running Datomic database."
     ""
-    "Usage: clj -A:ingest:datomic -m ingest.datomic [options] db-name datomic-client-config-edn"
+    "Usage: clojure -M:ingest:datomic -m ingest.datomic [options] db-name datomic-client-config-edn"
     ""
     "\tdb-name: A string naming the DB to which you want to connect."
     ""
