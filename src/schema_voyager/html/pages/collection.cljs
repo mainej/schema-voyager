@@ -84,7 +84,7 @@
 (defn page [{:keys [db.schema/_part-of db.schema.pseudo/referenced-by db/doc] :as coll}]
   [:div.space-y-6
    [:div.px-4.sm:px-0.space-y-6
-    [:h1.font-bold.whitespace-no-wrap
+    [:h1.font-bold.whitespace-nowrap
      [util/coll-name* coll]
      " "
      [util/aggregate-abbr coll]]

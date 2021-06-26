@@ -16,7 +16,7 @@
   (shadow/release :app))
 
 (defn optimized-css []
-  (yarn-run "css"))
+  (yarn-run "compile-css"))
 
 (defn standalone-html []
   (spit "target/standalone.html"

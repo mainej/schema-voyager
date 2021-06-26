@@ -293,7 +293,7 @@ First you need HTML and CSS files.
 
 ```sh
 yarn run html # only once, or if assets/index.html has changed
-yarn run css # only once, or if anything in assets/css/* has changed
+yarn run watch-css
 ```
 
 Then you need a running JS server.
@@ -623,7 +623,7 @@ For this option:
 ```sh
 yarn --prod run clean
 yarn --prod run html # generates index.html
-yarn --prod run css # generates a purge-css-optimized version of the CSS
+yarn --prod run compile-css # generates a minified version of the CSS
 yarn --prod run compile-js # generates a Closure-optimized version of the JS
 ```
 
@@ -640,8 +640,7 @@ Then copy `target/*` into the root directory of the server.
   Also, it feels right to use Datalog to navigate Datomic data.
 * Though the HTML app isn't very dynamic, it was nice, as always, to build it with [reagent](https://reagent-project.github.io/) and [reitit](https://metosin.github.io/reitit/).
 * [Tailwind CSS](https://tailwindcss.com/) makes writing CSS _fun_.
-  Along with assistance from [PostCSS](https://postcss.org/) and [PurgeCSS](https://purgecss.com/) it creates amazingly small CSS files.
-  And the pages look nice, right?
+  Easy refactoring of styles, small CSS files, and the pages look nice, right?
 * It's amazing what goes into running GraphViz on the web.
   Thanks to [Dorothy](https://github.com/cemerick/dorothy) for the tricky bits of DOT.
   And to [HPCC-Systems](https://github.com/hpcc-systems/hpcc-js-wasm) for compiling GraphViz for the browser.

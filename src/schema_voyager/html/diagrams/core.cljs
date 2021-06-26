@@ -7,15 +7,15 @@
             [schema-voyager.html.diagrams.util :as diagrams.util]))
 
 (def ^:private colors
-  {:purple-700  "#6b46c1"
-   :green-600   "#38a169"
-   :blue-500    "#4299e1"
+  {:purple-700  "#6D28D9"
+   :green-600   "#059669"
+   :blue-500    "#3B82F6"
    :white       "#ffffff"
-   :gray-100    "#f7fafc"
-   :gray-200    "#edf2f7"
-   :gray-300    "#e2e8f0"
-   :gray-500    "#a0aec0"
-   :gray-600    "#718096"
+   :gray-100    "#F3F4F6"
+   :gray-200    "#E5E7EB"
+   :gray-300    "#D1D5DB"
+   :gray-500    "#6B7280"
+   :gray-600    "#4B5563"
    :transparent "transparent"})
 
 (defn- coll-id [{coll-type :db.schema.collection/type

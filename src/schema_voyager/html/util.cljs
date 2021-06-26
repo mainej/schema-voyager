@@ -49,14 +49,14 @@
     (pr-str name)]))
 
 (defn coll-name* [coll]
-  [:span.whitespace-no-wrap [coll-name coll] slash asterisk])
+  [:span.whitespace-nowrap [coll-name coll] slash asterisk])
 
 (defn ident-name
   ([ident]
    [:span.text-blue-500 (pr-str ident)])
   ([ident coll-type] [ident-name {} ident coll-type])
   ([{:keys [coll-props ident-props]} ident coll-type]
-   [:span.whitespace-no-wrap
+   [:span.whitespace-nowrap
     [coll-name coll-props {:db.schema.collection/name (keyword (namespace ident))
                            :db.schema.collection/type coll-type}]
     slash
@@ -79,7 +79,7 @@
 
 (defn coll-link [coll]
   [link {:href     (coll-href coll)
-         :class    :whitespace-no-wrap
+         :class    :whitespace-nowrap
          :on-click stop}
    [coll-name* coll]
    " "
@@ -101,14 +101,14 @@
 (defn attr-link [{:keys [db/ident db.schema/part-of] :as attr}]
   (if (= 1 (count part-of))
     (let [coll (first part-of)]
-      [:span.whitespace-no-wrap
+      [:span.whitespace-nowrap
        [link {:href (coll-href coll)}
         [coll-name coll]]
        slash
        [link {:href (attr-href attr)}
         [:span.text-blue-500 (name ident)]]
        [attr-deprecated-abbr attr]])
-    [link {:class :whitespace-no-wrap
+    [link {:class :whitespace-nowrap
            :href  (attr-href attr)}
      [ident-name ident]
      [attr-deprecated-abbr attr]]))

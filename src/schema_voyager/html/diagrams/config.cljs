@@ -141,7 +141,7 @@
              diagrams.util/colls-with-attrs
              (group-by (comp :db.schema.collection/type first)))]
     [dropdown
-     [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-no-wrap
+     [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-nowrap
       [download dot-s]
       [:div.p-3.border-b.border-t.border-gray-500
        [attr-visibility]]

@@ -1,9 +1,0 @@
-/**
- * Override tailwindcss's default placeholder color
- */
-
-input::placeholder,
-textarea::placeholder {
-    @apply text-gray-800;
-}
-

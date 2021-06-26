@@ -9,23 +9,22 @@
         "clean": "rm -rf target && mkdir target",
         "readme": "pandoc -i README.md -o readme.html",
         "html": "cp assets/index.html target/",
-        "css": "postcss -c postcss.config.js -o target/styles.css assets/css/styles.css",
+        "watch-css": "npx tailwindcss -i assets/css/styles.css -o target/styles.css -w",
+        "compile-css": "npx tailwindcss -i assets/css/styles.css -o target/styles.css --minify",
         "js-server": "shadow-cljs -A:test server",
         "watch-js": "shadow-cljs watch app",
         "build-js": "shadow-cljs compile app",
         "compile-js": "shadow-cljs release app",
         "standalone": "clj -A:export -m build.standalone"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "tailwindcss": "^2.2.2"
+    },
     "dependencies": {
         "create-react-class": "^15.6.3",
         "file-saver": "^2.0.2",
-        "postcss-cli": "^7.1.1",
-        "postcss-import": "^12.0.1",
-        "postcss-preset-env": "^6.7.0",
         "react": "16.13.0",
         "react-dom": "16.13.0",
-        "shadow-cljs": "^2.8.91",
-        "tailwindcss": "^1.4.4"
+        "shadow-cljs": "^2.8.91"
     }
 }
