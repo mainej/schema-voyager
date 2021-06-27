@@ -3,8 +3,8 @@
 
   This is useful to get a 'quick view' of an unfamiliar database, one that
   hasn't yet been annotated with supplemental schema. However, in the long run
-  you should use the output from `schema.voyager.datomic/infer-references` and
-  `schema.voyager.datomic/infer-deprecations` as a starting point for your own
+  you should use the output from `schema-voyager.ingest.datomic/infer-references` and
+  `schema-voyager.ingest.datomic/infer-deprecations` as a starting point for your own
   supplemental schema.
 
   WARNING: This has not been tested on large databases, where it may have

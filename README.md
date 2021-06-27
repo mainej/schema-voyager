@@ -510,7 +510,7 @@ You might supplement it with this annotation:
 ```clojure
 {:db/ident                   :post/ranked-comments
  :db.schema/tuple-references [{:db.schema.tuple/position 1
-                               :db.schema/references     [(schema.voyager/aggregate :comment):]}]}
+                               :db.schema/references     [(schema-voyager.data/aggregate :comment):]}]}
 ```
 
 `:db.schema.tuple/position` is the position at which a ref appears in a tuple.
@@ -524,7 +524,7 @@ It is zero-indexed.
 >  :db/tupleType         :db.type/ref
 >  :db/cardinality       :db.cardinality/one
 >  :db/doc               "References to the top selling 0-5 artists signed to this label."
->  :db.schema/references [(schema.voyager/aggregate :artist)]}
+>  :db.schema/references [(schema-voyager.data/aggregate :artist)]}
 > ```
 
 #### :db.schema/part-of
