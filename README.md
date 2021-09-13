@@ -337,26 +337,26 @@ To learn all the ways to annotate your schema, it's useful to understand some Sc
 Schema Voyager is interested in the `:db/ident`s in your schema.
 It introduces terminology for different type of idents and their various parts.
 
-```
-           aggregate ─────────────────────────────┐
-            ▲                                     │
-            │                                     │
-           ─┴─────                                ├──► collection
-{:db/ident :medium/format :db/type :db.type/ref}  │
-           ─┬────────────                         │
-            │                                     │
-            ▼                                     │
-           attribute ─────────────────────────────┼──┐
-                                                  │  │
-           enum ──────────────────────────────────┘  │
-            ▲                                        ├──► ident
-            │                                        │
-           ─┴─────                                   │
-{:db/ident :medium.format/dvd}                       │
-           ─┬────────────────                        │
-            │                                        │
-            ▼                                        │
-           constant  ────────────────────────────────┘
+``` clojure
+;          aggregate ───────────────────────────────────┐
+;           ▲                                           │
+;           │                                           │
+;          ─┴─────                                      ├──► collection
+{:db/ident :medium/format, :db/valueType :db.type/ref}; │
+;          ─┬────────────                               │
+;           │                                           │
+;           ▼                                           │
+;          attribute ───────────────────────────────────┼──┐
+;                                                       │  │
+;          enum ────────────────────────────────────────┘  │
+;           ▲                                              ├──► ident
+;           │                                              │
+;          ─┴─────                                         │
+{:db/ident :medium.format/dvd};                            │
+;          ─┬────────────────                              │
+;           │                                              │
+;           ▼                                              │
+;          constant  ──────────────────────────────────────┘
 ```
 
 #### idents
@@ -382,7 +382,7 @@ Finally, there are [**entity specs**](https://docs.datomic.com/cloud/schema/sche
 These are special entities that have a `:db/ident` as well as `:db.entity/attrs` or `:db.entity/preds`.
 They are used to trigger entity-level validations within the transactor.
 ```clojure
-{:db/ident :score/guard
+{:db/ident        :score/guard
  :db.entity/attrs [:score/low :score/high]
  :db.entity/preds 'datomic.samples.entity-preds/scores-are-ordered?}
  ```
