@@ -199,11 +199,11 @@ Schema Voyager can query a running Datomic for these entities with `schema-voyag
 
 > **NOTE**: If you require `schema-voyager.ingest.datomic`, you will need to have `datomic.client.api` on your classpath.
 This project provides an alias `:datomic` which will pull in a version of `com.datomic/client-cloud`.
-
+>
 > ```sh
 > clojure -A:ingest:datomic -m ingest.projects.my-project
 > ```
-
+>
 > If the provided version of `datomic.client.api` isn't right for your project, consider using `-Sdeps` to get the appropriate version.
 
 #### Infer from Datomic
@@ -222,7 +222,7 @@ See the documentation for `schema-voyager.ingest.datomic` for more inference opt
 > **WARNING** These inference tools may help kick start your supplemental properties, but they are imperfect.
 Inferences can be slow and expensive.
 Avoid running them on a query group that is serving critical traffic.
-
+>
 > Because of this caveat, and because often you will need domain knowledge to identify missing references or to audit deprecations, it's preferable to avoid inference by maintaining [references](#dbschemareferences) and [deprecations](#dbschemadeprecated) in a file by hand.
 
 #### Join sources
@@ -517,7 +517,7 @@ You might supplement it with this annotation:
 It is zero-indexed.
 
 > **NOTE**: Use `:db.schema/references` to define the references of a [homogeneous tuple](https://docs.datomic.com/cloud/schema/schema-reference.html#homogeneous-tuples):
-
+>
 > ```clojure
 > {:db/ident             :label/top-artists
 >  :db/valueType         :db.type/tuple
@@ -580,8 +580,7 @@ It may help to understand an attribute by learning about one or more other attri
 
 > **NOTE**: you can refer to collections without predefining them, but the same is not true of attribute references.
 You may have to use tempids to create see-also references between attributes.
-
-
+>
 > ```clojure
 > {:db/id    "attr--track-artists"
 >  :db/ident :track/artists}
