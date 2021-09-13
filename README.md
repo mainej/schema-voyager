@@ -407,28 +407,17 @@ For example, `:medium.format` is the enum that contains `:medium.format/cd` and 
 
 Internally, when Schema Voyager needs to reference aggregates or enums they are represented as hash maps:
 ```clojure
-{:db.schema.collection/type :aggregate
- :db.schema.collection/name :artist}
-{:db.schema.collection/type :enum
- :db.schema.collection/name :medium.format}
+#:db.schema.collection{:type :aggregate, :name :artist}
+#:db.schema.collection{:type :enum,      :name :medium.format}
 ```
 
-This structure is a bit verbose, so within Clojure code, there are helpers to construct collections:
-```clojure
-(schema-voyager.data/aggregate :artist) ;; =>   #:db.schema/collection{:type :aggregate, :name :artist}
-(schema-voyager.data/enum :medium.format) ;; => #:db.schema/collection{:type :enum,      :name :medium.format}
-```
-
-It's also common to reference collections from EDN files, so Schema Voyager provides tagged literals which can be read with `schema-voyager.data/read-string`.
-Because supplemental properties are often stored in EDN files, `schema-voyager.ingest.file/ingest` uses `schema-voyager.data/read-string`.
-In an EDN file:
-
+This structure is a bit verbose, so within Clojure code and EDN files, use this data-reader shorthand:
 ```clojure
 #schema/agg :artist         ;; => #:db.schema.collection{:type :aggregate, :name :artist}
 #schema/enum :medium.format ;; => #:db.schema.collection{:type :enum,      :name :medium.format}
 ```
 
-Collections can be described by adding `:db/doc` strings to them in the annotations. In this case, you may need the long-hand:
+If you need to add further information about a collection (e.g. collections can be described by annotating them with a `:db/doc`), you may need the long-hand:
 
 ```clojure
 {:db.schema.collection/type :aggregate
@@ -481,15 +470,15 @@ To specify that `:address/country` refers to entities with `:country/name` and `
 
 ```clojure
 {:db/ident             :address/country
- :db.schema/references [(schema-voyager.data/aggregate :country)]}
+ :db.schema/references [#schema/agg :country]}
 ```
 
 To indicate that `:address/region` might refer to either a U.S. state like `:region.usa/new-york` or Canadian province like `:region.can/quebec`.
 
 ```clojure
 {:db/ident             :address/region
- :db.schema/references [(schema-voyager.data/enum :region.usa)
-                        (schema-voyager.data/enum :region.can)]}
+ :db.schema/references [#schema/enum :region.usa
+                        #schema/enum :region.can]}
 ```
 
 #### :db.schema/tuple-references
@@ -510,7 +499,7 @@ You might supplement it with this annotation:
 ```clojure
 {:db/ident                   :post/ranked-comments
  :db.schema/tuple-references [{:db.schema.tuple/position 1
-                               :db.schema/references     [(schema-voyager.data/aggregate :comment):]}]}
+                               :db.schema/references     [#schema/agg :comment]}]}
 ```
 
 `:db.schema.tuple/position` is the position at which a ref appears in a tuple.
@@ -524,7 +513,7 @@ It is zero-indexed.
 >  :db/tupleType         :db.type/ref
 >  :db/cardinality       :db.cardinality/one
 >  :db/doc               "References to the top selling 0-5 artists signed to this label."
->  :db.schema/references [(schema-voyager.data/aggregate :artist)]}
+>  :db.schema/references [#schema/agg :artist]}
 > ```
 
 #### :db.schema/part-of
@@ -538,11 +527,11 @@ So, most of the time you won't need to specify `:db.schema/part-of`.
 {:db/ident          :artist/name
  :db/valueType      :db.type/string
  ;; UNNECESSARY, this is the default for an *attribute* named :artist/name
- :db.schema/part-of [(schema-voyager.data/aggregate :artist)]}
+ :db.schema/part-of [#schema/agg :artist]}
 
 {:db/ident          :medium.format/dvd
  ;; UNNECESSARY, this is the default for a *constant* named :medium.format/dvd
- :db.schema/part-of [(schema-voyager.data/enum :medium.format)]}
+ :db.schema/part-of [#schema/enum :medium.format]}
 ```
 
 However, there are exceptions.
@@ -555,7 +544,7 @@ For example, some attributes are used alongside attributes in a different namesp
 ;; :car.make/name appears directly on :car entities
 {:db/ident          :car.make/name
  :db/valueType      :db.type/string
- :db.schema/part-of [(schema-voyager.data/aggregate :car)]}
+ :db.schema/part-of [#schema/agg :car]}
 ```
 
 Others are used on many different aggregates:
@@ -564,8 +553,8 @@ Others are used on many different aggregates:
 ;; :timestamp/updated-at appears on both posts and comments
 {:db/ident          :timestamp/updated-at
  :db/valueType      :db.type/inst
- :db.schema/part-of [(schema-voyager.data/aggregate :post)
-                     (schema-voyager.data/aggregate :comment)]}
+ :db.schema/part-of [#schema/agg :post
+                     #schema/agg :comment]}
 ```
 
 #### :db.schema/see-also

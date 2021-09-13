@@ -59,19 +59,19 @@
   Typically, you don't want to document them, so they are excluded by default.
   You can control which collections are excluded, either more or fewer, by
   passing `coll-exclusions` to [[ingest]]."
-  #{(data/aggregate :db.alter)
-    (data/aggregate :db.attr)
-    (data/aggregate :db.entity)
-    (data/aggregate :db.excise)
-    (data/aggregate :db.install)
-    (data/aggregate :db)
-    (data/aggregate :fressian)
-    (data/enum :db.bootstrap)
-    (data/enum :db.cardinality)
-    (data/enum :db.part)
-    (data/enum :db.type)
-    (data/enum :db.unique)
-    (data/enum :db)})
+  #{#schema/agg :db.alter
+    #schema/agg :db.attr
+    #schema/agg :db.entity
+    #schema/agg :db.excise
+    #schema/agg :db.install
+    #schema/agg :db
+    #schema/agg :fressian
+    #schema/enum :db.bootstrap
+    #schema/enum :db.cardinality
+    #schema/enum :db.part
+    #schema/enum :db.type
+    #schema/enum :db.unique
+    #schema/enum :db})
 
 (defn excluded-attr?
   "Individual attributes can be ignored by including their :db/ident in
