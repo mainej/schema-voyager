@@ -70,14 +70,14 @@
 (defmulti attribute-panel :db.schema.pseudo/type)
 
 (defmethod attribute-panel :attribute [attribute]
-  [:div.space-y-4
-   [:div.sm:flex.justify-between.space-y-4.sm:space-y-0.sm:space-x-4
+  [:div.space-y-2
+   [:div.sm:flex.justify-between.space-y-2.sm:space-y-0.sm:space-x-4
     [attribute-header attribute :aggregate]
     [:div [value-type/shorthand attribute]]]
    [doc-str attribute]])
 
 (defmethod attribute-panel :constant [constant]
-  [:div.space-y-4
+  [:div.space-y-2
    [attribute-header constant :enum]
    [doc-str constant]])
 
