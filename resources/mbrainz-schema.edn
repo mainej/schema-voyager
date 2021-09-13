@@ -1,3 +1,4 @@
+;; Imported from https://raw.githubusercontent.com/Datomic/mbrainz-importer/master/subsets/entities/schema.edn
 [#:db{:ident       :country/name,
       :valueType   :db.type/string,
       :cardinality :db.cardinality/one,
