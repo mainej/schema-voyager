@@ -54,7 +54,7 @@
    [:path {:d "M15 12a3 3 0 11-6 0 3 3 0 016 0z"}]])
 
 (def ^:private download-icon
-  [:svg.inline-block.w-4.h-4.fill-none.stroke-current.text-teal-500.group-hover:text-teal-400.stroke-2.transition-colors.ease-in-out.duration-200
+  [:svg.inline-block.w-4.h-4.fill-none.stroke-current.text-teal-500.group-hover:text-teal-400.stroke-2.transition-colors
    {:viewBox         "0 0 24 24"
     :stroke-linejoin "round"
     :stroke-linecap  "round"}
@@ -112,9 +112,21 @@
      {:on-key-down (fn [e]
                      (when (= "Escape" (.-key e))
                        (close)))}
-     [:button.rounded-md.border.p-2.bg-white.text-gray-700.hover:text-gray-500.focus:outline-none.focus:border-blue-300.focus:shadow-outline-blue.active:bg-gray-50.active:text-gray-800.transition.ease-in-out.duration-150
+     [:button
       {:type     "button"
-       :on-click open}
+       :on-click open
+       :class [:p-2
+               :border
+               :rounded-md
+               :transition-colors
+               :bg-white
+               :text-gray-700
+               :hover:text-gray-500
+               :focus:outline-none
+               :focus:border-blue-300
+               :focus:shadow-outline-blue
+               :active:bg-gray-50
+               :active:text-gray-800]}
       gear-icon]
      (when @!open?
        [:<>

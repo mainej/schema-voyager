@@ -99,8 +99,17 @@
       [:section
        {:class (when (:db.schema/deprecated? attribute)
                  :bg-gray-300)}
-       [:div.p-4.sm:p-6.flex.items-center.justify-between.space-x-4.sm:space-x-6.cursor-pointer.hover:bg-gray-100.transition.duration-150.ease-in-out.group
-        {:on-click #(util/visit (util/attr-route attribute))}
+       [:div
+        {:on-click #(util/visit (util/attr-route attribute))
+         :class [:p-4              :sm:p-6
+                 :flex
+                 :items-center
+                 :justify-between
+                 :space-x-4        :sm:space-x-6
+                 :group
+                 :cursor-pointer
+                 :transition-colors
+                 :hover:bg-gray-100]}
         [:div.flex-1 [attribute-panel attribute]]
         chevron-right]])]
    [:div
