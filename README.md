@@ -178,6 +178,8 @@ If you have files that contain attribute definitions or [supplemental properties
   (ingest.file/ingest "../path/to/schema.edn"))
 ```
 
+The files you provide can be anything that [clojure.java.io/reader](https://clojuredocs.org/clojure.java.io/reader) understands, including URIs or local file names.
+
 #### Ingest from Datomic
 
 Datomic supports introspection of its schema by storing attributes as entities.

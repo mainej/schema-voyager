@@ -6,10 +6,9 @@
   schema; see the README for a definition of what kind of supplemental data you
   can include. The files can contain any special tags documented in
   [[schema-voyager.data/read-string]]."
-  (:require [clojure.java.io :as io]
-            [schema-voyager.data :as data]))
+  (:require [schema-voyager.data :as data]))
 
 (defn ingest
   "Read a file, using the tags defined in [[schema-voyager.data/read-string]]."
   [file]
-  (data/read-string (slurp (io/file file))))
+  (data/read-string (slurp file)))
