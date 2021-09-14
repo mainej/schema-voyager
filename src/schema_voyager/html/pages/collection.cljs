@@ -114,4 +114,4 @@
         chevron-right]])]
    [:div
     ^{:key (:db/id coll)}
-    [diagrams/erd (diagrams.query/coll db/db coll)]]])
+    [diagrams/erd (diagrams.query/coll-edges db/db coll)]]])

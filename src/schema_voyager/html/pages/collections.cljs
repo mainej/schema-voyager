@@ -62,4 +62,4 @@
       [spec-list specs]])
    [:div
     ^{:key :collections}
-    [diagrams/erd (diagrams.query/colls db/db)]]])
+    [diagrams/erd (diagrams.query/colls-edges db/db)]]])

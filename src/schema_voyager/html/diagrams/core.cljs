@@ -35,7 +35,7 @@
 (def ^:private html
   dom/render-to-static-markup)
 
-(defn- dot-node [[coll attrs] attrs-visible?]
+(defn- dot-node [coll attrs-visible?]
   (let [id         (coll-id coll)
         coll-color (colors (case (:db.schema.collection/type coll)
                              :enum      :green-600
@@ -55,7 +55,7 @@
                                :title   coll-name}
                           [:font {:color coll-color} coll-name]]])
                   (when attrs-visible?
-                    (for [{:keys [db/ident] :as attr} attrs]
+                    (for [{:keys [db/ident] :as attr} (:db.schema.collection/attributes coll)]
                       ^{:key ident}
                       [:tr [:td {:align   "LEFT"
                                  :color   (colors :gray-300) ;; border color
@@ -68,7 +68,7 @@
                             [:font {:color (colors :gray-500)} "/"]
                             [:font {:color (colors :blue-500)} (name ident)]]]))])}]))
 
-(defn- dot-edge [[source target attr] attrs-visible?]
+(defn- dot-edge [[source attr target] attrs-visible?]
   (let [source-id   (coll-id source)
         source-port (attr-id attr)
         target-id   (coll-id target)
@@ -81,10 +81,10 @@
       :tooltip   (pr-str (:db/ident attr))
       :href      (util/attr-href attr)}]))
 
-(defn- dot-graph [references]
-  (let [attrs-visible?   (diagrams.config/attrs-visible?)
-        ;; do not show reference if either source, target, or attribute is marked as excluded
-        shown-references (remove diagrams.config/some-entities-excluded? references)]
+(defn- dot-graph [edges]
+  (let [attrs-visible? (diagrams.config/attrs-visible?)
+        ;; do not show edges if either source, target, or attribute is marked as excluded
+        shown-edges    (remove diagrams.config/some-entities-excluded? edges)]
     (dot/dot (dot/digraph
               (concat
                [(dot/graph-attrs {:bgcolor (colors :gray-200)})
@@ -94,17 +94,17 @@
                 (dot/edge-attrs {:color     (colors :gray-600)
                                  :penwidth  0.5
                                  :arrowsize 0.75})]
-               (->> shown-references
-                    diagrams.util/colls-with-attrs
+               (->> shown-edges
+                    diagrams.util/edges-as-nodes
                     (map #(dot-node % attrs-visible?)))
-               (->> shown-references
+               (->> shown-edges
                     (map #(dot-edge % attrs-visible?))))))))
 
-(defn erd [references]
+(defn erd [edges]
   (r/with-let [_ (diagrams.config/reset-state)]
-    (when (seq references)
-      (let [dot-s (dot-graph references)]
+    (when (seq edges)
+      (let [dot-s (dot-graph edges)]
         [:div
          [:div.ml-4.sm:ml-0
-          [diagrams.config/config references dot-s]]
+          [diagrams.config/config (diagrams.util/edges-as-nodes edges) dot-s]]
          [graphviz-svg dot-s]]))))

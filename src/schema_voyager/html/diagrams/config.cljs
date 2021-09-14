@@ -101,10 +101,11 @@
                      :on-change #(swap-exclusions toggle-entities enums)}
       "Include enums?"]]))
 
-(defn- collections-inclusion [colls-and-attrs]
+(defn- collections-inclusion [colls]
   (let [attrs-visible? @(r/track attrs-visible?)]
     [:div.divide-y
-     (for [[coll attrs] colls-and-attrs]
+     (for [coll colls
+           :let [attrs (:db.schema.collection/attributes coll)]]
        ^{:key (:db/id coll)}
        [:div.p-3.space-y-2
         [collection-inclusion coll]
@@ -145,20 +146,18 @@
     [:span.mr-1 "Export SVG"]
     download-icon]])
 
-(defn config [references dot-s]
-  (let [{enums-and-attrs      :enum
-         aggregates-and-attrs :aggregate}
-        (->> references
-             diagrams.util/colls-with-attrs
-             (group-by (comp :db.schema.collection/type first)))]
+(defn config [nodes dot-s]
+  (let [{enums      :enum
+         aggregates :aggregate}
+        (group-by :db.schema.collection/type nodes)]
     [dropdown
      [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-nowrap
       [:div.divide-y.divide-gray-500
        [download dot-s]
        [clear-filters]
        [attr-visibility]
-       [collections-inclusion aggregates-and-attrs]
-       (when-let [enums (seq (map first enums-and-attrs))]
+       [collections-inclusion aggregates]
+       (when (seq enums)
          [:<>
           [enum-inclusion enums]
-          [collections-inclusion enums-and-attrs]])]]]))
+          [collections-inclusion enums]])]]]))

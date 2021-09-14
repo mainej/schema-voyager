@@ -59,7 +59,7 @@
 
 (defn diagram [attr]
   ^{:key (:db/id attr)}
-  [diagrams/erd (diagrams.query/attr db/db attr)])
+  [diagrams/erd (diagrams.query/attr-edges db/db attr)])
 
 (defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]
   [:h1.font-bold.flex.items-center.space-x-2
