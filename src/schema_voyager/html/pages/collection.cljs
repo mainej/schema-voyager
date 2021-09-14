@@ -55,7 +55,7 @@
 
 (defn doc-str [{:keys [db/doc]}]
   (when doc
-    [:p.text-gray-600.italic.hidden.sm:block doc]))
+    [:p.text-gray-600.italic.col-span-2.hidden.sm:block doc]))
 
 (defn- attribute-header [{:keys [db/ident db/unique db.schema/deprecated?] :as attribute} coll-type]
   [:h1.font-medium.flex.items-center.space-x-2
@@ -70,14 +70,13 @@
 (defmulti attribute-panel :db.schema.pseudo/type)
 
 (defmethod attribute-panel :attribute [attribute]
-  [:div.space-y-2
-   [:div.sm:flex.justify-between.space-y-2.sm:space-y-0.sm:space-x-4
-    [attribute-header attribute :aggregate]
-    [:div [value-type/shorthand attribute]]]
+  [:div.grid.sm:grid-cols-2.gap-x-4.sm:gap-y-2
+   [attribute-header attribute :aggregate]
+   [:div.sm:text-right [value-type/shorthand attribute]]
    [doc-str attribute]])
 
 (defmethod attribute-panel :constant [constant]
-  [:div.space-y-2
+  [:div.grid.sm:grid-cols-2.gap-x-4.sm:gap-y-2
    [attribute-header constant :enum]
    [doc-str constant]])
 
@@ -101,7 +100,8 @@
                  :bg-gray-300)}
        [:div
         {:on-click #(util/visit (util/attr-route attribute))
-         :class [:p-4              :sm:p-6
+         :class [:px-4              :sm:px-6
+                 :py-2              :sm:py-4
                  :flex
                  :items-center
                  :justify-between

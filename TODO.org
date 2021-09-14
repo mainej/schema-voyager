@@ -173,3 +173,24 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 ** DONE hide attrs
    CLOSED: [2020-04-04 Sat 00:33]
 ** show non-ref attrs?
+* convert to clojure tool
+** TODO Unify CLI to a single invocation
+*** many inputs
+*** many kinds of inputs
+    * files
+    * dbs
+    * functions, referenced by symbols
+*** db inferences
+*** db exclusions (?)
+*** output to standalone html
+*** output to ... anywhere else?
+** TODO follow guidance in https://clojure.org/reference/deps_and_cli#_best_practices_for_tool_authors
+** TODO Release on clojars
+** TODO simplify spread of files
+   * get rid of dev namespace?
+   * output dynamic, and standalone html to target directory
+   * can resource/inline use directory besides resources?
+     Looks like no, so can't put it in target. Is there somewhere better to put it?
+* replace diagram config dropdown and toggles with headlessui-reagent
+* revise documentation
+  * split into several files?
