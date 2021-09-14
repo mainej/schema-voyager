@@ -59,7 +59,7 @@
 
 (defn- attribute-header [{:keys [db/ident db/unique db.schema/deprecated?] :as attribute} coll-type]
   [:h1.font-medium.flex.items-center.space-x-2
-   [:a.group-hover:underline
+   [:a.group-hover:underline.focus:outline-none.focus:underline
     {:href (util/attr-href attribute)}
     [util/ident-name ident coll-type]]
    (when (= :db.unique/identity unique)

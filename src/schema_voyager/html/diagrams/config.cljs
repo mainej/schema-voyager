@@ -54,7 +54,7 @@
    [:path {:d "M15 12a3 3 0 11-6 0 3 3 0 016 0z"}]])
 
 (def ^:private download-icon
-  [:svg.inline-block.w-4.h-4.fill-none.stroke-current.text-teal-500.group-hover:text-teal-400.stroke-2.transition-colors
+  [:svg.inline-block.w-4.h-4.fill-none.stroke-current.text-teal-500.group-focus:ring-2.group-focus:ring-teal-400.rounded-sm.group-hover:text-teal-400.stroke-2.transition-colors
    {:viewBox         "0 0 24 24"
     :stroke-linejoin "round"
     :stroke-linecap  "round"}
@@ -62,7 +62,7 @@
    [:path {:d "M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"}]])
 
 (defn- attr-visibility []
-  [:fieldset.flex.items-center.space-x-2.cursor-pointer
+  [:fieldset.flex.items-center.space-x-2.cursor-pointer.p-3
    (toggle/handlers toggle-attrs-visible)
    [toggle/span {:checked    @(r/track attrs-visible?)
                  :aria-label "Toggle visibility of attributes"}]
@@ -85,7 +85,7 @@
 (defn- enum-inclusion [enums]
   (let [some-enums-included? @(r/track some-entities-included? enums)
         toggle-entities      (if some-enums-included? exclude-entities include-entities)]
-    [:fieldset.flex.items-center.space-x-2.cursor-pointer
+    [:fieldset.flex.items-center.space-x-2.cursor-pointer.p-3
      (toggle/handlers #(swap-exclusions toggle-entities enums))
      [toggle/span {:checked    some-enums-included?
                    :aria-label "Toggle inclusion of enums"}]
@@ -123,7 +123,7 @@
                :text-gray-700
                :hover:text-gray-500
                :focus:outline-none
-               :focus:border-blue-300
+               :focus:border-gray-700
                :focus:shadow-outline-blue
                :active:bg-gray-50
                :active:text-gray-800]}
@@ -137,12 +137,12 @@
   (js/Blob. #js [svg] #js {:type "image/svg+xml"}))
 
 (defn- download [dot-s]
-  [:button.p-3
+  [:button.p-3.focus:outline-none.group
    {:type     "button"
     :on-click (fn [_e]
                 (diagrams.util/with-dot-to-svg dot-s
                   #(file-saver/saveAs (svg-to-blob %) "erd.svg")))}
-   [:div.flex.items-center.group
+   [:div.flex.items-center
     [:span.mr-1 "Export SVG"]
     download-icon]])
 
@@ -154,12 +154,11 @@
              (group-by (comp :db.schema.collection/type first)))]
     [dropdown
      [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-nowrap
-      [download dot-s]
-      [:div.p-3.border-b.border-t.border-gray-500
-       [attr-visibility]]
-      [collections-inclusion aggregates-and-attrs]
-      (when-let [enums (seq (map first enums-and-attrs))]
-        [:<>
-         [:div.p-3.border-b.border-t.border-gray-500
-          [enum-inclusion enums]]
-         [collections-inclusion enums-and-attrs]])]]))
+      [:div.divide-y.divide-gray-500
+       [download dot-s]
+       [attr-visibility]
+       [collections-inclusion aggregates-and-attrs]
+       (when-let [enums (seq (map first enums-and-attrs))]
+         [:<>
+          [enum-inclusion enums]
+          [collections-inclusion enums-and-attrs]])]]]))

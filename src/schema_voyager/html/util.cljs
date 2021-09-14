@@ -75,7 +75,7 @@
        (interpose ", ")
        (into [:span])))
 
-(def link :a.hover:underline)
+(def link :a.hover:underline.focus:outline-none.focus:underline)
 
 (defn coll-link [coll]
   [link {:href     (coll-href coll)

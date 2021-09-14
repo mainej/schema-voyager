@@ -13,6 +13,7 @@ module.exports = {
                 '1half': '0.375rem',
                 '2half': '0.625rem',
                 '3half': '0.875rem',
+                text: '1em',
             },
             width: {
                 // originally 1/2, etc
