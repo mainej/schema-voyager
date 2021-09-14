@@ -61,6 +61,14 @@
    [:title "Download"]
    [:path {:d "M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"}]])
 
+(defn- clear-filters []
+  [:div.flex.justify-between
+   [:h2.font-semibold.p-3 "Filters"]
+   [:button.p-3.hover:underline.focus:outline-none.focus:underline
+    {:type     "button"
+     :on-click reset-state}
+    "clear all"]])
+
 (defn- attr-visibility []
   [:fieldset.flex.items-center.space-x-2.cursor-pointer.p-3
    (toggle/handlers toggle-attrs-visible)
@@ -156,6 +164,7 @@
      [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-nowrap
       [:div.divide-y.divide-gray-500
        [download dot-s]
+       [clear-filters]
        [attr-visibility]
        [collections-inclusion aggregates-and-attrs]
        (when-let [enums (seq (map first enums-and-attrs))]
