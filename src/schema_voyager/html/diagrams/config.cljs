@@ -118,14 +118,14 @@
   [ui/popover {:class [:relative]}
    [ui/popover-button
     {:class [:p-2
-             :border
              :rounded-md
              :transition-colors
              :bg-white
              :text-gray-700
              :hover:text-gray-500
              :focus:outline-none
-             :focus:border-gray-700
+             :focus:ring-2
+             :focus:ring-gray-700
              :active:bg-gray-50
              :active:text-gray-800]}
     gear-icon]
