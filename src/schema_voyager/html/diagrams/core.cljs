@@ -41,11 +41,11 @@
                              :enum      :green-600
                              :aggregate :purple-700))]
     [id {:label (html
-                 [:table {:port        id
-                          :border      0
-                          :cellborder  1
-                          :cellspacing 0
-                          :cellpadding 4}
+                 [:table {:port         id
+                          :border       0
+                          :cellborder   1
+                          :cell-spacing 0
+                          :cell-padding 4}
                   (let [coll-name (pr-str (:db.schema.collection/name coll))]
                     [:tr [:td {:align   "TEXT"
                                :color   (colors :gray-300) ;; border color
@@ -105,5 +105,6 @@
     (when (seq references)
       (let [dot-s (dot-graph references)]
         [:div
-         [diagrams.config/config references dot-s]
+         [:div.ml-4.sm:ml-0
+          [diagrams.config/config references dot-s]]
          [graphviz-svg dot-s]]))))

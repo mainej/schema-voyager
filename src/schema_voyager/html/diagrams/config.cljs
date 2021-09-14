@@ -1,6 +1,7 @@
 (ns schema-voyager.html.diagrams.config
   (:require [reagent.core :as r]
             ["file-saver" :as file-saver]
+            [headlessui-reagent.core :as ui]
             [schema-voyager.html.util :as util]
             [schema-voyager.html.components.toggle :as toggle]
             [schema-voyager.html.diagrams.util :as diagrams.util]))
@@ -70,34 +71,35 @@
     "clear all"]])
 
 (defn- attr-visibility []
-  [:fieldset.flex.items-center.space-x-2.cursor-pointer.p-3
-   (toggle/handlers toggle-attrs-visible)
-   [toggle/span {:checked    @(r/track attrs-visible?)
-                 :aria-label "Toggle visibility of attributes"}]
-   [:span "Show attributes on aggregates?"]])
+  (let [checked? @(r/track attrs-visible?)]
+    [:fieldset.flex.items-center.space-x-2.p-3
+     [toggle/toggle {:checked   checked?
+                     :on-change toggle-attrs-visible}
+      "Show attributes on aggregates?"]]))
 
 (defn- attr-inclusion [coll attr]
-  [:fieldset.flex.items-center.space-x-2.cursor-pointer
-   (toggle/handlers #(swap-exclusions toggle-entity attr))
-   [toggle/span {:checked    @(r/track included-entity? attr)
-                 :aria-label (str "Toggle inclusion of attribute " (pr-str (:db/ident attr)))}]
-   [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]])
+  [:fieldset.flex.items-center.space-x-2
+   [toggle/toggle {:checked   @(r/track included-entity? attr)
+                   :on-change #(swap-exclusions toggle-entity attr)}
+    [:span
+     [:span.sr-only "Toggle inclusion of attribute "]
+     [util/ident-name (:db/ident attr) (:db.schema.collection/type coll)]]]])
 
 (defn- collection-inclusion [coll]
-  [:fieldset.flex.items-center.space-x-2.cursor-pointer
-   (toggle/handlers #(swap-exclusions toggle-entity coll))
-   [toggle/span {:checked    @(r/track included-entity? coll)
-                 :aria-label (str "Toggle inclusion of " (:db.schema.collection/type coll) " " (:db.schema.collection/name coll))}]
-   [util/coll-name coll]])
+  [:fieldset.flex.items-center.space-x-2
+   [toggle/toggle {:checked   @(r/track included-entity? coll)
+                   :on-change #(swap-exclusions toggle-entity coll)}
+    [:span
+     [:span.sr-only "Toggle inclusion of "]
+     [util/coll-name coll]]]])
 
 (defn- enum-inclusion [enums]
   (let [some-enums-included? @(r/track some-entities-included? enums)
         toggle-entities      (if some-enums-included? exclude-entities include-entities)]
-    [:fieldset.flex.items-center.space-x-2.cursor-pointer.p-3
-     (toggle/handlers #(swap-exclusions toggle-entities enums))
-     [toggle/span {:checked    some-enums-included?
-                   :aria-label "Toggle inclusion of enums"}]
-     [:span "Include enums?"]]))
+    [:fieldset.flex.items-center.space-x-2.p-3
+     [toggle/toggle {:checked   some-enums-included?
+                     :on-change #(swap-exclusions toggle-entities enums)}
+      "Include enums?"]]))
 
 (defn- collections-inclusion [colls-and-attrs]
   (let [attrs-visible? @(r/track attrs-visible?)]
@@ -113,33 +115,22 @@
              [attr-inclusion coll attr])])])]))
 
 (defn- dropdown [body]
-  (r/with-let [!open? (r/atom false)
-               open   #(reset! !open? true)
-               close  #(reset! !open? false)]
-    [:div.relative.inline-block.ml-4.sm:ml-0
-     {:on-key-down (fn [e]
-                     (when (= "Escape" (.-key e))
-                       (close)))}
-     [:button
-      {:type     "button"
-       :on-click open
-       :class [:p-2
-               :border
-               :rounded-md
-               :transition-colors
-               :bg-white
-               :text-gray-700
-               :hover:text-gray-500
-               :focus:outline-none
-               :focus:border-gray-700
-               :focus:shadow-outline-blue
-               :active:bg-gray-50
-               :active:text-gray-800]}
-      gear-icon]
-     (when @!open?
-       [:<>
-        [:div.fixed.inset-0.bg-gray-900.opacity-50 {:on-click close}]
-        body])]))
+  [ui/popover {:class [:relative]}
+   [ui/popover-button
+    {:class [:p-2
+             :border
+             :rounded-md
+             :transition-colors
+             :bg-white
+             :text-gray-700
+             :hover:text-gray-500
+             :focus:outline-none
+             :focus:border-gray-700
+             :active:bg-gray-50
+             :active:text-gray-800]}
+    gear-icon]
+   [ui/popover-overlay {:class [:bg-gray-900 :fixed :inset-0 :opacity-50]}]
+   [ui/popover-panel body]])
 
 (defn- svg-to-blob [svg]
   (js/Blob. #js [svg] #js {:type "image/svg+xml"}))

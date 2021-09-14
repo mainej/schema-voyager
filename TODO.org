@@ -173,6 +173,7 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 ** DONE hide attrs
    CLOSED: [2020-04-04 Sat 00:33]
 ** show non-ref attrs?
+* DONE replace diagram config dropdown and toggles with headlessui-reagent
 * convert to clojure tool
 ** TODO Unify CLI to a single invocation
 *** many inputs
@@ -191,6 +192,5 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
    * output dynamic, and standalone html to target directory
    * can resource/inline use directory besides resources?
      Looks like no, so can't put it in target. Is there somewhere better to put it?
-* replace diagram config dropdown and toggles with headlessui-reagent
 * revise documentation
   * split into several files?

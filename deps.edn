@@ -1,10 +1,11 @@
 {:paths   ["src" "resources"]
- :deps    {datascript/datascript   {:mvn/version "1.2.1"}
-           metosin/reitit-frontend {:mvn/version "0.5.13"}
-           reagent/reagent         {:mvn/version "1.1.0"}
-           thheller/shadow-cljs    {:mvn/version "2.14.5"}
-           funcool/promesa         {:mvn/version "6.0.2"}
-           dorothy/dorothy         {:mvn/version "0.0.7"}}
+ :deps    {com.github.mainej/headlessui-reagent {:mvn/version "1.4.1.40"}
+           datascript/datascript                {:mvn/version "1.2.1"}
+           dorothy/dorothy                      {:mvn/version "0.0.7"}
+           funcool/promesa                      {:mvn/version "6.0.2"}
+           metosin/reitit-frontend              {:mvn/version "0.5.13"}
+           reagent/reagent                      {:mvn/version "1.1.0"}
+           thheller/shadow-cljs                 {:mvn/version "2.14.5"}}
  :aliases {:ingest  {:extra-paths ["dev"]
                      :extra-deps  {org.clojure/tools.cli {:mvn/version "1.0.194"}}}
            :datomic {:extra-deps {com.datomic/client-cloud {:mvn/version "0.8.78"}}}
