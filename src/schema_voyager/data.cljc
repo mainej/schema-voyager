@@ -12,7 +12,7 @@
 (defn enum [name]
   (collection :enum name))
 
-(defn read-schema-coll [[type name]]
+(defn ^:deprecated read-schema-coll [[type name]]
   (collection type name))
 
 (defn read-string
