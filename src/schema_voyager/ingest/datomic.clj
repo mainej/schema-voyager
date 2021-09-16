@@ -32,8 +32,8 @@
   want to join the DB data with data from another source:
 
   ```clojure
-  (-> (data/join (ingest.datomic/ingest db)
-                 supplemental-data)
+  (-> (concat (ingest.datomic/ingest db)
+              supplemental-data)
       data/process
       ingest/into-db
       export/save-db)
@@ -249,9 +249,9 @@
   once, caching the results in a file, then maintaing it by hand."
   ([db] (infer-references db {}))
   ([db exclusions]
-   (data/join (infer-plain-references db exclusions)
-              (infer-homogeneous-tuple-references db exclusions)
-              (infer-heterogeneous-tuple-references db exclusions))))
+   (concat (infer-plain-references db exclusions)
+           (infer-homogeneous-tuple-references db exclusions)
+           (infer-heterogeneous-tuple-references db exclusions))))
 
 (defn infer-deprecations
   "Infer deprecated attributes and constants, based on whether they are used.

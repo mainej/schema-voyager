@@ -119,6 +119,7 @@
   navigate between collections via attributes."
   [elements]
   (let [elements     (->> elements
+                          (merge-by #(select-keys % [:db/ident :db.schema.collection/type :db.schema.collection/name]))
                           (map element-with-element-type))
         attributes   (->> elements
                           ;; attributes and constants get the same treatment
@@ -137,16 +138,3 @@
     (concat collections
             entity-specs
             (replace-collections-by-temp-ids collections attributes))))
-
-(defn join
-  "Join schema from several `sources`. Data from later sources overrides earlier
-  sources."
-  [& sources]
-  (->> sources
-       (apply concat)
-       (merge-by #(select-keys % [:db/ident :db.schema.collection/type :db.schema.collection/name]))))
-
-(defn join-all
-  "Like [[join]], but for a `->>` context."
-  [sources]
-  (apply join sources))

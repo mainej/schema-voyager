@@ -12,8 +12,7 @@
   (->> ["resources/mbrainz-schema.edn"
         "resources/mbrainz-enums.edn"
         "resources/mbrainz-supplemental.edn"]
-       (map ingest.file/ingest)
-       data/join-all
+       (mapcat ingest.file/ingest)
        data/process
        ingest/into-db))
 

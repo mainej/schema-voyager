@@ -105,15 +105,15 @@
     (if exit-message
       (exit (if ok? 0 1) exit-message)
       (let [db (ingest.datomic/datomic-db client-config db-name)]
-        (->> (data/join (ingest.datomic/ingest db)
-                        (when (some infer #{"all" "deprecations"})
-                          (ingest.datomic/infer-deprecations db))
-                        (when (some infer #{"all" "references" "plain-references"})
-                          (ingest.datomic/infer-plain-references db))
-                        (when (some infer #{"all" "references" "tuple-references" "homogeneous-tuple-references"})
-                          (ingest.datomic/infer-homogeneous-tuple-references db))
-                        (when (some infer #{"all" "references" "tuple-references" "heterogeneous-tuple-references"})
-                          (ingest.datomic/infer-heterogeneous-tuple-references db)))
+        (->> (concat (ingest.datomic/ingest db)
+                     (when (some infer #{"all" "deprecations"})
+                       (ingest.datomic/infer-deprecations db))
+                     (when (some infer #{"all" "references" "plain-references"})
+                       (ingest.datomic/infer-plain-references db))
+                     (when (some infer #{"all" "references" "tuple-references" "homogeneous-tuple-references"})
+                       (ingest.datomic/infer-homogeneous-tuple-references db))
+                     (when (some infer #{"all" "references" "tuple-references" "heterogeneous-tuple-references"})
+                       (ingest.datomic/infer-heterogeneous-tuple-references db)))
              data/process
              ingest/into-db
              export/save-db)))))

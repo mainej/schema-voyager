@@ -11,8 +11,7 @@
 
 (defn -main [& files]
   (->> files
-       (map ingest.file/ingest)
-       data/join-all
+       (mapcat ingest.file/ingest)
        data/process
        ingest/into-db
        export/save-db))

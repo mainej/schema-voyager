@@ -136,9 +136,9 @@ It should follow these steps:
 ```
 
 1. Ingest from all sources, not necessarily in this order:
-    * [Use static txn data](#ingest-static-data).
-    * [Ingest from a file](#ingest-from-files).
     * [Ingest from a Datomic DB](#ingest-from-datomic).
+    * [Ingest from a file](#ingest-from-files).
+    * [Use static txn data](#ingest-static-data).
 1. [Join multiple sources](#join-sources).
 1. Process the joined data.
 1. Load the processed data into a DataScript DB.
@@ -214,9 +214,9 @@ You can also ask Schema Voyager to infer deprecations and inter-attribute refere
 
 ```clojure
 (defn schema-data []
-  (data/join (ingest.datomic/ingest db)
-             (ingest.datomic/infer-references db)
-             (ingest.datomic/infer-deprecations db)))
+  (concat (ingest.datomic/ingest db)
+          (ingest.datomic/infer-references db)
+          (ingest.datomic/infer-deprecations db)))
 ```
 
 See the documentation for `schema-voyager.ingest.datomic` for more inference options.
@@ -229,22 +229,15 @@ Avoid running them on a query group that is serving critical traffic.
 
 #### Join sources
 
-The properties of an attribute might be defined incrementally over [several sources](#ingest), partially in Datomic, partially in a file, and partially in static data.
-When combining several sources Schema Voyager merges data that share a `:db/ident`, so later sources can augment or override earlier sources.
+The properties of an attribute might be defined incrementally over [several sources](#ingest), primarily in Datomic, but supplementally in an EDN file or from static data.
 
-Join data from several sources with `schema-voyager.data/join`:
-
-```clojure
-(data/join (ingest.datomic/ingest db)
-           (ingest.file/ingest "supplemental-properties.edn")
-           experimental-schema)
-```
-
-Or from a sequence of sources with `schema-voyager.data/join-all`:
-
+If your sources mention an attribute or collection repeatedly, all those mentions will be merged before processing.
+This is done with `clojure.core/merge` so later sources can augment or override earlier sources, by adding new or replacing existing keys.
 
 ```clojure
-(data/join-all (map ingest.file/ingest file-names))
+(concat (ingest.datomic/ingest db)
+        (ingest.file/ingest "supplemental-properties.edn")
+        experimental-schema)
 ```
 
 ### Explore
