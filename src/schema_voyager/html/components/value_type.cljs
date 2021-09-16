@@ -3,7 +3,7 @@
             [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]))
 
-(defn tuple-type [{:keys [db/tupleAttrs db/tupleType db/tupleTypes]}]
+(defn tuple-composition [{:keys [db/tupleAttrs db/tupleType db/tupleTypes]}]
   (cond
     tupleAttrs :db.type.tuple/composite
     tupleType  :db.type.tuple/homogeneous
@@ -35,18 +35,18 @@
 
 (defmulti p
   (fn [{:keys [db/cardinality db/valueType db.schema/references db/tupleType] :as attribute}]
-    (let [tuple?     (= :db.type/tuple valueType)
-          ref?       (= :db.type/ref valueType)
-          tuple-type (tuple-type attribute)]
+    (let [tuple?            (= :db.type/tuple valueType)
+          ref?              (= :db.type/ref valueType)
+          tuple-composition (tuple-composition attribute)]
       [cardinality
-       (cond tuple? tuple-type
+       (cond tuple? tuple-composition
              ref?   valueType
              :else  ::default)
        (cond
          ref?
          (if (seq references) :referred :not-referred)
 
-         (= :db.type.tuple/homogeneous tuple-type)
+         (= :db.type.tuple/homogeneous tuple-composition)
          (if (= :db.type/ref tupleType)
            (if (seq references) :referred :not-referred)
            ::default)
@@ -103,13 +103,13 @@
                                  (map :db.schema/references tuple-references))]
     [angle-span
      [util/comma-list
-      (map-indexed (fn [position kw]
+      (map-indexed (fn [position value-type]
                      ^{:key position}
                      (let [refs (get refs-by-position position)]
-                       (if (and (= :db.type/ref kw)
+                       (if (and (= :db.type/ref value-type)
                                 refs)
                          [util/coll-links refs]
-                         [keyword-abbr kw])))
+                         [keyword-abbr value-type])))
                    tupleTypes)]]))
 (defmethod p [:db.cardinality/one :db.type.tuple/heterogeneous ::default] [attribute]
   [:p
@@ -125,13 +125,13 @@
   [:p
    "This attribute " references-abbr " " card-one-abbr " value, of type "
    [util/coll-links references] "."])
-(defmethod p [:db.cardinality/one :db.type/ref :not-referred] [attribute]
+(defmethod p [:db.cardinality/one :db.type/ref :not-referred] [_attribute]
   [:p "This attribute " references-abbr " " card-one-abbr " value."])
 (defmethod p [:db.cardinality/many :db.type/ref :referred] [{:keys [db.schema/references]}]
   [:p
    "This attribute " references-abbr " " card-many-abbr " values, of type "
    [util/coll-links references] "."])
-(defmethod p [:db.cardinality/many :db.type/ref :not-referred] [attribute]
+(defmethod p [:db.cardinality/many :db.type/ref :not-referred] [_attribute]
   [:p "This attribute " references-abbr " " card-many-abbr " values."])
 
 ;; scalars
@@ -142,17 +142,17 @@
 
 (defmulti shorthand-span
   (fn [{:keys [db/valueType db.schema/references db/tupleType] :as attribute}]
-    (let [tuple?     (= :db.type/tuple valueType)
-          ref?       (= :db.type/ref valueType)
-          tuple-type (tuple-type attribute)]
-      [(cond tuple? tuple-type
+    (let [tuple?            (= :db.type/tuple valueType)
+          ref?              (= :db.type/ref valueType)
+          tuple-composition (tuple-composition attribute)]
+      [(cond tuple? tuple-composition
              ref?   valueType
              :else  ::default)
        (cond
          ref?
          (if (seq references) :referred :not-referred)
 
-         (= :db.type.tuple/homogeneous tuple-type)
+         (= :db.type.tuple/homogeneous tuple-composition)
          (if (and (= :db.type/ref tupleType)
                   (seq references))
            :referred
@@ -178,7 +178,7 @@
 ;; references
 (defmethod shorthand-span [:db.type/ref :referred] [{:keys [db.schema/references]}]
   [util/coll-links references])
-(defmethod shorthand-span [:db.type/ref :not-referred] [attribute]
+(defmethod shorthand-span [:db.type/ref :not-referred] [_attribute]
   [keyword-abbr :db.type/ref])
 
 ;; scalars
