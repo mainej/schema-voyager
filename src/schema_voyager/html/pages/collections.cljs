@@ -48,11 +48,11 @@
 (defn page []
   [:div.space-y-8
    [list-section
-    "Aggregates"
+    [:span.flex.items-center.gap-x-1 "Aggregates" [util/aggregate-abbr {:db.schema.collection/type :aggregate}]]
     "Aggregates are collections of attributes that often co-exist on an entity. They are analogous to a SQL table, though some attributes may appear on many aggregates."
     [collection-list (collections db/db :aggregate)]]
    [list-section
-    "Enums"
+    [:span.flex.items-center.gap-x-1 "Enums" [util/aggregate-abbr {:db.schema.collection/type :enum}]]
     "Enums are collections of named constants. They usually specify the various values that an attribute may take."
     [collection-list (collections db/db :enum)]]
    (when-let [specs (seq (entity-specs db/db))]

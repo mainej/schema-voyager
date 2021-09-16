@@ -9,7 +9,7 @@
 (def ^:private colors
   {:purple-700  "#6D28D9"
    :green-600   "#059669"
-   :blue-500    "#3B82F6"
+   :blue-600    "#2563EB"
    :white       "#ffffff"
    :gray-100    "#F3F4F6"
    :gray-200    "#E5E7EB"
@@ -66,7 +66,7 @@
                                  :title   (pr-str ident)}
                             [:font {:color coll-color} ":" (namespace ident)]
                             [:font {:color (colors :gray-500)} "/"]
-                            [:font {:color (colors :blue-500)} (name ident)]]]))])}]))
+                            [:font {:color (colors :blue-600)} (name ident)]]]))])}]))
 
 (defn- dot-edge [[source attr target] attrs-visible?]
   (let [source-id   (coll-id source)

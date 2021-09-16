@@ -58,14 +58,16 @@
     [:p.text-gray-600.italic.col-span-2.hidden.sm:block doc]))
 
 (defn- attribute-header [{:keys [db/ident db/unique db.schema/deprecated?] :as attribute} coll-type]
-  [:h1.font-medium.flex.items-center.space-x-2
+  [:h1.flex.items-center.space-x-2
    [:a.group-hover:underline.focus:outline-none.focus:underline
     {:href (util/attr-href attribute)}
-    [util/ident-name ident coll-type]]
+    [util/ident-name {:ident-props {:class [:font-semibold]}}
+     ident coll-type]]
    (when (= :db.unique/identity unique)
      util/lock-closed)
    (when deprecated?
-     util/deprecated-pill)])
+     [:span.font-medium
+      util/deprecated-pill])])
 
 (defmulti attribute-panel :db.schema.pseudo/type)
 
@@ -83,8 +85,8 @@
 (defn page [{:keys [db.schema/_part-of db.schema.pseudo/referenced-by db/doc] :as coll}]
   [:div.space-y-6
    [:div.px-4.sm:px-0.space-y-6
-    [:h1.font-bold.whitespace-nowrap
-     [util/coll-name* coll]
+    [:h1.whitespace-nowrap
+     [util/coll-name* {:class [:font-bold]} coll]
      " "
      [util/aggregate-abbr coll]]
     (when doc
