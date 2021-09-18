@@ -6,6 +6,7 @@
   (html/standalone)
   (shutdown-agents))
 
+;; Needed by Netlify
 (defn -main []
   (standalone {}))
 

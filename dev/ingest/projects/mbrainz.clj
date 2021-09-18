@@ -3,7 +3,7 @@
    [schema-voyager.cli :as cli]))
 
 (defn import-mbrainz
-  "A datascript DB that contains the mbrainz schema, enums, and supplemental
+  "Create datascript DB that contains the mbrainz schema, enums, and supplemental
   data about references.
 
   Loaded out of resources/mbrainz-*.edn files.
@@ -14,5 +14,6 @@
                          {:file/name "resources/mbrainz-enums.edn"}
                          {:file/name "resources/mbrainz-supplemental.edn"}]}))
 
+;; Needed by Netlify
 (defn -main []
   (import-mbrainz {}))
