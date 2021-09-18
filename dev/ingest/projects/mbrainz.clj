@@ -13,3 +13,6 @@
   (cli/ingest {:sources [{:file/name "resources/mbrainz-schema.edn"}
                          {:file/name "resources/mbrainz-enums.edn"}
                          {:file/name "resources/mbrainz-supplemental.edn"}]}))
+
+(defn -main []
+  (import-mbrainz {}))

@@ -2,10 +2,11 @@
 
 set -Eeuo pipefail
 
+# Netlify uses an older version of clojure CLI, hence the outdated invocation styles.
+
 rm -rf target && mkdir target
-clojure -X:cli ingest :sources \
-  '[{:file/name "resources/mbrainz-schema.edn"}
-    {:file/name "resources/mbrainz-enums.edn"}
-    {:file/name "resources/mbrainz-supplemental.edn"}]'
-clojure -X:export standalone
+echo Importing mbrainz schema...
+clojure -A:netlify -m ingest.projects.mbrainz
+echo Building standalone HTML
+clojure -A:netlify -m build.standalone
 mv target/standalone.html target/index.html

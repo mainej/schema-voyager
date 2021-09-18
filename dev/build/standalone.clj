@@ -6,6 +6,9 @@
   (html/standalone)
   (shutdown-agents))
 
+(defn -main []
+  (standalone {}))
+
 (comment
   (html/standalone)
   )
