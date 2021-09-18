@@ -1,43 +1,13 @@
 (ns schema-voyager.ingest.datomic
-  "Tools for extracting schema information directly from a Datomic database.
+  "Tools for ingesting schema information directly from a Datomic database.
 
-  This can be useful if your schema files are hard to collate, or when you want
-  to know what _is_ installed in your database, as opposed to what _should_ be
-  installed.
+  The Datomic database is the authority on which attributes are installed, so
+  most projects will want to ingest schema data from their running Datomic
+  database.
 
   To use this namespace, [[datomic.client.api]] must be on your classpath. This
   project provides an alias `:datomic` which will pull in a version of
-  [[com.datomic/client-cloud]], but you may need your own version.
-
-  ```bash
-  clojure -A:ingest:datomic -m ingest.projects.my-project
-  ```
-
-  The most basic usage of this namespace would look like:
-
-  ```clojure
-  (let [db (ingest.datomic/datomic-db {:server-type :ion
-                                       :region      \"us-east-1\"
-                                       :system      \"my-system\"
-                                       :endpoint    \"http://entry.my-system.us-east-1.datomic.net:8182/\"
-                                       :proxy-port  8182}
-                                      \"my-system-db\")]
-    (-> (ingest.datomic/ingest db)
-        data/process
-        ingest/into-db
-        export/save-db))
-  ```
-
-  However, assuming you don't store your supplemental data in Datomic, you may
-  want to join the DB data with data from another source:
-
-  ```clojure
-  (-> (concat (ingest.datomic/ingest db)
-              supplemental-data)
-      data/process
-      ingest/into-db
-      export/save-db)
-  ```"
+  [[com.datomic/client-cloud]], but you may need your own version."
   (:require [datomic.client.api :as d]
             [schema-voyager.data :as data]
             [clojure.set :as set]))
@@ -126,7 +96,7 @@
        (map (fn [[refers-attr grouped]]
               [refers-attr (map second grouped)]))
        (map (fn [[refers-attr referred-colls]]
-              (assoc refers-attr :db.schema/references referred-colls)))))
+              (assoc refers-attr :db.schema/references (vec referred-colls))))))
 
 (defn infer-plain-references
   "Infer references between `:db.type/ref` attributes by inspecting the things
@@ -135,12 +105,7 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  WARNING: This has not been tested on large databases, where it may have
-  performance impacts. Use at your own risk.
-
-  This may help kick start your supplemental schema, but consider running it
-  once, caching the results in a file, then maintaing it by hand."
-
+  Before using, see the warnings in doc/datomic-inference.md."
   ([db] (infer-plain-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?refers-attr [:db/ident :db/valueType]) (pull ?referred-attr [:db/ident :db/valueType])
@@ -166,8 +131,7 @@
   infer that collection-a is a reference. Of course, if your data is structured
   that way, perhaps you would be better suited by a heterogeneous tuple.
 
-  This may help kick start your supplemental schema, but consider running it
-  once, caching the results in a file, then maintaing it by hand."
+  Before using, see the warnings in doc/datomic-inference.md."
   ([db] (infer-homogeneous-tuple-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?refers-attr [:db/ident :db/valueType]) (pull ?referred-attr [:db/ident :db/valueType])
@@ -186,13 +150,7 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  WARNING: This has not been tested on large databases, where it may have
-  performance impacts. This is even more true than [[infer-references]] because
-  it executes one query per tuple attribute per `:db.type/ref`. Use at your own
-  risk.
-
-  This may help kick start your supplemental schema, but consider running it
-  once, caching the results in a file, then maintaing it by hand."
+  Before using, see the warnings in doc/datomic-inference.md."
   ([db] (infer-heterogeneous-tuple-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?tuple-attr [:db/id :db/ident :db/valueType :db/tupleTypes])
@@ -229,10 +187,10 @@
                                                                                distinct)]
                                                      (when (seq referred-colls)
                                                        {:db.schema.tuple/position position
-                                                        :db.schema/references     referred-colls}))))
+                                                        :db.schema/references     (vec referred-colls)}))))
                                            seq)]
                   {:db/ident                   (:db/ident refers-attr)
-                   :db.schema/tuple-references tuple-refs}))))))
+                   :db.schema/tuple-references (vec tuple-refs)}))))))
 
 (defn infer-references
   "Infer references between ref and tuple attributes by inspecting the things
@@ -241,12 +199,7 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  Be sure to see WARNINGS on [[infer-plain-references]],
-  [[infer-homogeneous-tuple-references]] and
-  [[infer-heterogeneous-tuple-references]].
-
-  This may help kick start your supplemental schema, but consider running it
-  once, caching the results in a file, then maintaing it by hand."
+  Before using, see the warnings in doc/datomic-inference.md."
   ([db] (infer-references db {}))
   ([db exclusions]
    (concat (infer-plain-references db exclusions)
@@ -259,11 +212,7 @@
   Ignores attributes that are excluded per the `exclusions`. See
   [[excluded-attr?]].
 
-  WARNING: This has not been tested on large databases, where it may have
-  performance impacts. Use at your own risk.
-
-  This may help kick start your supplemental schema, but consider running it
-  once, caching the results in a file, then maintaing it by hand."
+  Before using, see the warnings in doc/datomic-inference.md."
   ([db] (infer-deprecations db {}))
   ([db exclusions]
    (let [defined (->> (d/q '[:find (pull ?attr [:db/ident :db/valueType])
@@ -291,3 +240,47 @@
                  {:db/ident              (:db/ident attr)
                   :db.schema/deprecated? true}))
           (sort-by :db/ident)))))
+
+(defn infer
+  "Infer deprecations and/or references from db usage.
+
+  Before using, see the warnings in doc/datomic-inference.md."
+  [db infer]
+  (let [infer (set infer)]
+    (vec
+     (concat (when (some infer #{:all :deprecations})
+               (infer-deprecations db))
+             (when (some infer #{:all :references :plain-references})
+               (infer-plain-references db))
+             (when (some infer #{:all :references :tuple-references :homogeneous-tuple-references})
+               (infer-homogeneous-tuple-references db))
+             (when (some infer #{:all :references :tuple-references :heterogeneous-tuple-references})
+               (infer-heterogeneous-tuple-references db))))))
+
+(defn cli-ingest
+  "A shorthand, used by the CLI, for connecting to a database, ingesting and
+  making inferences all in one step.
+
+  Before calling with the `infer` param, see the warnings in
+  doc/datomic-inference.md."
+  [{:keys [client-config db-name exclusions] inferences :infer}]
+  (let [db (datomic-db client-config db-name)]
+    (concat (ingest db exclusions)
+            (infer db inferences))) )
+
+(defn cli-inferences
+  "A shorthand, used by the CLI, for connecting to a database and inspecting
+  inferences.
+
+  Before using, see the warnings in doc/datomic-inference.md.
+  "
+  [{:keys [client-config db-name] inferences :infer}]
+  (let [db (datomic-db client-config db-name)]
+    (infer db inferences)) )
+
+(defn cli-attributes
+  "A shorthand, used by the CLI, for connecting to a database and inspecting
+  attributes."
+  [{:keys [client-config db-name exclusions]}]
+  (let [db (datomic-db client-config db-name)]
+    (ingest db exclusions)) )

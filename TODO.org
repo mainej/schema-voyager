@@ -176,11 +176,12 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * DONE replace diagram config dropdown and toggles with headlessui-reagent
 * convert to clojure tool
 ** TODO Unify CLI to a single invocation
-*** many inputs
-*** many kinds of inputs
+*** many sources
+*** many kinds of sources
     * files
     * dbs
     * functions, referenced by symbols
+    * static data
 *** db inferences
 *** db exclusions (?)
 *** output to standalone html
@@ -191,6 +192,20 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
    * get rid of dev namespace?
    * output dynamic, and standalone html to target directory
    * can resource/inline use directory besides resources?
-     Looks like no, so can't put it in target. Is there somewhere better to put it?
+     Looks like no, so can't put dataascript db in target. Is there somewhere better to put it?
 * revise documentation
   * split into several files?
+  README.md
+  screenshots
+  big picture
+  links to further documentation
+
+  docs/installation.md
+  docs/sources.md
+  docs/annotation.md
+  docs/exploring-and-sharing.md
+  docs/advanced-exploration.md
+  docs/datomic-inference.md
+  docs/troubleshooting.md
+* move away from yarn scripts
+  possibly a clojure.tools.build script would work

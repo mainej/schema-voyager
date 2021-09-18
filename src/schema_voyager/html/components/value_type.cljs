@@ -59,13 +59,13 @@
   [:p
    "This attribute is " card-one-abbr " " tuple-abbr ", " composed-abbr " of other attributes "
    [tuple-attrs-span attribute]". "
-   "It is managed by Datomic, and should not be set manually."])
+   "It's managed by Datomic, and should not be set manually."])
 (defmethod p [:db.cardinality/many :db.type.tuple/composite ::default] [attribute]
   ;; NOTE: In practice a composite tuple is probably never card many.
   [:p
    "This attribute is " card-many-abbr " " tuples-abbr ", each " composed-abbr " of other attributes "
    [tuple-attrs-span attribute]". "
-   "It is managed by Datomic, and should not be set manually."])
+   "It's managed by Datomic, and should not be set manually."])
 
 ;; homogeneous tuples
 (def ^:private homogeneous-one-span [:span "This attribute has " card-one-abbr " value, a " homogeneous-abbr " " tuple-abbr " of variable length. "])

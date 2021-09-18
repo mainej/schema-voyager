@@ -8,5 +8,6 @@
 
 .nrepl-port
 readme.html
+doc/*.html
 resources/schema_voyager_db.edn
 /dev/ingest/projects

@@ -7,20 +7,18 @@
   :db/doc                    "A geographical country."}
 
  ;; deprecated attributes
- {:db/id    "attr--track-artists"
-  :db/ident :track/artists}
  {:db/ident              :track/artistCredit
   :db.schema/deprecated? true
-  :db.schema/see-also    ["attr--track-artists"]}
+  :db.schema/see-also    [{:db/ident :track/artists}]}
 
  ;; reclassification of the collections an ident is part of
  ;;
  ;; The mbrainz schema defines an `:artist.type/name` attribute. It uses it to
- ;; document the `:artist.type`s: `#:db{:ident :artist.type/group,
+ ;; document the `:artist.type`s: `{:db/ident :artist.type/group,
  ;; :artist.type/name "Group"}`. It probably would have sufficed to use
  ;; `:db/doc` to document these constants, but schemas always gather some cruft.
- ;; Rather than make an entire web page for `:artist.type/name`, we reconfigure
- ;; it to be documented with the `:artist.type`s:
+ ;; Rather than make an entire page for the `:artist.type` aggregate, we
+ ;; reconfigure it to be documented with the `:artist.type` enum:
  {:db/ident :artist.type/name       :db.schema/part-of [#schema/enum :artist.type]}
  ;; The following attributes all follow the same pattern as `:artist.type/name`.
  {:db/ident :artist.gender/name     :db.schema/part-of [#schema/enum :artist.gender]}

@@ -49,7 +49,7 @@
                                 :db/doc         "Other attributes to which this attribute is related. Often used with :db.schema/deprecated? to point to a new way of storing some data."}
    :db.schema/part-of          {:db/valueType   :db.type/ref
                                 :db/cardinality :db.cardinality/many
-                                :db/doc         "Which collection(s) this attribute or constant is a part of. Usually derived from the type and namespace of the ident. Can be overridden for attributes that are used on many aggregates, or which have many versions."}
+                                :db/doc         "Which collection(s) this attribute or constant is a part of. Usually derived from the namespace of the ident and whether it has a :db/valueType. Can be overridden for attributes that are used on many aggregates, or which have many versions."}
    :db.schema/references       {:db/valueType   :db.type/ref
                                 :db/cardinality :db.cardinality/many
                                 :db/doc         "Which collection(s) this attribute refers to."}
@@ -115,7 +115,7 @@
 
   This function has two main purposes. First it gives attributes and constants
   their default `:db.schema/part-of`. Second, it converts literal collection
-  references into full Datascript relationships, so that it is possible to
+  references into full Datascript relationships, so that it's possible to
   navigate between collections via attributes."
   [elements]
   (let [elements     (->> elements
