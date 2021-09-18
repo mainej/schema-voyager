@@ -7,7 +7,7 @@ Now the fun part!
 After ingesting your schema, generate an HTML page for it:
 
 ```sh
-yarn --prod run standalone
+clojure -X:export standalone
 ```
 
 When it's done, open `target/standalone.html` in your browser.

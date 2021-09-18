@@ -1,7 +1,7 @@
 (ns build.standalone
   (:require [schema-voyager.html.standalone :as html]))
 
-(defn -main []
+(defn standalone [_]
   #_(html/debug)
   (html/standalone)
   (shutdown-agents))

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+rm -rf target && mkdir target
+clojure -X:cli ingest :sources \
+  '[{:file/name "resources/mbrainz-schema.edn"}
+    {:file/name "resources/mbrainz-enums.edn"}
+    {:file/name "resources/mbrainz-supplemental.edn"}]'
+clojure -X:export standalone
+mv target/standalone.html target/index.html

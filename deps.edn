@@ -10,5 +10,6 @@
  :aliases {:datomic {:extra-deps {com.datomic/client-cloud {:mvn/version "0.8.113"}
                                   com.datomic/dev-local    {:mvn/version "0.9.235"}}}
            :export  {:extra-paths ["dev"]
-                     :extra-deps  {hiccup/hiccup {:mvn/version "2.0.0-alpha2"}}}
+                     :extra-deps  {hiccup/hiccup {:mvn/version "2.0.0-alpha2"}}
+                     :ns-default build.standalone}
            :cli     {:ns-default schema-voyager.cli}}}
