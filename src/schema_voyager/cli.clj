@@ -4,6 +4,13 @@
             [schema-voyager.ingest.core :as ingest]
             [clojure.pprint :as pprint]))
 
+(def ^:private default-db-path "resources/schema_voyager_db.edn")
+
+(defn save-db
+  ([db] (save-db default-db-path db))
+  ([file-path db]
+   (spit (or file-path default-db-path) (pr-str db))))
+
 (defn- datomic-config [{:keys [datomic/db-name datomic/client-config datomic/exclusions datomic/infer]}]
   {:db-name       db-name
    :client-config client-config
@@ -48,7 +55,7 @@
   NOTICE: If you experience errors using a Datomic source, see
   `doc/troubleshooting.md`. "
   [params]
-  (export/save-db (ingest-into-db params))
+  (save-db (:db-file params) (ingest-into-db params))
   (shutdown-agents))
 
 (defn print-inferences
