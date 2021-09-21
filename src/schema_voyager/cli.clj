@@ -2,7 +2,7 @@
   (:require
    [clojure.pprint :as pprint]
    [schema-voyager.build.db :as build.db]
-   [schema-voyager.build.template-html :as template-html]
+   [schema-voyager.build.standalone-html :as standalone-html]
    [schema-voyager.data :as data]
    [schema-voyager.ingest.core :as ingest]))
 
@@ -75,4 +75,4 @@
 
   By default, the generated HTML page is called `schema-voyager.html`."
   [{:keys [output-path] :or {output-path "schema-voyager.html"} :as spec}]
-  (template-html/fill-template output-path (ingest-into-db spec)))
+  (standalone-html/fill-template output-path (ingest-into-db spec)))

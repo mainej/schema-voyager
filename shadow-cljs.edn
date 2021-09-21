@@ -1,4 +1,4 @@
-{:deps     true
+{:deps     {:aliases [:cljs]}
  :dev-http {8080 "target/"}
  :builds   {:app {:output-dir       "target/"
                   :asset-path       "."

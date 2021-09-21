@@ -1,15 +1,16 @@
 (ns schema-voyager.build.template-html
+  "Builds the template file used by `schema-voyager.build.standalone-html/fill-template`.
+
+  The dependency order is important here... we want to keep hiccup out of the
+  dependencies. Therefore, the CLI depends on
+  `schema-voyager.build.standalone-html`, which doesn't require hiccup. This
+  file also depends on `schema-voyager.build.standalone-html`, but it does
+  require hiccup, letting us use hiccup only when necessary."
   (:require
-   [clojure.java.io :as io]
    [clojure.java.shell :refer (sh)]
-   [clojure.string :as string]
    [hiccup.page :as hiccup.page]
+   [schema-voyager.build.standalone-html :as standalone-html]
    [schema-voyager.build.db :as build.db]))
-
-(def db-template-placeholder 'SCHEMA_VOYAGER_DB_PLACEHOLDER)
-
-(def template-dir (io/resource "standalone_template"))
-(def template-file (io/file template-dir "standalone.html"))
 
 (defn optimized-js []
   ;; Not (shadow.cljs.devtools.api/release :app)
@@ -20,6 +21,11 @@
   ;;
   ;; See https://clojurians-log.clojureverse.org/shadow-cljs/2021-05-27
   ;; There is some sort of dependency conflict, but I couldn't figure out how to resolve it.
+  ;;
+  ;; NOTE: this may be fixed, as of the separation of this file from
+  ;; `schema-voyager.build.standalone-html`. In theory, you shouldn't ever have
+  ;; to use -X:datomic at the same time as using this file, so the error
+  ;; shouldn't arise.
   (sh "npx" "shadow-cljs" "release" ":app"))
 
 (defn optimized-css []
@@ -27,7 +33,7 @@
 
 (defn standalone-html
   []
-  (spit template-file
+  (spit standalone-html/template-file
         ;; IMPORTANT: keep this in sync with index.html
         (hiccup.page/html5
          [:head
@@ -56,20 +62,7 @@
   ;; available, among other things). Now they just substitute their data into
   ;; the template.
   [_]
-  (build.db/save-db db-template-placeholder)
+  (build.db/save-db standalone-html/db-template-placeholder)
   (optimized-js)
   (optimized-css)
   (standalone-html))
-
-(defn fill-template
-  "Creates a standalone HTML page at `output-path`, by subsitituting the `db`
-  into the template file."
-  [output-path db]
-  (let [target-file (io/file "." output-path)
-        contents    (slurp template-file)
-        replaced    (string/replace contents
-                                    (pr-str (str db-template-placeholder))
-                                    (pr-str (pr-str db)))]
-    (when-not (.exists (.getParentFile target-file))
-      (.mkdirs (.getParentFile target-file)))
-    (spit target-file replaced :append false)))

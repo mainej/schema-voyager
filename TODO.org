@@ -217,20 +217,23 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * DONE simplify spread of files
   * DONE slim down dev/
   * DONE move assets/ into resources/
+* CANCELED convert datomic (and hiccup?) deps to :optional
+  NOTE: I decided to keep them as is... If they're loaded when using s-v
+  directly, it's hard to see how they'll behave from a project.
+
+  Would this ensure they're loaded when using s-v directly, but not when using from a project?
+  And would this let us get rid of the :datmoic and :export aliases, and the dev directory/namespace?
+    The dev directory also exists to support Netlify, so maybe not
+* DONE Reorganize deps in deps.edn. What is really needed, and when?
+  development/live
+  release
+  standalone
+  standalone with Datomic
 * TODO create a build script
 ** TODO run clj -X:build-template
 ** TODO Create tagged version
    check that find-versions can actually find the tool
 * TODO reintroduce quickstart, as a way of seeing full workflow
   basically just -X:cli ingest followed by -X:export standalone
-* TODO convert datomic (and hiccup?) deps to :optional
-  Would this ensure they're loaded when using s-v directly, but not when using from a project?
-  And would this let us get rid of the :datmoic and :export aliases, and the dev directory/namespace?
-    The dev directory also exists to support Netlify, so maybe not
-* TODO Reorganize deps in deps.edn. What is really needed, and when?
-  development/live
-  release
-  standalone
-  standalone with Datomic
 * TODO consider renaming cli/standalone to standalone-html or just html
   if it would read better in the docs
