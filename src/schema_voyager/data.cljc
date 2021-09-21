@@ -110,12 +110,12 @@
   (comp types :db.schema.pseudo/type))
 
 (defn process
-  "Prepare the provided list of schema `elements` for import into the Datascript DB.
+  "Prepare the provided list of schema `elements` for import into the DataScript DB.
   Each element should be an attribute, constant, entity-spec or collection.
 
   This function has two main purposes. First it gives attributes and constants
   their default `:db.schema/part-of`. Second, it converts literal collection
-  references into full Datascript relationships, so that it's possible to
+  references into full DataScript relationships, so that it's possible to
   navigate between collections via attributes."
   [elements]
   (let [elements     (->> elements

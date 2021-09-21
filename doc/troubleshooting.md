@@ -1,12 +1,12 @@
 
 ## Missing Datomic deps
 
-You may have problems loading dependencies when using a [Datomic source](doc/sources.md#Datomic-source).
+When using a [Datomic source](doc/sources.md#Datomic-source), you'll need to add Datomic dependencies.
 Since not all projects that use Schema Voyager will need to connect to Datomic, it is not one of the default dependencies.
 
-This library provides an alias `:datomic` which adds these dependencies, but if they aren't the right versions for your project, create your own alias.
-
+If you don't you'll see an error referencing Datomic.
 These errors manifest in a few forms.
+In all cases, the fix is to ensure the deps are included in your deps.edn.
 
 ### Could not locate datomic/client/api__init.class, datomic/client/api.clj or datomic/client/api.cljc on classpath.
 

@@ -11,3 +11,4 @@ readme.html
 doc/*.html
 resources/schema_voyager_db.edn
 /dev/ingest/projects
+schema-voyager.html

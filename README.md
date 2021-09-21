@@ -52,9 +52,9 @@ OK, sounds good.
 How do we get started?
 
 1. Start by learning how Schema Voyager ingests schema data from different [sources](doc/sources.md).
-2. You'll also want to learn about the [supplemental properties](doc/annotation.md) that define references, deprecations, and other attribute metadata you might want to store. 
-3. When you're ready, read the [installation documentation](doc/installation.md) to get started ingesting your schema.
-4. After your schema is ingested, it needs to be converted into a web page. Read the docs on [exploring and sharing](doc/exploring-and-sharing.md) for details.
+2. Then learn about the [supplemental properties](doc/annotation.md) that define references, deprecations, and other supplemental schema data you can add.
+3. When you're ready, read the [installation and usage documentation](doc/installation-and-usage.md) to learn how to convert your schema data into a web page.
+4. Read the docs on [exploring and sharing](doc/exploring-and-sharing.md) for details about exploring this page and sharing it with others.
 
 
 ## Alternatives

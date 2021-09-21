@@ -1,15 +1,10 @@
 (ns schema-voyager.cli
-  (:require [schema-voyager.data :as data]
-            [schema-voyager.export :as export]
-            [schema-voyager.ingest.core :as ingest]
-            [clojure.pprint :as pprint]))
-
-(def ^:private default-db-path "resources/schema_voyager_db.edn")
-
-(defn save-db
-  ([db] (save-db default-db-path db))
-  ([file-path db]
-   (spit (or file-path default-db-path) (pr-str db))))
+  (:require
+   [clojure.pprint :as pprint]
+   [schema-voyager.build.db :as build.db]
+   [schema-voyager.build.template-html :as template-html]
+   [schema-voyager.data :as data]
+   [schema-voyager.ingest.core :as ingest]))
 
 (defn- datomic-config [{:keys [datomic/db-name datomic/client-config datomic/exclusions datomic/infer]}]
   {:db-name       db-name
@@ -38,24 +33,24 @@
     :else                     (throw (ex-info "Unrecognized source" {:source source}))))
 
 (defn ingest-into-db
-  "Create an in-memory Datascript DB from the `source`s. Does not persist the
+  "Create an in-memory DataScript DB from the `source`s. Does not persist the
   database. Useful primarily for exploring the database from a script."
   [{:keys [sources]}]
   (->> (mapcat extract-source sources)
        data/process
-       ingest/into-db))
+       build.db/into-db))
 
 (defn ingest
   "Ingest schema into Schema Voyager from one or more `source`s.
 
   Read about specifying sources in `doc/sources.md`.
 
-  Read about how to invoke [[ingest]] in `doc/installation.md`.
+  Read about how to invoke [[ingest]] in `doc/installation-and-usage.md`.
 
   NOTICE: If you experience errors using a Datomic source, see
   `doc/troubleshooting.md`. "
   [params]
-  (save-db (:db-file params) (ingest-into-db params))
+  (build.db/save-db (:db-file params) (ingest-into-db params))
   (shutdown-agents))
 
 (defn print-inferences
@@ -73,3 +68,11 @@
   [params]
   (pprint/pprint (ingest/datomic-attributes (datomic-config params)))
   (shutdown-agents))
+
+(defn standalone
+  "Creates a standalone HTML page at `output-path`, after importing the `sources`
+  as per [[ingest]].
+
+  By default, the generated HTML page is called `schema-voyager.html`."
+  [{:keys [output-path] :or {output-path "schema-voyager.html"} :as spec}]
+  (template-html/fill-template output-path (ingest-into-db spec)))

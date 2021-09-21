@@ -5,9 +5,7 @@
   most projects will want to ingest schema data from their running Datomic
   database.
 
-  To use this namespace, [[datomic.client.api]] must be on your classpath. This
-  project provides an alias `:datomic` which will pull in a version of
-  [[com.datomic/client-cloud]], but you may need your own version."
+  To use this namespace, [[datomic.client.api]] must be on your classpath."
   (:require [datomic.client.api :as d]
             [schema-voyager.data :as data]
             [clojure.set :as set]))

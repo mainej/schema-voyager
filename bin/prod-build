@@ -2,11 +2,18 @@
 
 set -Eeuo pipefail
 
-# Netlify uses an older version of clojure CLI, hence the outdated invocation styles.
-
 rm -rf target && mkdir target
-echo Importing mbrainz schema...
+echo Generating target/index.html for mbrainz schema...
+# When Netlify updates their version of Clojure https://github.com/netlify/build-image/pull/484
+# this can become
+# clojure -X:cli standalone \
+#         '{:sources    [{:file/name "resources/mbrainz-schema.edn"}
+#                        {:file/name "resources/mbrainz-enums.edn"}
+#                        {:file/name "resources/mbrainz-supplemental.edn"}]
+#          :output-path "target/index.html"}'
+#
+# And the :netlify alias can be removed.
+#
+# Until the, use this outdated invocation style:
 clojure -A:netlify -m ingest.projects.mbrainz
-echo Building standalone HTML
-clojure -A:netlify -m build.standalone
-mv target/standalone.html target/index.html
+echo Generated target/index.html for mbrainz schema

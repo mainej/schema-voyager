@@ -44,10 +44,11 @@ If your `:dev-local` database isn't using an attribute that _is_ used in product
 So, you've decided to use the inference tools, and you promise to do it responsibly (Schema Voyager and its maintainers are not responsible for any damage caused by using these tools).
 
 The recommended approach is to use inference as a start to a manually maintained file.
-There's a command line tool for making and printing inferences:
+There's a command line tool for making and printing inferences.
+First ensure you have an [alias](doc/installation-and-usage.md#As-an-alias) for Schema Voyager.
 
 ```sh
-clojure -A:datomic -X:cli print-inferences \
+clojure -X:schema print-inferences \
   '{:datomic/db-name "my-db",
     :datomic/client-config {:server-type :dev-local, :system "my-system"}, 
     :datomic/infer #{:all}}'
@@ -68,8 +69,8 @@ You can include more than one:
   
 ### ingest
 
-Though it isn't recommended, you can also use `:datomic/infer` with `clojure -X:cli ingest :sources ...`.
-Unlike inference, `ingest` is designed to be run whenever your schema updates.
+You can also use `:datomic/infer` with [`schema-voyager.cli/standalone`](doc/installation-and-usage.md).
+However, this it isn't recommended, because `standalone` is designed to run whenever your schema updates.
 If it is ever run against a production database with inference enabled, you may experience the problems described above.
 
 ## Future work

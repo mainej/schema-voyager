@@ -2,22 +2,16 @@
 
 Now the fun part!
 
-## Create web page
+## View web page
 
-After ingesting your schema, generate an HTML page for it:
-
-```sh
-clojure -X:export standalone
-```
-
-When it's done, open `target/standalone.html` in your browser.
+After [running](doc/installation-and-usage.md) Schema Voyager, open `schema-voyager.html` in your browser.
 Have fun getting to know your schema!
 
 ## Share web page
 
-`target/standalone.html` is a single file containing HTML, CSS and JS.
-It embeds your entire schema and doesn't need to communicate with a server.
-Therefore it can be committed, emailed, hosted on Netlify or a server of your choice, or otherwise shared anywhere.
+`schema-voyager.html` is a single file containing HTML, CSS and JS.
+It embeds your entire schema and doesn't communicate with a server (we promise! feel free to review the code).
+Therefore it can be committed, emailed, hosted on Netlify or another server of your choice, or otherwise shared anywhere.
 
 ## Share ERDs
 

@@ -1,4 +1,4 @@
-* ingest data
+* DONE ingest data
 ** DONE from file
    CLOSED: [2020-03-09 Mon 16:44]
 ** DONE from db
@@ -14,7 +14,7 @@
 The tool should be a 'quick view' of an unfamiliar database, one that hasn't yet been annotated with supplemental schema.
 The tool should parse command line args for the client config and db name.
 Then it should ingest the db, inferring references and deprecations.
-* process data into datascript db
+* DONE process data into DataScript db
 ** DONE basic schema
    CLOSED: [2020-03-09 Mon 14:17]
 ** DONE with deprecations
@@ -39,7 +39,7 @@ Then it should ingest the db, inferring references and deprecations.
    CLOSED: [2020-03-27 Fri 17:56]
 ** DONE allow doc strings on collections
    CLOSED: [2020-03-10 Tue 18:06]
-* inspect data
+* DONE inspect data
 ** DONE index
    CLOSED: [2020-03-10 Tue 15:44]
 ** DONE aggregate table
@@ -90,8 +90,8 @@ Then it should ingest the db, inferring references and deprecations.
    CLOSED: [2020-03-28 Sat 10:21]
 ** DONE toggle enums in diagrams
    CLOSED: [2020-03-27 Fri 18:22]
-* export data
-** DONE to static datascript db
+* DONE export data
+** DONE to static DataScript db
    CLOSED: [2020-03-10 Tue 23:22]
 ** DONE to live HTML, with inlined data
    CLOSED: [2020-03-10 Tue 23:23]
@@ -100,8 +100,8 @@ Then it should ingest the db, inferring references and deprecations.
 ** DONE to svg
    CLOSED: [2020-03-25 Wed 17:10]
 Done by Vega, see toolbox to upper right of diagram
-* refactoring
-** DONE switch to just datascript and reagent... don't need re-frame or re-posh
+* DONE refactoring
+** DONE switch to just DataScript and reagent... don't need re-frame or re-posh
    CLOSED: [2020-03-10 Tue 22:38]
 ** DONE why do we have both entity and attribute? aren't they two names for the same thing?
    CLOSED: [2020-03-27 Fri 20:06]
@@ -119,7 +119,7 @@ So that you can transact several times.
 ** DONE Consider switching diagrams to GraphViz
    CLOSED: [2020-04-02 Thu 16:00]
 See https://github.com/felixflores/datomic_schema_grapher for some ideas
-* documentation
+* DONE documentation
 ** DONE terminology
    CLOSED: [2020-03-31 Tue 16:57]
 *** collections, aggregates, enums, attributes, constants
@@ -160,22 +160,44 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 *** upload assets/* to Netlify, or a server of your choice
 ** DONE acknowledgements
    CLOSED: [2020-03-31 Tue 16:57]
-*** datascript
+*** DataScript
 *** reagent
 *** oz
 *** shadow
 *** tailwindcss, postcss and purgecss
 ** DONE license
    CLOSED: [2020-04-02 Thu 12:08]
-* erd config
+* DONE erd config
 ** DONE toggle attr and collection
    CLOSED: [2020-04-03 Fri 15:57]
 ** DONE hide attrs
    CLOSED: [2020-04-04 Sat 00:33]
 ** show non-ref attrs?
 * DONE replace diagram config dropdown and toggles with headlessui-reagent
-* convert to clojure tool
-** TODO Unify CLI to a single invocation
+* DONE revise documentation
+  * split into several files?
+  README.md
+  screenshots
+  big picture
+  links to further documentation
+
+  docs/installation-and-usage.md
+  docs/sources.md
+  docs/annotation.md
+  docs/exploring-and-sharing.md
+  docs/advanced-exploration.md
+  docs/datomic-inference.md
+  docs/troubleshooting.md
+* DONE Fix usage from within a project
+  Problem: You can't really use s-v from within another Clojure codebase. This
+  is a problem because those codebases are closest to the original schema
+  definition, client connection parameters etc. And more practially, because the
+  DataScript DB is put in the project resources/, not s-v's resources, meaning
+  that resource/inline doesn't work. Maybe? Needs research
+** DONE Create way to build website with arbitrary db input.
+** CANCELED Create version of website that allows upload of s-v.db
+* DONE convert to clojure tool
+** DONE Unify CLI to a single invocation
 *** DONE many sources
 *** DONE many kinds of sources
     * files
@@ -184,29 +206,31 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
     * static data
 *** DONE db inferences
 *** DONE db exclusions (?)
-*** output to standalone html
-*** output to ... anywhere else?
-** TODO follow guidance in https://clojure.org/reference/deps_and_cli#_best_practices_for_tool_authors
-** TODO Release on clojars
-** TODO simplify spread of files
-   * get rid of dev/ directory?
-   * move assets/ into resources/
-   * output dynamic, and standalone html to target directory
-   * can resource/inline use directory besides resources?
-     Looks like no, so can't put dataascript db in target. Is there somewhere better to put it?
-* DONE revise documentation
-  * split into several files?
-  README.md
-  screenshots
-  big picture
-  links to further documentation
-
-  docs/installation.md
-  docs/sources.md
-  docs/annotation.md
-  docs/exploring-and-sharing.md
-  docs/advanced-exploration.md
-  docs/datomic-inference.md
-  docs/troubleshooting.md
-* move away from yarn scripts
+*** DONE output to standalone html
+* DONE Rename standalone.html to schema-voyager.html, or make it configurable?
+  better branding of schema voyager
+* DONE fix print-references
+  It fails with some cryptic message related to compiling js (!)
+  Also check that docs for print-inferences (doc/datomic-inference.md) actually work
+* TODO create a build script
+** TODO run clj -X:build-template
+** TODO Create tagged version
+   check that find-versions can actually find the tool
+* TODO simplify spread of files
+  * get rid of dev/ directory?
+  * move assets/ into resources/
+* TODO reintroduce quickstart, as a way of seeing full workflow
+  basically just -X:cli ingest followed by -X:export standalone
+* TODO move away from yarn scripts
   possibly a clojure.tools.build script would work
+* TODO convert datomic (and hiccup?) deps to :optional
+  Would this ensure they're loaded when using s-v directly, but not when using from a project?
+  And would this let us get rid of the :datmoic and :export aliases, and the dev directory/namespace?
+    The dev directory also exists to support Netlify, so maybe not
+* TODO Reorganize deps in deps.edn. What is really needed, and when?
+  development/live
+  release
+  standalone
+  standalone with Datomic
+* TODO consider renaming cli/standalone to standalone-html or just html
+  if it would read better in the docs

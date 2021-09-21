@@ -33,8 +33,13 @@ Read on to learn about the sources Schema Voyager understands and how to merge t
 
 ## How to use with `schema-voyager.cli`
 
-The primary interface for working with sources is `schema-voyager.cli/ingest`.
-You can read the [installation documentation](doc/installation.md) to learn different ways to invoke `schema-voyager.cli/ingest`, but for now, let's focus on what it does.
+The primary interface for working with sources is `schema-voyager.cli/standalone`.
+You can read the [usage documentation](doc/installation-and-usage.md) to learn different ways to invoke `schema-voyager.cli/standalone`, but for now, let's focus on what it does.
+
+`schema-voyager.cli/standalone` is divided into two parts.
+First it calls `schema-voyager.cli/ingest` which reads your schema data.
+Then it turns that data into a web page.
+This document focus on the first part, ingestion.
 
 `schema.voyager.cli/ingest` accepts a vector of sources.
 (See below for how to specify each type of source.)
