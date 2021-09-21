@@ -56,7 +56,7 @@ module.exports = {
     plugins: [],
     purge: {
         content: [
-            './assets/index.html',
+            './resources/assets/index.html',
             './src/**/*.cljs',
             './src/**/*.cljc',
         ],

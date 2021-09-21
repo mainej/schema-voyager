@@ -7,9 +7,9 @@
     "license": "MIT",
     "scripts": {
         "readme": "pandoc -i README.md -o readme.html",
-        "html": "cp assets/index.html target/",
-        "watch-css": "npx tailwindcss -i assets/css/styles.css -o target/styles.css -w",
-        "compile-css": "npx tailwindcss -i assets/css/styles.css -o target/styles.css --minify",
+        "html": "cp resources/assets/index.html target/",
+        "watch-css": "npx tailwindcss -i resources/assets/css/styles.css -o target/styles.css -w",
+        "compile-css": "npx tailwindcss -i resources/assets/css/styles.css -o target/styles.css --minify",
         "js-server": "npx shadow-cljs -A:test server",
         "watch-js": "npx shadow-cljs watch app",
         "build-js": "npx shadow-cljs compile app",

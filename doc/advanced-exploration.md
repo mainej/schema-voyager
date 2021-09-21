@@ -61,7 +61,7 @@ Then you need an HTML file which will reference the JS as it changes.
 That is, you can't use the typical standalone web page.
 
 ```sh
-yarn run html # only once, or if assets/index.html has changed
+yarn run html # only once, or if resources/assets/index.html has changed
 ```
 
 Also compile the CSS file:

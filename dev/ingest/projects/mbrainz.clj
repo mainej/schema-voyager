@@ -10,9 +10,9 @@
 
   Invoke with clojure -A:ingest -X ingest.projects.mbrainz/import-mbrainz"
   [_]
-  (cli/standalone {:sources     [{:file/name "resources/mbrainz-schema.edn"}
-                                 {:file/name "resources/mbrainz-enums.edn"}
-                                 {:file/name "resources/mbrainz-supplemental.edn"}]
+  (cli/standalone {:sources     [{:file/name "resources/mbrainz-schema/schema.edn"}
+                                 {:file/name "resources/mbrainz-schema/enums.edn"}
+                                 {:file/name "resources/mbrainz-schema/supplemental.edn"}]
                    :output-path "target/index.html"}))
 
 ;; Needed by Netlify

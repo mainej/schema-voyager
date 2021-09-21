@@ -148,8 +148,8 @@ To annotate that an attribute has been deprecated and replaced by another attrib
   :db.schema/see-also    [{:db/ident :person/full-name}]}]
 ```
 
-For an example of supplemental properties, see [resources/mbrainz-supplemental.edn](resources/mbrainz-supplemental.edn).
-That file augments the schema defined in [resources/mbrainz-schema.edn](resources/mbrainz-schema.edn) and [resources/mbrainz-enums.edn](resources/mbrainz-enums.edn).
+For an example of supplemental properties, see [resources/mbrainz-schema/supplemental.edn](resources/mbrainz-schema/supplemental.edn).
+That file augments the schema defined in [resources/mbrainz-schema/schema.edn](resources/mbrainz-schema/schema.edn) and [resources/mbrainz-schema/enums.edn](resources/mbrainz-schema/enums.edn).
 It does not take advantage of every one of the Schema Voyager supplemental properties, but is a good introduction.
 
 ### :db.schema/references

@@ -212,17 +212,17 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * DONE fix print-references
   It fails with some cryptic message related to compiling js (!)
   Also check that docs for print-inferences (doc/datomic-inference.md) actually work
+* CANCELED move away from yarn scripts
+  possibly a clojure.tools.build script would work
+* DONE simplify spread of files
+  * DONE slim down dev/
+  * DONE move assets/ into resources/
 * TODO create a build script
 ** TODO run clj -X:build-template
 ** TODO Create tagged version
    check that find-versions can actually find the tool
-* TODO simplify spread of files
-  * get rid of dev/ directory?
-  * move assets/ into resources/
 * TODO reintroduce quickstart, as a way of seeing full workflow
   basically just -X:cli ingest followed by -X:export standalone
-* TODO move away from yarn scripts
-  possibly a clojure.tools.build script would work
 * TODO convert datomic (and hiccup?) deps to :optional
   Would this ensure they're loaded when using s-v directly, but not when using from a project?
   And would this let us get rid of the :datmoic and :export aliases, and the dev directory/namespace?
