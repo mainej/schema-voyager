@@ -1,3 +1,3 @@
 [build]
-  command = "bin/prod-build"
+  command = "bin/netlify/build"
   publish = "target/"
