@@ -238,4 +238,4 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * DONE create a build script
 ** DONE run clj -X:build-template
 ** DONE Create tagged version
-* TODO check that find-versions can actually find the tool
+* DONE check that find-versions can actually find the tool

@@ -71,7 +71,7 @@
 (defn- post-release-message "Suggest updating the docs to reference the new release." [params]
   (println (format "\nRelease finished. Now update doc/installation-and-usage.md to reference {:git/tag \"%s\", :git/sha \"%s\"}"
                    tag
-                   (git-rev)))
+                   (subs (git-rev) 0 8)))
   params)
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
