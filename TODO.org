@@ -212,7 +212,7 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * DONE fix print-references
   It fails with some cryptic message related to compiling js (!)
   Also check that docs for print-inferences (doc/datomic-inference.md) actually work
-* CANCELED move away from yarn scripts
+* DONE move away from yarn scripts
   possibly a clojure.tools.build script would work
 * DONE simplify spread of files
   * DONE slim down dev/

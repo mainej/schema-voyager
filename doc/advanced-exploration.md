@@ -38,7 +38,7 @@ You have some options about how to start a JS server. You can do it from your te
 From the terminal:
 
 ```sh
-yarn run watch-js
+bin/dev/js/watch
 ```
 
 Or, you can start shadow-cljs from your editor. For example, from an Emacs ClojureScript REPL, started in Schema Voyager's repo:
@@ -50,28 +50,28 @@ M-x cider-jack-in-cljs
 <choose :app>
 ```
 
-> You can speed up the restart time of `yarn run watch-js` by running the following in a separate terminal.
-> Wait for it to report that an nREPL server has been started before running watch-js.
+> You can speed up the restart time of `bin/dev/js/watch` by running the following in a separate terminal.
+> Wait for it to report that an nREPL server has been started before running `bin/dev/js/watch`.
 > 
 > ```sh
-> yarn run js-server
+> bin/dev/js/server
 > ```
 
 Then you need an HTML file which will reference the JS as it changes.
 That is, you can't use the typical standalone web page.
 
 ```sh
-yarn run html # only once, or if resources/assets/index.html has changed
+bin/dev/html # only once, or if resources/assets/index.html has changed
 ```
 
 Also compile the CSS file:
 ```sh
-yarn run compile-css
+bin/dev/css --minify
 ```
 
 Or, if you're hacking on Schema Voyager, and will be changing CSS classes:
 ```sh
-yarn run watch-css
+bin/dev/css --watch
 ```
 
 After everything is loaded, open [http://localhost:8080](http://localhost:8080).

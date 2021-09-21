@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+npx tailwindcss -i resources/assets/css/styles.css -o target/styles.css "$@"

@@ -23,7 +23,7 @@
   (sh "npx" "shadow-cljs" "release" ":app"))
 
 (defn optimized-css []
-  (sh "yarn" "run" "--prod" "compile-css"))
+  (sh "bin/dev/css" "--minify"))
 
 (defn standalone-html
   []
