@@ -229,11 +229,13 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
   release
   standalone
   standalone with Datomic
+* CANCELED reintroduce quickstart, as a way of seeing full workflow
+  NOTE: decided not to do this because -X:cli standalone is the whole workflow now
+  basically just -X:cli ingest followed by -X:export standalone
+* CANCELED consider renaming cli/standalone to standalone-html or just html
+  NOTE: going to leave it for now
+  if it would read better in the docs
 * TODO create a build script
 ** TODO run clj -X:build-template
 ** TODO Create tagged version
    check that find-versions can actually find the tool
-* TODO reintroduce quickstart, as a way of seeing full workflow
-  basically just -X:cli ingest followed by -X:export standalone
-* TODO consider renaming cli/standalone to standalone-html or just html
-  if it would read better in the docs

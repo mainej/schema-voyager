@@ -5,7 +5,7 @@ See the [exploration documentation](doc/exploring-and-sharing.md) for how to use
 
 ## As an alias
 
-In most cases you will be working on a team and several developers will need to be able to re-generate the schema web page.
+In most cases you will be working on a team and several developers will need to be able to re-generate the standalone web page.
 The easiest way to share the command to do this is to create an alias that invokes `schema-voyager.cli/standalone`.
 
 ```clojure
@@ -13,11 +13,10 @@ The easiest way to share the command to do this is to create an alias that invok
 {,,,
  :aliases {:schema {:replace-deps {schema-voyager/schema-voyager {:git/tag "..." :git/sha "..."}}
                     :ns-default   schema-voyager.cli
+                    ;; This example demonstrates using a few file sources, but any type of source is available.
                     :exec-args    {:sources [{:file/name "resources/main-schema.edn"}
                                              {:file/name "resources/supplemental-schema.edn"}]}}}}
 ```
-
-This example demonstrates using a few file sources, but any [type of source](doc/sources.md) is available.
 
 Execute the alias like so:
 
@@ -25,7 +24,7 @@ Execute the alias like so:
 clojure -X:schema standalone
 ```
 
-By default this will generate a web page called `schema-voyager.html` in the current directory.
+This will generate a web page called `schema-voyager.html` in the current directory, by default.
 You can modify this by setting `:output-path`:
 
 ```clojure
@@ -41,7 +40,7 @@ You can modify this by setting `:output-path`:
 
 ## As an alias, with Datomic
 
-If you need to include a [Datomic source](doc/sources.md#Datomic-source), as many people do, you must add deps on `com.datomic/client-cloud` and/or `com.datomic/dev-local`.
+If you need to include a [Datomic source](doc/sources.md#Datomic-source), as many people do, you must depend on `com.datomic/client-cloud` and/or `com.datomic/dev-local`.
 
 ```clojure
 ;; deps.edn
