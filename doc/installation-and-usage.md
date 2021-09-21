@@ -11,7 +11,7 @@ The easiest way to share the command to do this is to create an alias that invok
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {schema-voyager/schema-voyager {:git/tag "..." :git/sha "..."}}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "..." :git/sha "..."}}
                     :ns-default   schema-voyager.cli
                     ;; This example demonstrates using a few file sources, but any type of source is available.
                     :exec-args    {:sources [{:file/name "resources/main-schema.edn"}
@@ -30,7 +30,7 @@ You can modify this by setting `:output-path`:
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {schema-voyager/schema-voyager {:git/tag "..." :git/sha "..."}}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "..." :git/sha "..."}}
                     :ns-default   schema-voyager.cli
                     :exec-args    {:sources     [{:file/name "resources/main-schema.edn"}
                                                  {:file/name "resources/supplemental-schema.edn"}]
@@ -45,9 +45,9 @@ If you need to include a [Datomic source](doc/sources.md#Datomic-source), as man
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {schema-voyager/schema-voyager {:git/tag "..." :git/sha "..."}
-                                   com.datomic/client-cloud      {:mvn/version "0.8.113"}
-                                   com.datomic/dev-local         {:mvn/version "0.9.235"}}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "..." :git/sha "..."}
+                                   com.datomic/client-cloud        {:mvn/version "0.8.113"}
+                                   com.datomic/dev-local           {:mvn/version "0.9.235"}}
                     :ns-default   schema-voyager.cli
                     :exec-args    {:sources [{:datomic/db-name "my-db-name",
                                               :datomic/client-config {:server-type :dev-local, :system "my-system"}}

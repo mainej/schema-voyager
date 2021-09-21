@@ -235,7 +235,7 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 * CANCELED consider renaming cli/standalone to standalone-html or just html
   NOTE: going to leave it for now
   if it would read better in the docs
-* TODO create a build script
-** TODO run clj -X:build-template
-** TODO Create tagged version
-   check that find-versions can actually find the tool
+* DONE create a build script
+** DONE run clj -X:build-template
+** DONE Create tagged version
+* TODO check that find-versions can actually find the tool
