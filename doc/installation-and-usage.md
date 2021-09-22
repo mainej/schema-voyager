@@ -70,7 +70,7 @@ EXPERIMENTAL: you can install Schema Voyager as a Clojure Tool.
 
 * Find tool versions: `clj -X:deps find-versions :lib io.github.mainej/schema-voyager`
 * Install tool with `clj -Ttools install io.github.mainej/schema-voyager '{:git/tag "VERSION"}' :as schema-voyager`
-* Invoke tool with `clj -Tschema-voyager standalone :sources '[<SOURCE>, ...]`
+* Invoke tool with `clj -Tschema-voyager standalone :sources '[<SOURCE>, ...]'`
 
 ## As a script
 
