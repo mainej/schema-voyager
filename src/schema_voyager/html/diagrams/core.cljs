@@ -35,11 +35,20 @@
 (def ^:private html
   dom/render-to-static-markup)
 
+(defn coll-color [coll]
+  (colors (if (= :enum (:db.schema.collection/type coll))
+            :green-600
+            :purple-700)))
+
+(defn attr-coll-color [attr]
+  ;; Are constants ever rendered as attributes in the diagrams? I don't think
+  ;; so, so this could probably always be purple.
+  (colors (if (= :constant (:db.schema.pseudo/type attr))
+            :green-600
+            :purple-700)))
+
 (defn- dot-node [coll attrs-visible?]
-  (let [id         (coll-id coll)
-        coll-color (colors (case (:db.schema.collection/type coll)
-                             :enum      :green-600
-                             :aggregate :purple-700))]
+  (let [id (coll-id coll)]
     [id {:label (html
                  [:table {:port         id
                           :border       0
@@ -53,7 +62,7 @@
                                :sides   "brl"
                                :href    (util/coll-href coll)
                                :title   coll-name}
-                          [:font {:color coll-color} coll-name]]])
+                          [:font {:color (coll-color coll)} coll-name]]])
                   (when attrs-visible?
                     (for [{:keys [db/ident] :as attr} (:db.schema.collection/attributes coll)]
                       ^{:key ident}
@@ -64,7 +73,7 @@
                                  :port    (attr-id attr)
                                  :href    (util/attr-href attr)
                                  :title   (pr-str ident)}
-                            [:font {:color coll-color} ":" (namespace ident)]
+                            [:font {:color (attr-coll-color attr)} ":" (namespace ident)]
                             [:font {:color (colors :gray-500)} "/"]
                             [:font {:color (colors :blue-600)} (name ident)]]]))])}]))
 
