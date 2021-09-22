@@ -3,12 +3,12 @@
    [schema-voyager.cli :as cli]))
 
 (defn import-mbrainz
-  "Create datascript DB that contains the mbrainz schema, enums, and supplemental
-  data about references.
+  "Creates a web page at target/index.html that contains the mbrainz schema,
+  enums, and supplemental data about references.
 
-  Loaded out of resources/mbrainz-*.edn files.
+  Loaded out of resources/mbrainz-schema/*.edn files.
 
-  Invoke with clojure -A:ingest -X ingest.projects.mbrainz/import-mbrainz"
+  Invoke with clojure -A:netlify -X ingest.projects.mbrainz/import-mbrainz"
   [_]
   (cli/standalone {:sources     [{:file/name "resources/mbrainz-schema/schema.edn"}
                                  {:file/name "resources/mbrainz-schema/enums.edn"}
