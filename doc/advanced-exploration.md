@@ -1,39 +1,37 @@
 # Advanced exploration
 
-You can use Schema Voyager as a live tool, which responds to updates to the
-schema ingestion process as soon as they occur.
+You can use Schema Voyager as a live tool, which responds to updates to the schema ingestion process as soon as they occur.
+If you're hacking on Schema Voyager itself, it's also a good way to see updates to the CLJS.
 
 > This is a bit more involved.
-I spend a lot of time in this mode while developing Schema Voyager and it might be useful when you're iterating on a new schema design, but it's definitely a more advanced use-case.
+I spend a lot of time in this mode while developing Schema Voyager and it might be useful when you're iterating on a new schema design, but it's definitely more advanced.
 
 ## Pre-requisites
 
 To work in this mode, you have to be in Schema Voyager's directory, not your project's directory.
 First do a `git checkout` of Schema Voyager's repo.
 
-## ingest schema data
-
-Instead of running `standalone`, run `ingest` with the sources you usually use:
+You need an HTML file which will reference the JS as it changes.
+That is, you can't use the typical standalone web page created by `schema-voyager.cli/standalone`.
 
 ```sh
-clojure -X:cli ingest \
-  :sources '[{:file/name "resources/main-schema.edn"}
-             {:file/name "resources/supplemental-schema.edn"}]'
+bin/dev/html # only once, or if resources/assets/index.html has changed
 ```
 
-Every run of this will update an EDN file.
-The EDN file contains your schema in a DataScript DB.
+Also compile the CSS:
+```sh
+bin/dev/css --minify
+```
 
-If this command line gets unwieldy, you can create an alias in Schema Voyager's deps.edn.
-Use the approaches described in [the usage docs](installation-and-usage.md#As-an-alias) to define the alias (perhaps adding Datomic dependencies).
-Substitute `schema-voyager.cli/ingest` where those docs mention `schema-voyager.cli/standalone`.
-
-## live web page
+Or, if you're hacking on Schema Voyager, and will be changing CSS classes:
+```sh
+bin/dev/css --watch
+```
 
 Now you need a live version of the JS.
-The JS will update as the underlying DataScript DB changes.
 
-You have some options about how to start a JS server. You can do it from your terminal or from an editor.
+You have some options about how to start a JS server.
+You can do it from your terminal or from an editor.
 
 From the terminal:
 
@@ -50,33 +48,33 @@ M-x cider-jack-in-cljs
 <choose :app>
 ```
 
-> You can speed up the restart time of `bin/dev/js/watch` by running the following in a separate terminal.
+> To speed up the restart time of `bin/dev/js/watch` run the following in a separate terminal.
 > Wait for it to report that an nREPL server has been started before running `bin/dev/js/watch`.
 > 
 > ```sh
 > bin/dev/js/server
 > ```
 
-Then you need an HTML file which will reference the JS as it changes.
-That is, you can't use the typical standalone web page.
+## Ingest schema data
+
+Instead of running `standalone`, run `ingest` with the sources you usually use:
 
 ```sh
-bin/dev/html # only once, or if resources/assets/index.html has changed
+clojure -X:cli ingest \
+  :sources '[{:file/name "resources/main-schema.edn"}
+             {:file/name "resources/supplemental-schema.edn"}]'
 ```
 
-Also compile the CSS file:
-```sh
-bin/dev/css --minify
-```
+Every run of this will update an EDN file.
+The EDN file contains your schema in a DataScript DB, which is slurped into the JS.
 
-Or, if you're hacking on Schema Voyager, and will be changing CSS classes:
-```sh
-bin/dev/css --watch
-```
+> If this command line gets unwieldy, you can extend _Schema Voyager's_ `:cli` alias in its deps.edn.
+Use the approaches described in [the usage docs](installation-and-usage.md#As-an-alias) to define the alias (perhaps adding Datomic dependencies).
+Then invoke `clojure -X:cli ingest` instead of `clojure -X:cli standalone`.
 
 After everything is loaded, open [http://localhost:8080](http://localhost:8080).
 
-## re-running ingestion
+## Re-running ingestion
 
 As you change your schema, [re-run](#ingest-schema-data) the ingestion.
 When it has finished and after a short delay, changes will be reflected on the page.

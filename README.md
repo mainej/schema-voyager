@@ -29,14 +29,14 @@ Drill further into an attribute, to see its properties.
 Let's establish a mental model of how Schema Voyager works.
 
 Presumably you can see where Schema Voyager gets some of its data.
-When you transact schema, you give entities a `:db/ident`.
+When you transact schema, you give attributes a `:db/ident` along with their `:db/valueType` and `:db/cardinality`.
 You can imagine how Schema Voyager would query a Datomic database for data about attributes by looking up all the `:db/ident`s.
 It could group similar attributes together and display their data.
 
 But there's more going on here.
 Somehow Schema Voyager knows not only that `:track/artists` is a `:db.type/ref` attribute, but also that it refers to entities with attributes in the `:artist` namespace.
-It knows that `:track/artistCredit` has been deprecated and superseded by `:track/artists`.
-That's not part of the regular schema that Datomic defines, so how does Schema Voyager know?
+If you poked around in the [mbrainz schema](https://focused-kepler-9497ed.netlify.app) you might have noticed `:track/artistCredit` has been deprecated and superseded by `:track/artists`.
+References and deprecations aren't part of the regular schema that Datomic defines, so how does Schema Voyager know about these things?
 
 Enter **supplemental properties**.
 Schema Voyager defines supplemental properties that can be assigned to an attribute, properties which specify what the attribute references and whether it's deprecated, among other characteristics.

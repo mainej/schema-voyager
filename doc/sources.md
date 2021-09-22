@@ -89,10 +89,11 @@ You would extract from a Datomic source like this:
                                       :system "my-system"}}]})
 ```
 
-This pulls and classifies all the `:db/ident`s from the database.
-By default, it does not extract any supplemental schema, though it can.
-See the docs on [Datomic inference](/doc/datomic-inference.md) for details, being sure to heed the warnings.
-Generally, you should prefer "file sources" with supplemental schema over Datomic inference.
+This extracts all the `:db/ident`s from the database.
+
+> By default, it does not extract any supplemental schema, though it can.
+> See the docs on [Datomic inference](/doc/datomic-inference.md) for details, being sure to heed the warnings.
+> Generally, you should prefer "file sources" with supplemental schema over Datomic inference.
 
 Since not all projects that use Schema Voyager will need to connect to Datomic, it is not one of the default dependencies.
 This can lead to errors when ingesting from a Datomic source.
@@ -100,7 +101,7 @@ See the [troubleshooting docs](/doc/troubleshooting.md) for how to fix.
 
 ### file source
 
-A "file source" reads schema data (usually supplemental schema) from an EDN file.
+A "file source" extracts (slurps) schema data (usually supplemental schema) from an EDN file.
 
 ```clojure
 (schema-voyager.cli/ingest 
@@ -143,7 +144,7 @@ A "function source" specifies a function which returns schema data.
 
 The `:fn/name` will be resolved and called with a single argument, either the value provided in `:fn/args`, or an empty hashmap.
 
-## merging sources
+## Merging sources
 
 You can specify many sources.
 Properties from later sources will be merged with those from earlier sources.

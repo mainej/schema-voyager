@@ -43,8 +43,8 @@ If your `:dev-local` database isn't using an attribute that _is_ used in product
 
 So, you've decided to use the inference tools, and you promise to do it responsibly (Schema Voyager and its maintainers are not responsible for any damage caused by using these tools).
 
-The recommended approach is to use inference as a start to a manually maintained file.
-There's a command line tool for making and printing inferences.
+There's a command line tool for printing inferences.
+Use its output as the start of your supplemental schema file.
 First ensure you have an [alias](/doc/installation-and-usage.md#As-an-alias) for Schema Voyager.
 
 ```sh
@@ -67,7 +67,7 @@ You can include more than one:
       * **`:homogeneous-tuple-references`** - infer references for attributes that have `:db/tupleType`
       * **`:heterogeneous-tuple-references`** - infer references for attributes that have `:db/tupleTypes`
   
-### ingest
+### standalone
 
 You can also use `:datomic/infer` with [`schema-voyager.cli/standalone`](/doc/installation-and-usage.md).
 However, this it isn't recommended, because `standalone` is designed to run whenever your schema updates.
