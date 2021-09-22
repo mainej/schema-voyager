@@ -8,6 +8,7 @@
 (def template-dir (io/resource "standalone_template"))
 (def template-file (io/file template-dir "standalone.html"))
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn fill-template
   "Creates a standalone HTML page at `output-path`, by subsitituting the `db`
   into the template file."

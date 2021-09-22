@@ -255,6 +255,7 @@
              (when (some infer #{:all :references :tuple-references :heterogeneous-tuple-references})
                (infer-heterogeneous-tuple-references db))))))
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn cli-ingest
   "A shorthand, used by the CLI, for connecting to a database, ingesting and
   making inferences all in one step.
@@ -266,6 +267,7 @@
     (concat (ingest db exclusions)
             (infer db inferences))) )
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn cli-inferences
   "A shorthand, used by the CLI, for connecting to a database and inspecting
   inferences.
@@ -276,6 +278,7 @@
   (let [db (datomic-db client-config db-name)]
     (infer db inferences)) )
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn cli-attributes
   "A shorthand, used by the CLI, for connecting to a database and inspecting
   attributes."

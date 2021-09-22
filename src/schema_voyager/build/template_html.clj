@@ -13,19 +13,9 @@
    [schema-voyager.build.db :as build.db]))
 
 (defn optimized-js []
-  ;; Not (shadow.cljs.devtools.api/release :app)
-  ;; Because if -X:datomic is also used, you get errors
-  ;;
-  ;; Execution error (NoSuchMethodError) at com.google.javascript.jscomp.deps.ModuleLoader/createRootPaths (ModuleLoader.java:257).
-  ;; com.google.common.collect.ImmutableSortedSet.toImmutableSortedSet(Ljava/util/Comparator;)Ljava/util/stream/Collector;
-  ;;
-  ;; See https://clojurians-log.clojureverse.org/shadow-cljs/2021-05-27
-  ;; There is some sort of dependency conflict, but I couldn't figure out how to resolve it.
-  ;;
-  ;; NOTE: this may be fixed, as of the separation of this file from
-  ;; `schema-voyager.build.standalone-html`. In theory, you shouldn't ever have
-  ;; to use -X:datomic at the same time as using this file, so the error
-  ;; shouldn't arise.
+  ;; Shelling out doesn't seem to be any slower than
+  ;; (shadow.cljs.devtools.api/release :app), so better to keep shadow-cljs out
+  ;; of the deps while making the template.
   (sh "npx" "shadow-cljs" "release" ":app"))
 
 (defn optimized-css []
@@ -47,10 +37,11 @@
           [:div#app]
           [:script {:type "text/javascript"} (slurp "target/main.js")]])))
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn make-template
   "Creates a template file with a placeholder string instead of a DataScript DB.
-  It's used by [[fill-template]], which takes an ingested DB, then substitutes
-  that into the template file."
+  It's used by `schema-voyager.build.standalone-html/fill-template`, which takes
+  an ingested DB, then substitutes that into the template file."
   ;; This is kind of a hack. It works in contrast to the old approach where the
   ;; ingested DB was saved and then compiled directly into the JS.
   ;;

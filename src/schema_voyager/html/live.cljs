@@ -19,6 +19,7 @@
   (reagent.dom/render [main-view]
                       (.getElementById js/document "app")))
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn ^:export init []
   (routes/initialize)
   (dev-setup)

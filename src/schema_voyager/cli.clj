@@ -53,6 +53,7 @@
   (build.db/save-db (:db-file params) (ingest-into-db params))
   (shutdown-agents))
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn print-inferences
   "Show the inferences Schema Voyager is making. Expects `params` to be a
   Datomic source as defined by [[ingest]]. This can be a good starting point for
@@ -62,6 +63,7 @@
   (pprint/pprint (ingest/datomic-inferences (datomic-config params)))
   (shutdown-agents))
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn print-attributes
   "Show the attributes Schema Voyager is loading. Expects `params` to be a
   Datomic source as defined by [[ingest]]. Useful mostly for debugging."
