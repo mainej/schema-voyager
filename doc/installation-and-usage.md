@@ -24,8 +24,8 @@ Execute the alias like so:
 clojure -X:schema standalone
 ```
 
-This will generate a web page called `schema-voyager.html` in the current directory, by default.
-You can modify this by setting `:output-path`:
+This will generate a file called `schema-voyager.html` in the current directory, by default.
+You can modify the location of the file by setting `:output-path`:
 
 ```clojure
 ;; deps.edn
@@ -90,3 +90,6 @@ You can create a script which calls `schema-voyager.cli/standalone` directly.
 ```
 
 This example demonstrates using a static source, but any [type of source](/doc/sources.md) is available.
+
+What's next?
+[Explore](/doc/exploring-and-sharing.md) your schema.
