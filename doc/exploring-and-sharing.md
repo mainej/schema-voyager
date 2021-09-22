@@ -4,7 +4,7 @@ Now the fun part!
 
 ## View web page
 
-After [running](doc/installation-and-usage.md) Schema Voyager, open `schema-voyager.html` in your browser.
+After [running](/doc/installation-and-usage.md) Schema Voyager, open `schema-voyager.html` in your browser.
 Have fun getting to know your schema!
 
 ## Share web page

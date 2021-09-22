@@ -43,12 +43,12 @@
 (defn ingest
   "Ingest schema into Schema Voyager from one or more `source`s.
 
-  Read about specifying sources in `doc/sources.md`.
+  Read about specifying sources in `/doc/sources.md`.
 
-  Read about how to invoke [[ingest]] in `doc/installation-and-usage.md`.
+  Read about how to invoke [[ingest]] in `/doc/installation-and-usage.md`.
 
   NOTICE: If you experience errors using a Datomic source, see
-  `doc/troubleshooting.md`. "
+  `/doc/troubleshooting.md`. "
   [params]
   (build.db/save-db (:db-file params) (ingest-into-db params))
   (shutdown-agents))

@@ -45,7 +45,7 @@ So, you've decided to use the inference tools, and you promise to do it responsi
 
 The recommended approach is to use inference as a start to a manually maintained file.
 There's a command line tool for making and printing inferences.
-First ensure you have an [alias](doc/installation-and-usage.md#As-an-alias) for Schema Voyager.
+First ensure you have an [alias](/doc/installation-and-usage.md#As-an-alias) for Schema Voyager.
 
 ```sh
 clojure -X:schema print-inferences \
@@ -54,7 +54,7 @@ clojure -X:schema print-inferences \
     :datomic/infer #{:all}}'
 ```
 
-The argument is a Datomic source as defined in the [docs about sources](doc/sources.md#Datomic-source).
+The argument is a Datomic source as defined in the [docs about sources](/doc/sources.md#Datomic-source).
 
 Below are valid values for :datomic/infer.
 You can include more than one:
@@ -69,7 +69,7 @@ You can include more than one:
   
 ### ingest
 
-You can also use `:datomic/infer` with [`schema-voyager.cli/standalone`](doc/installation-and-usage.md).
+You can also use `:datomic/infer` with [`schema-voyager.cli/standalone`](/doc/installation-and-usage.md).
 However, this it isn't recommended, because `standalone` is designed to run whenever your schema updates.
 If it is ever run against a production database with inference enabled, you may experience the problems described above.
 

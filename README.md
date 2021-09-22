@@ -9,20 +9,20 @@ Try exploring the live [mbrainz schema](https://focused-kepler-9497ed.netlify.ap
 If you'd prefer a few screenshots, here's what it looks like.
 The app starts with an overview of your schema, with attributes grouped into related collections.
 
-![Screenshot of the listing of aggregate and enum collections on the Schema Voyager homepage](doc/collections.png)
+![Screenshot of the listing of aggregate and enum collections on the Schema Voyager homepage](/doc/collections.png)
 
 A configurable interactive diagram shows references between collections.
 
-![Screenshot of the connections diagram on the Schema Voyager homepage](doc/collections_diagram.png)
+![Screenshot of the connections diagram on the Schema Voyager homepage](/doc/collections_diagram.png)
 
 Drill in to a collection to see the attributes it contains, as well as a more focused diagram of how those attributes are connected to other collections.
 
-![Screenshot of the attributes list and the connections diagram on the Schema Voyager aggregate page](doc/aggregate.png)
+![Screenshot of the attributes list and the connections diagram on the Schema Voyager aggregate page](/doc/aggregate.png)
 
 
 Drill further into an attribute, to see its properties.
 
-![Screenshot of the attribute details on the Schema Voyager attribute page](doc/attribute.png)
+![Screenshot of the attribute details on the Schema Voyager attribute page](/doc/attribute.png)
 
 ## Big Picture
 
@@ -41,7 +41,7 @@ That's not part of the regular schema that Datomic defines, so how does Schema V
 Enter **supplemental properties**.
 Schema Voyager defines supplemental properties that can be assigned to an attribute, properties which specify what the attribute references and whether it's deprecated, among other characteristics.
 
-> Typically you'll maintain these supplemental properties in a separate [file](doc/sources.md#file-source) by hand (don't worry, it's not hard!) though see how to [infer](doc/datomic-inference.md) supplemental properties from an unfamiliar running database.
+> Typically you'll maintain these supplemental properties in a separate [file](/doc/sources.md#file-source) by hand (don't worry, it's not hard!) though see how to [infer](/doc/datomic-inference.md) supplemental properties from an unfamiliar running database.
 
 It's these supplemental properties that turn Schema Voyager into a living document about how your schema is being used, how attributes reference entities, which attributes are deprecated, and more.
 
@@ -51,10 +51,10 @@ It's these supplemental properties that turn Schema Voyager into a living docume
 OK, sounds good.
 How do we get started?
 
-1. Start by learning how Schema Voyager ingests schema data from different [sources](doc/sources.md).
-2. Then learn about the [supplemental properties](doc/annotation.md) that define references, deprecations, and other supplemental schema data you can add.
-3. When you're ready, read the [installation and usage documentation](doc/installation-and-usage.md) to learn how to convert your schema data into a web page.
-4. Read the docs on [exploring and sharing](doc/exploring-and-sharing.md) for details about exploring this page and sharing it with others.
+1. Start by learning how Schema Voyager ingests schema data from different [sources](/doc/sources.md).
+2. Then learn about the [supplemental properties](/doc/annotation.md) that define references, deprecations, and other supplemental schema data you can add.
+3. When you're ready, read the [installation and usage documentation](/doc/installation-and-usage.md) to learn how to convert your schema data into a web page.
+4. Read the docs on [exploring and sharing](/doc/exploring-and-sharing.md) for details about exploring this page and sharing it with others.
 
 
 ## Alternatives

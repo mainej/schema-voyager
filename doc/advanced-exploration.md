@@ -85,7 +85,7 @@ When it has finished and after a short delay, changes will be reflected on the p
 
 More adventurous technical users might enjoy exploring the DataScript DB directly in a Clojure REPL.
 
-You can ingest the usual [sources](doc/sources.md) into an in-memory DB:
+You can ingest the usual [sources](/doc/sources.md) into an in-memory DB:
 ```clojure
 (def db (schema-voyager.cli/ingest-into-db {:sources [,,,]}))
 ```

@@ -1,7 +1,7 @@
 The primary way of using Schema Voyager is through `schema-voyager.cli/standalone`.
 You tell this function where your sources of schema data are, it pulls in those sources, and creates a standalone web page where you can explore your schema.
-See the [sources documentation](doc/sources.md) for details on specifying sources.
-See the [exploration documentation](doc/exploring-and-sharing.md) for how to use the generated web page.
+See the [sources documentation](/doc/sources.md) for details on specifying sources.
+See the [exploration documentation](/doc/exploring-and-sharing.md) for how to use the generated web page.
 
 ## As an alias
 
@@ -40,7 +40,7 @@ You can modify this by setting `:output-path`:
 
 ## As an alias, with Datomic
 
-If you need to include a [Datomic source](doc/sources.md#Datomic-source), as many people do, you must depend on `com.datomic/client-cloud` and/or `com.datomic/dev-local`.
+If you need to include a [Datomic source](/doc/sources.md#Datomic-source), as many people do, you must depend on `com.datomic/client-cloud` and/or `com.datomic/dev-local`.
 
 ```clojure
 ;; deps.edn
@@ -89,4 +89,4 @@ You can create a script which calls `schema-voyager.cli/standalone` directly.
   (cli/standalone {:sources [{:static/data schema}]}))
 ```
 
-This example demonstrates using a static source, but any [type of source](doc/sources.md) is available.
+This example demonstrates using a static source, but any [type of source](/doc/sources.md) is available.

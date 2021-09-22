@@ -103,7 +103,7 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  Before using, see the warnings in doc/datomic-inference.md."
+  Before using, see the warnings in /doc/datomic-inference.md."
   ([db] (infer-plain-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?refers-attr [:db/ident :db/valueType]) (pull ?referred-attr [:db/ident :db/valueType])
@@ -129,7 +129,7 @@
   infer that collection-a is a reference. Of course, if your data is structured
   that way, perhaps you would be better suited by a heterogeneous tuple.
 
-  Before using, see the warnings in doc/datomic-inference.md."
+  Before using, see the warnings in /doc/datomic-inference.md."
   ([db] (infer-homogeneous-tuple-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?refers-attr [:db/ident :db/valueType]) (pull ?referred-attr [:db/ident :db/valueType])
@@ -148,7 +148,7 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  Before using, see the warnings in doc/datomic-inference.md."
+  Before using, see the warnings in /doc/datomic-inference.md."
   ([db] (infer-heterogeneous-tuple-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?tuple-attr [:db/id :db/ident :db/valueType :db/tupleTypes])
@@ -197,7 +197,7 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  Before using, see the warnings in doc/datomic-inference.md."
+  Before using, see the warnings in /doc/datomic-inference.md."
   ([db] (infer-references db {}))
   ([db exclusions]
    (concat (infer-plain-references db exclusions)
@@ -210,7 +210,7 @@
   Ignores attributes that are excluded per the `exclusions`. See
   [[excluded-attr?]].
 
-  Before using, see the warnings in doc/datomic-inference.md."
+  Before using, see the warnings in /doc/datomic-inference.md."
   ([db] (infer-deprecations db {}))
   ([db exclusions]
    (let [defined (->> (d/q '[:find (pull ?attr [:db/ident :db/valueType])
@@ -242,7 +242,7 @@
 (defn infer
   "Infer deprecations and/or references from db usage.
 
-  Before using, see the warnings in doc/datomic-inference.md."
+  Before using, see the warnings in /doc/datomic-inference.md."
   [db infer]
   (let [infer (set infer)]
     (vec
@@ -260,7 +260,7 @@
   making inferences all in one step.
 
   Before calling with the `infer` param, see the warnings in
-  doc/datomic-inference.md."
+  /doc/datomic-inference.md."
   [{:keys [client-config db-name exclusions] inferences :infer}]
   (let [db (datomic-db client-config db-name)]
     (concat (ingest db exclusions)
@@ -270,7 +270,7 @@
   "A shorthand, used by the CLI, for connecting to a database and inspecting
   inferences.
 
-  Before using, see the warnings in doc/datomic-inference.md.
+  Before using, see the warnings in /doc/datomic-inference.md.
   "
   [{:keys [client-config db-name] inferences :infer}]
   (let [db (datomic-db client-config db-name)]
