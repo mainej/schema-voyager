@@ -2,15 +2,15 @@
 
 The core data for Schema Voyager are the [properties of an attribute](https://docs.datomic.com/cloud/schema/defining-schema.html), like `:db/valueType` and `:db/cardinality`, that have been (or will be) transacted into a Datomic database.
 Datomic needs these properties to run.
-However, Datomic [recommends](https://docs.datomic.com/cloud/best.html#annotate-schema) that you annotate schema with information that it doesn't need to run, but which helps explain the history and structure of the database.
+However, Datomic [recommends](https://docs.datomic.com/cloud/best.html#annotate-schema) that you annotate your schema with additional information, information which helps explain the history and structure of your database.
 
-Schema Voyager introduces [supplemental properties](#supplemental-properties) for annotating attributes.
+Schema Voyager introduces supplemental properties for annotating attributes.
 
 Though the annotation step is optional, it's an excellent way to enrich and document your schema.
 Without any annotation, Schema Voyager will show the details of an attribute—the name, type, cardinality, uniqueness constraints and other properties.
-But with annotation, it can show much more—whether an attribute has been deprecated, which entities it refers to, and more.
+But with annotation it can show much more—whether an attribute has been deprecated, which entities it refers to or refer to it, and more.
 
-To learn all the ways to annotate your schema, it's useful to understand some Schema Voyager [terminology](#terminology) first.
+To learn all the ways to annotate your schema, it's useful to understand some Schema Voyager terminology first.
 
 ## Terminology
 
@@ -72,13 +72,7 @@ They are used to trigger entity-level validations within the transactor.
 
 ### collections
 
-Schema Voyager groups collections of idents that share a namespace into what it calls **collections**.
-
-> In Datomic an entity usually consists of several attributes that share a namespace.
-For example, a track entity might contain the `:track/artist` and `:track/duration` attributes, among others.
-In the majority of the database world, the namespace `:track` would be called a "table".
-However, Datomic itself does not use the word "table" nor does it introduce its own terminology for this concept.
-(To extend the analogy, attributes would be called "columns" and entities "rows". But, we digress.)
+Schema Voyager groups collections of idents that share a namespace into **collections**.
 
 There are two types of collections.
 
@@ -123,15 +117,9 @@ To annotate you add supplemental properties, most of which are in the `:db.schem
 
 For example, suppose you've installed the following schema for people's names.
 ```clojure
-[{:db/ident       :person/given-name
-  :db/valueType   :db.type/string
-  :db/cardinality :db.cardinality/one}
- {:db/ident       :person/family-name
-  :db/valueType   :db.type/string
-  :db/cardinality :db.cardinality/one}
- {:db/ident       :person/full-name
-  :db/valueType   :db.type/string
-  :db/cardinality :db.cardinality/one}]
+[{:db/ident :person/given-name,  :db/cardinality :db.cardinality/one, :db/valueType :db.type/string}
+ {:db/ident :person/family-name, :db/cardinality :db.cardinality/one, :db/valueType :db.type/string}
+ {:db/ident :person/full-name,   :db/cardinality :db.cardinality/one, :db/valueType :db.type/string}]
 ```
 
 To annotate that an attribute has been deprecated and replaced by another attribute, you might add the following supplemental annotation:
@@ -140,12 +128,8 @@ To annotate that an attribute has been deprecated and replaced by another attrib
 [;; Since not every country follows the given/family name pattern,
  ;; :person/given-name and :person/family-name have been replaced by
  ;; :person/full-name. See migration 5 which merged given+family into full name.
- {:db/ident              :person/given-name
-  :db.schema/deprecated? true
-  :db.schema/see-also    [{:db/ident :person/full-name}]}
- {:db/ident              :person/family-name
-  :db.schema/deprecated? true
-  :db.schema/see-also    [{:db/ident :person/full-name}]}]
+ {:db/ident  :person/given-name,  :db.schema/deprecated? true :db.schema/see-also, [{:db/ident :person/full-name}]}
+ {:db/ident  :person/family-name, :db.schema/deprecated? true :db.schema/see-also, [{:db/ident :person/full-name}]}]
 ```
 
 For an example of supplemental properties, see [resources/mbrainz-schema/supplemental.edn](/resources/mbrainz-schema/supplemental.edn).
@@ -296,3 +280,9 @@ For instance, you may want to point to an attribute that supersedes a deprecated
  :db.schema/deprecated? true
  :db.schema/see-also    [{:db/ident :track/artist}]}
 ```
+
+## Where to go from here
+
+Great! You've got a good picture of the supplemental properties Schema Voyager defines.
+Read on to learn where to [save](/doc/sources.md) those properties.
+And how to [convert](/doc/installation-and-usage.md) them into a web page for [exploration](/doc/exploring-and-sharing.md).

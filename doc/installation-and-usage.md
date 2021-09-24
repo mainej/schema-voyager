@@ -1,12 +1,11 @@
 The primary way of using Schema Voyager is through `schema-voyager.cli/standalone`.
-You tell this function where your sources of schema data are, it pulls in those sources, and creates a standalone web page where you can explore your schema.
-See the [sources documentation](/doc/sources.md) for details on specifying sources.
-See the [exploration documentation](/doc/exploring-and-sharing.md) for how to use the generated web page.
+You tell this function where your [sources](/doc/sources.md) of [schema data](/doc/annotation.md) are.
+It pulls in those sources and creates a standalone web page where you can explore your schema.
 
 ## As an alias
 
 In most cases you will be working on a team and several developers will need to be able to re-generate the standalone web page.
-The easiest way to share the command to do this is to create an alias that invokes `schema-voyager.cli/standalone`.
+The easiest way to share the command to do this is to create a `deps.edn` alias that invokes `schema-voyager.cli`.
 
 ```clojure
 ;; deps.edn
@@ -24,8 +23,12 @@ Execute the alias like so:
 clojure -X:schema standalone
 ```
 
-This will generate a file called `schema-voyager.html` in the current directory, by default.
-You can modify the location of the file by setting `:output-path`:
+This will generate a file called `schema-voyager.html`, a standalone web page you can use to [explore](/doc/exploring-and-sharing.md) your schema.
+
+## To a different file
+
+The HTML file is placed in the current directory, by default.
+You can modify the location by passing `:output-path` to `schema-voyager.cli/standalone`:
 
 ```clojure
 ;; deps.edn
@@ -91,5 +94,6 @@ You can create a script which calls `schema-voyager.cli/standalone` directly.
 
 This example demonstrates using a static source, but any [type of source](/doc/sources.md) is available.
 
-What's next?
-[Explore](/doc/exploring-and-sharing.md) your schema.
+## Where to go from here
+
+It's time! [Explore](/doc/exploring-and-sharing.md) your schema.

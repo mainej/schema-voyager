@@ -29,8 +29,8 @@ Drill further into an attribute, to see its properties.
 Let's establish a mental model of how Schema Voyager works.
 
 Presumably you can see where Schema Voyager gets some of its data.
-When you transact schema, you give attributes a `:db/ident` along with their `:db/valueType` and `:db/cardinality`.
-You can imagine how Schema Voyager would query a Datomic database for data about attributes by looking up all the `:db/ident`s.
+When you transact schema into Datomic, you give attributes a `:db/ident` along with a `:db/valueType` and `:db/cardinality`.
+You can imagine how Schema Voyager would query Datomic for this data by looking up all the `:db/ident`s.
 It could group similar attributes together and display their data.
 
 But there's more going on here.
@@ -41,8 +41,6 @@ References and deprecations aren't part of the regular schema that Datomic defin
 Enter **supplemental properties**.
 Schema Voyager defines supplemental properties that can be assigned to an attribute, properties which specify what the attribute references and whether it's deprecated, among other characteristics.
 
-> Typically you'll maintain these supplemental properties in a separate [file](/doc/sources.md#file-source) by hand (don't worry, it's not hard!) though see how to [infer](/doc/datomic-inference.md) supplemental properties from an unfamiliar running database.
-
 It's these supplemental properties that turn Schema Voyager into a living document about how your schema is being used, how attributes reference entities, which attributes are deprecated, and more.
 
 
@@ -51,10 +49,11 @@ It's these supplemental properties that turn Schema Voyager into a living docume
 OK, sounds good.
 How do we get started?
 
-1. Start by learning how Schema Voyager ingests schema data from different [sources](/doc/sources.md).
-2. Then learn about the [supplemental properties](/doc/annotation.md) that define references, deprecations, and other supplemental schema data you can add.
-3. When you're ready, read the [installation and usage documentation](/doc/installation-and-usage.md) to learn how to convert your schema data into a web page.
-4. Read the docs on [exploring and sharing](/doc/exploring-and-sharing.md) for details about exploring this page and sharing it with others.
+1. Start by learning [how to define](/doc/annotation.md) references, deprecations, and other supplemental properties.
+2. Then learn about [where to store](/doc/sources.md) your schema data, and how Schema Voyager reads these sources.
+3. When you're ready, learn [how to invoke](/doc/installation-and-usage.md) Schema Voyager to convert your schema data into a web page.
+
+After you're up and running, you may want to read some advice about [exploring and sharing](/doc/exploring-and-sharing.md) your web page. Or use may want to learn how to use an advanced feature to [infer](/doc/datomic-inference.md) references and deprecations, kickstarting your supplemental schema.
 
 
 ## Alternatives
@@ -81,6 +80,7 @@ How do we get started?
 
 Copyright © Jacob Maine.
 All rights reserved.
+
 The use and distribution terms for this software are covered by the Eclipse Public License 2.0 (https://opensource.org/licenses/EPL-2.0) which can be found in the file LICENSE at the root of this distribution.
 By using this software in any fashion, you are agreeing to be bound by the terms of this license.
 You must not remove this notice, or any other, from this software.

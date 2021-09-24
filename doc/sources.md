@@ -7,27 +7,35 @@ You can imagine other places where you might store data (see below for more opti
 
 Schema Voyager calls each of these sources ...wait for it... a **"source"**.
 A source is anything from which a vector of schema data can be extracted.
-You might expect to extract basic properties from a "Datomic source":
+Given a "Datomic source", like this:
 
 ```clojure
-;; given a "Datomic" source, that looks like this:
-{:datomic/db-name "my-db-name",
- :datomic/client-config {:server-type :dev-local,
-                         :system "my-system"}}
+(def datomic-source {:datomic/db-name "my-db-name",
+                     :datomic/client-config {:server-type :dev-local,
+                                             :system "my-system"}})
+```
 
-;; Schema Voyager extracts schema data like this:
+Schema Voyager extracts schema data by quering for idents:
+
+```clojure
+(schema-voyager.cli/extract-source datomic-source)
+;; =>
 [{:db/ident       :person/given-name
   :db/valueType   :db.type/string
   :db/cardinality :db.cardinality/one}]
 ```
 
-And you might extract supplemental properites from a "file source":
+Given a "file source":
 
 ```clojure
-;; Given a "file" source that like this
-{:file/name "path/to/supplemental-schema.edn"}
+(def file-source {:file/name "path/to/supplemental-schema.edn"})
+```
 
-;; Schema Voyager extracts schema data like this:
+Schema Voyager extracts schema data by reading the file:
+
+```clojure
+(schema-voyager.cli/extract-source file-source)
+;; => 
 [{:db/ident              :person/given-name
   :db.schema/deprecated? true}]
 ```
@@ -37,7 +45,7 @@ Read on to learn about the sources Schema Voyager understands and how to merge t
 ## How to use with `schema-voyager.cli`
 
 The primary interface for working with sources is `schema-voyager.cli/standalone`.
-You can read the [usage documentation](/doc/installation-and-usage.md) to learn different ways to invoke `schema-voyager.cli/standalone`, but for now, let's focus on what it does.
+You can read the [usage documentation](/doc/installation-and-usage.md) to learn how to invoke `schema-voyager.cli/standalone`, but for now, let's focus on what it does.
 
 `schema-voyager.cli/standalone` is divided into two parts.
 First it calls `schema-voyager.cli/ingest` which reads your schema data.
@@ -48,19 +56,19 @@ This document focus on the first part, ingestion.
 (See below for how to specify each type of source.)
 It extracts schema data from each source in turn, then merges all the data.
 
-As an example, the above example about `:person/given-name` included schema data from two sources, a Datomic source and a file source.
+As an example of the ingestion process, the above example about `:person/given-name` included schema data from two sources, a Datomic source and a file source.
 `schema.voyager.cli/ingest` would merge these two sources of data into a single entity:
 
 ```clojure
-[{;; From Datomic
+[{;; From datomic-source
   :db/ident              :person/given-name
   :db/valueType          :db.type/string
   :db/cardinality        :db.cardinality/one
-  ;; From file
+  ;; From file-source
   :db.schema/deprecated? true}]
 ```
 
-`schema-voyager.cli/ingest` then processes this data to derive whatever missing properties it can:
+`schema-voyager.cli/ingest` then processes this data to derive missing properties:
 
 ```clojure
 [{:db/ident              :person/given-name
@@ -95,9 +103,9 @@ This extracts all the `:db/ident`s from the database.
 > See the docs on [Datomic inference](/doc/datomic-inference.md) for details, being sure to heed the warnings.
 > Generally, you should prefer "file sources" with supplemental schema over Datomic inference.
 
-Since not all projects that use Schema Voyager will need to connect to Datomic, it is not one of the default dependencies.
+Since not all projects will need to connect to Datomic, it is not one of the default dependencies.
 This can lead to errors when ingesting from a Datomic source.
-See the [troubleshooting docs](/doc/troubleshooting.md) for how to fix.
+See the [troubleshooting docs](/doc/troubleshooting.md) for fixes.
 
 ### file source
 
@@ -191,3 +199,8 @@ From experience, this is tempting but tends to fall out of date.
 If someone forgets to add an annotation when an attribute is first installed, or if an annotation needs to be changed, it feels expensive to craft another migration which adds or retracts the right annotation data.
 It's cheap, however, to update a file full of annotations.
 If you're intent on trying this route, see `schema-voyager.data/metaschema` for the schema you would need to install.
+
+## Where to go from here
+
+If you haven't learned how to [define supplemental properties](/doc/annotation.md), you may want to do that now.
+Otherwise it's time to [install and start using](/doc/installation-and-usage.md) Schema Voyager.
