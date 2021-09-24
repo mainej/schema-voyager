@@ -28,6 +28,7 @@
   #schema/coll[:enum :foo] ;; => #:db.schema.collection{:type :enum, :name :foo}
   ```"
   [s]
+  #_{:clj-kondo/ignore #{:deprecated-var}}
   (edn/read-string {:readers {'schema-coll read-schema-coll
                               'schema/coll read-schema-coll
                               'schema/agg  aggregate
