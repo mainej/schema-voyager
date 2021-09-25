@@ -73,22 +73,23 @@
 (defn- build-standalone-examples [params]
   (println "\nBuilding standalone HTML for GitHub Pages...")
   (when-not (-> {:command-args ["clojure" "-X:cli" "standalone"
-                                (str "'" {:sources     [{:file/name "resources/mbrainz-schema/schema.edn"}
-                                                        {:file/name "resources/mbrainz-schema/enums.edn"}
-                                                        {:file/name "resources/mbrainz-schema/supplemental.edn"}]
-                                          :output-path "_site/mbrainz-schema.html"} "'")]}
+                                (str
+                                 {:sources     [{:file/name "resources/mbrainz-schema/schema.edn"}
+                                                {:file/name "resources/mbrainz-schema/enums.edn"}
+                                                {:file/name "resources/mbrainz-schema/supplemental.edn"}]
+                                  :output-path "_site/mbrainz-schema.html"})]}
                 b/process
                 :exit
                 zero?)
     (die 17 "\nCould not create mbrainz-schema.html"))
   (when-not (-> {:command-args ["clojure" "-X:cli" "standalone"
-                                (str "'" {:sources     [{:file/name "resources/schema-voyager-schema/schema.edn"}]
-                                          :output-path "_site/schema-voyager-schema.html"} "'")]}
+                                (str {:sources     [{:file/name "resources/schema-voyager-schema/schema.edn"}]
+                                      :output-path "_site/schema-voyager-schema.html"})]}
                 b/process
                 :exit
                 zero?)
     (die 18 "\nCould not create schema-voyager-schema.html"))
-  (when-not (zero? (:exit (git ["commit" "--all" "-m" "'Deploy updates'"] {:dir "./_site"})))
+  (when-not (zero? (:exit (git ["commit" "-a" "--no-gpg-sign" "-m" "'Deploy updates'"] {:dir "./_site"})))
     (die 19 "\nCould not commit GitHub Pages"))
   params)
 
