@@ -202,7 +202,7 @@ You could transact this directly into Datomic:
 From experience, this is tempting but tends to fall out of date.
 If someone forgets to add an annotation when an attribute is first installed, or if an annotation needs to be changed, it feels expensive to craft another migration which adds or retracts the right annotation data.
 It's cheap, however, to update a file full of annotations.
-If you're intent on trying this route, see `schema-voyager.data/metaschema` for the schema you would need to install.
+If you're intent on trying this route and want to know what schema to install, see `schema-voyager.data/metaschema` and/or `resources/schema-voyager-schema/schema.edn`.
 
 ## Where to go from here
 
