@@ -10,7 +10,7 @@ The easiest way to share the command to do this is to create a `deps.edn` alias 
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.171", :git/sha "65469634"}}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.186", :git/sha "57ae5af0"}}
                     :ns-default   schema-voyager.cli
                     ;; This example demonstrates using a few file sources, but any type of source is available.
                     :exec-args    {:sources [{:file/name "resources/main-schema.edn"}
@@ -33,7 +33,7 @@ You can modify the location by passing `:output-path` to `schema-voyager.cli/sta
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.171", :git/sha "65469634"}}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.186", :git/sha "57ae5af0"}}
                     :ns-default   schema-voyager.cli
                     :exec-args    {:sources     [{:file/name "resources/main-schema.edn"}
                                                  {:file/name "resources/supplemental-schema.edn"}]
@@ -48,7 +48,7 @@ If you need to include a [Datomic source](/doc/sources.md#Datomic-source), as ma
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.171", :git/sha "65469634"}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.186", :git/sha "57ae5af0"}
                                    com.datomic/client-cloud        {:mvn/version "0.8.113"}
                                    com.datomic/dev-local           {:mvn/version "0.9.235"}}
                     :ns-default   schema-voyager.cli
