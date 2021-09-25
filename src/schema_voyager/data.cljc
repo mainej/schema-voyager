@@ -50,7 +50,7 @@
                                 :db/doc         "Other attributes to which this attribute is related. Often used with :db.schema/deprecated? to point to a new way of storing some data."}
    :db.schema/part-of          {:db/valueType   :db.type/ref
                                 :db/cardinality :db.cardinality/many
-                                :db/doc         "Which collection(s) this attribute or constant is a part of. Usually derived from the namespace of the ident and whether it has a :db/valueType. Can be overridden for attributes that are used on many aggregates, or which have many versions."}
+                                :db/doc         "Which collection(s) this attribute or constant is a part of. Usually derived from the namespace of the ident and whether it has a :db/valueType. Can be overridden for an attribute that is used on many aggregates, or whose namespace differs from the entities on which it appears."}
    :db.schema/references       {:db/valueType   :db.type/ref
                                 :db/cardinality :db.cardinality/many
                                 :db/doc         "Which collection(s) this attribute refers to."}
