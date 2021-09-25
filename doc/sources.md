@@ -103,6 +103,10 @@ This extracts all the `:db/ident`s from the database.
 > See the docs on [Datomic inference](/doc/datomic-inference.md) for details, being sure to heed the warnings.
 > Generally, you should prefer "file sources" with supplemental schema over Datomic inference.
 
+Schema Voyager makes a few assumptions about which attributes to extract.
+If you want to exclude certain attributes (or include attributes that are excluded by default), provide `:datomic/exclusions`.
+See `schema-voyager.ingest.datomic/excluded-attr?` for details.
+
 Since not all projects will need to connect to Datomic, it is not one of the default dependencies.
 This can lead to errors when ingesting from a Datomic source.
 See the [troubleshooting docs](/doc/troubleshooting.md) for fixes.
