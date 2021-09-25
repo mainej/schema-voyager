@@ -4,6 +4,9 @@ log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+* Moved hosting of example mbrainz schema page from Netlify to GitHub Pages.
+
 ## [0.1.171] - 2021-09-21
 Initial release, with support for exploring schema data from a standalone web
 page. Schema data can come from many sources, including from Datomic and from

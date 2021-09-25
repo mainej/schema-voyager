@@ -4,7 +4,7 @@ Schema Voyager is a tool for documenting and exploring your [Datomic](https://ww
 It imports your schema then displays it in a way that offers you and your team insights about the history and usage of your database.
 
 The best way to get a feel for Schema Voyager is to play with it.
-Try exploring the live [mbrainz schema](https://focused-kepler-9497ed.netlify.app).
+Try exploring the live [mbrainz schema](https://mainej.github.io/schema-voyager/mbrainz-schema.html).
 
 If you'd prefer a few screenshots, here's what it looks like.
 The app starts with an overview of your schema, with attributes grouped into related collections.
@@ -35,7 +35,7 @@ It could group similar attributes together and display their data.
 
 But there's more going on here.
 Somehow Schema Voyager knows not only that `:track/artists` is a `:db.type/ref` attribute, but also that it refers to entities with attributes in the `:artist` namespace.
-If you poked around in the [mbrainz schema](https://focused-kepler-9497ed.netlify.app) you might have noticed `:track/artistCredit` has been deprecated and superseded by `:track/artists`.
+If you poked around in the [mbrainz schema](https://mainej.github.io/schema-voyager/mbrainz-schema.html) you might have noticed `:track/artistCredit` has been deprecated and superseded by `:track/artists`.
 References and deprecations aren't part of the regular schema that Datomic defines, so how does Schema Voyager know about these things?
 
 Enter **supplemental properties**.

@@ -11,7 +11,7 @@ Have fun getting to know your schema!
 
 `schema-voyager.html` is a single file containing HTML, CSS and JS.
 It embeds your entire schema and doesn't communicate with a server (we promise! feel free to review the code).
-Therefore it can be committed, emailed, hosted on Netlify or another server of your choice, or otherwise shared anywhere.
+Therefore it can be committed, emailed, hosted on a server of your choice, or otherwise shared anywhere.
 
 ## Share ERDs
 

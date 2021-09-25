@@ -95,3 +95,8 @@ It can be read with:
 ```clojure
 (edn/read-string (io/resource "schema_voyager_db.edn"))
 ```
+
+# Working on Schema Voyager
+
+If you want to work on Schema Voyager itself, familiarize yourself with the above workflow for working with live JS.
+You may also want to review [Schema Voyager's own schema](https://mainej.github.io/schema-voyager/schema-voyager-schema.html) (how meta!)
