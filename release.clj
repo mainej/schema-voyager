@@ -89,7 +89,7 @@
                 :exit
                 zero?)
     (die 18 "\nCould not create schema-voyager-schema.html"))
-  (when-not (zero? (:exit (git ["commit" "-a" "--no-gpg-sign" "-m" "'Deploy updates'"] {:dir "./_site"})))
+  (when-not (zero? (:exit (git ["commit" "-a" "--no-gpg-sign" "-m" "Deploy updates"] {:dir "./_site"})))
     (die 19 "\nCould not commit GitHub Pages"))
   params)
 
