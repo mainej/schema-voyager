@@ -6,7 +6,7 @@
                                              funcool/promesa                      {:mvn/version "6.0.2"}
                                              metosin/reitit-frontend              {:mvn/version "0.5.13"}
                                              reagent/reagent                      {:mvn/version "1.1.0"}
-                                             thheller/shadow-cljs                 {:mvn/version "2.14.5"}}}
+                                             thheller/shadow-cljs                 {:mvn/version "2.15.10"}}}
                :datomic        {:extra-deps {com.datomic/client-cloud {:mvn/version "0.8.113"}
                                              com.datomic/dev-local    {:mvn/version "0.9.235"}}}
                :cli            {:ns-default schema-voyager.cli}
