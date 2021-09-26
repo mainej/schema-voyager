@@ -7,22 +7,39 @@
   file also depends on `schema-voyager.build.standalone-html`, but it does
   require hiccup, letting us use hiccup only when necessary."
   (:require
-   [clojure.java.shell :refer (sh)]
+   [clojure.tools.build.api :as b]
    [hiccup.page :as hiccup.page]
-   [schema-voyager.build.standalone-html :as standalone-html]
-   [schema-voyager.build.db :as build.db]))
+   [schema-voyager.build.db :as build.db]
+   [schema-voyager.build.standalone-html :as standalone-html]))
+
+(defn- die
+  ([code message & args]
+   (die code (apply format message args)))
+  ([code message]
+   (binding [*out* *err*]
+     (println message))
+   (System/exit code)))
+
+(defn create-placeholder-db []
+  (println "\nCreating placeholder DB...")
+  (build.db/save-db standalone-html/db-template-placeholder))
 
 (defn optimized-js []
   ;; Shelling out doesn't seem to be any slower than
   ;; (shadow.cljs.devtools.api/release :app), so better to keep shadow-cljs out
   ;; of the deps while making the template.
-  (sh "npx" "shadow-cljs" "release" ":app"))
+  (println "\nCompiling CLJS...")
+  (when-not (zero? (:exit (b/process {:command-args ["npx" "shadow-cljs" "release" ":app"]})))
+    (die 1 "Couldn't compile CLJS")))
 
 (defn optimized-css []
-  (sh "bin/dev/css" "--minify"))
+  (println "\nCompiling CSS...")
+  (when-not (zero? (:exit (b/process {:command-args ["bin/dev/css" "--minify"]})))
+    (die 2 "Couldn't compile CSS")))
 
 (defn standalone-html
   []
+  (println "\nCombining HTML, CSS and JS into template file...")
   (spit standalone-html/template-file
         ;; IMPORTANT: keep this in sync with index.html
         (hiccup.page/html5
@@ -53,7 +70,8 @@
   ;; available, among other things). Now they just substitute their data into
   ;; the template.
   [_]
-  (build.db/save-db standalone-html/db-template-placeholder)
+  (create-placeholder-db)
   (optimized-js)
   (optimized-css)
-  (standalone-html))
+  (standalone-html)
+  (println "\nDone"))
