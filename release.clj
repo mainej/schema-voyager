@@ -6,7 +6,7 @@
 (def ^:private lib 'com.github.mainej/schema-voyager)
 (def ^:private rev-count (Integer/parseInt (b/git-count-revs nil)))
 (def ^:private semantic-version "1.0")
-(defn- format-version [revision] (format "%s.%s-SNAPSHOT" semantic-version revision))
+(defn- format-version [revision] (format "%s.%s" semantic-version revision))
 (def ^:private version (format-version rev-count))
 (def ^:private next-version (format-version (inc rev-count)))
 (def ^:private tag (str "v" version))
