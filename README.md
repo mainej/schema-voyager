@@ -51,9 +51,10 @@ How do we get started?
 
 1. Start by learning [how to define](/doc/annotation.md) references, deprecations, and other supplemental properties.
 2. Then learn about [where to store](/doc/sources.md) your schema data, and how Schema Voyager reads these sources.
-3. When you're ready, learn [how to invoke](/doc/installation-and-usage.md) Schema Voyager to convert your schema data into a web page.
+3. When you're ready, learn [how to invoke](/doc/installation-and-usage.md) Schema Voyager to convert your schema data into an interactive web page.
 
-After you're up and running, you may want to read some advice about [exploring and sharing](/doc/exploring-and-sharing.md) your web page. Or use may want to learn how to use an advanced feature to [infer](/doc/datomic-inference.md) references and deprecations, kickstarting your supplemental schema.
+After you're up and running, [explore and share](/doc/exploring-and-sharing.md) your web page.
+Or [infer](/doc/datomic-inference.md) references and deprecations, kickstarting your supplemental schema.
 
 
 ## Alternatives
