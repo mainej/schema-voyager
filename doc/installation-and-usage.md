@@ -12,7 +12,7 @@ The easiest way to share the command to do this is to create a `deps.edn` alias 
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:mvn/version "VERSION"}}
+ :aliases {:schema {:replace-deps {com.github.mainej/schema-voyager {:mvn/version "VERSION"}}
                     :ns-default   schema-voyager.cli
                     ;; This example demonstrates using a few file sources, but any type of source is available.
                     :exec-args    {:sources [{:file/name "resources/main-schema.edn"}
@@ -35,7 +35,7 @@ You can modify the location by passing `:output-path` to `schema-voyager.cli/sta
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:mvn/version "VERSION"}}
+ :aliases {:schema {:replace-deps {com.github.mainej/schema-voyager {:mvn/version "VERSION"}}
                     :ns-default   schema-voyager.cli
                     :exec-args    {:sources     [{:file/name "resources/main-schema.edn"}
                                                  {:file/name "resources/supplemental-schema.edn"}]
@@ -50,9 +50,9 @@ If you need to include a [Datomic source](/doc/sources.md#Datomic-source), as ma
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:mvn/version "VERSION"}
-                                   com.datomic/client-cloud        {:mvn/version "0.8.113"}
-                                   com.datomic/dev-local           {:mvn/version "0.9.235"}}
+ :aliases {:schema {:replace-deps {com.github.mainej/schema-voyager {:mvn/version "VERSION"}
+                                   com.datomic/client-cloud         {:mvn/version "0.8.113"}
+                                   com.datomic/dev-local            {:mvn/version "0.9.235"}}
                     :ns-default   schema-voyager.cli
                     :exec-args    {:sources [{:datomic/db-name "my-db-name",
                                               :datomic/client-config {:server-type :dev-local, :system "my-system"}}
@@ -68,14 +68,6 @@ clojure -X:schema standalone \
   :sources '[{:file/name "resources/main-schema.edn"}
              {:file/name "resources/supplemental-schema.edn"}]'
 ```
-
-## As a tool
-
-EXPERIMENTAL: you can install Schema Voyager as a Clojure Tool.
-
-* Find tool versions: `clj -X:deps find-versions :lib io.github.mainej/schema-voyager`
-* Install tool with `clj -Ttools install io.github.mainej/schema-voyager '{:mvn/version "VERSION"}' :as schema-voyager`
-* Invoke tool with `clj -Tschema-voyager standalone :sources '[<SOURCE>, ...]'`
 
 ## As a script
 
