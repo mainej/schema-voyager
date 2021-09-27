@@ -2,6 +2,8 @@ The primary way of using Schema Voyager is through `schema-voyager.cli/standalon
 You tell this function where your [sources](/doc/sources.md) of [schema data](/doc/annotation.md) are.
 It pulls in those sources and creates a standalone web page where you can explore your schema.
 
+> In the docs below, replace VERSION with the latest release coordinates provided by Clojars: [![Clojars Project](https://img.shields.io/clojars/v/com.github.mainej/schema-voyager.svg)](https://clojars.org/com.github.mainej/schema-voyager)
+
 ## As an alias
 
 In most cases you will be working on a team and several developers will need to be able to re-generate the standalone web page.
@@ -10,7 +12,7 @@ The easiest way to share the command to do this is to create a `deps.edn` alias 
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.186", :git/sha "57ae5af0"}}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:mvn/version "VERSION"}}
                     :ns-default   schema-voyager.cli
                     ;; This example demonstrates using a few file sources, but any type of source is available.
                     :exec-args    {:sources [{:file/name "resources/main-schema.edn"}
@@ -33,7 +35,7 @@ You can modify the location by passing `:output-path` to `schema-voyager.cli/sta
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.186", :git/sha "57ae5af0"}}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:mvn/version "VERSION"}}
                     :ns-default   schema-voyager.cli
                     :exec-args    {:sources     [{:file/name "resources/main-schema.edn"}
                                                  {:file/name "resources/supplemental-schema.edn"}]
@@ -48,7 +50,7 @@ If you need to include a [Datomic source](/doc/sources.md#Datomic-source), as ma
 ```clojure
 ;; deps.edn
 {,,,
- :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:git/tag "v0.1.186", :git/sha "57ae5af0"}
+ :aliases {:schema {:replace-deps {io.github.mainej/schema-voyager {:mvn/version "VERSION"}
                                    com.datomic/client-cloud        {:mvn/version "0.8.113"}
                                    com.datomic/dev-local           {:mvn/version "0.9.235"}}
                     :ns-default   schema-voyager.cli
@@ -72,7 +74,7 @@ clojure -X:schema standalone \
 EXPERIMENTAL: you can install Schema Voyager as a Clojure Tool.
 
 * Find tool versions: `clj -X:deps find-versions :lib io.github.mainej/schema-voyager`
-* Install tool with `clj -Ttools install io.github.mainej/schema-voyager '{:git/tag "VERSION"}' :as schema-voyager`
+* Install tool with `clj -Ttools install io.github.mainej/schema-voyager '{:mvn/version "VERSION"}' :as schema-voyager`
 * Invoke tool with `clj -Tschema-voyager standalone :sources '[<SOURCE>, ...]'`
 
 ## As a script

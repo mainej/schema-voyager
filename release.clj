@@ -1,13 +1,18 @@
 (ns release
   (:require [clojure.tools.build.api :as b]
+            [org.corfield.build :as bb]
             [clojure.string :as string]))
 
+(def ^:private lib 'com.github.mainej/schema-voyager)
 (def ^:private rev-count (Integer/parseInt (b/git-count-revs nil)))
-(def ^:private semantic-version "0.1")
-(defn- format-version [revision] (format "%s.%s" semantic-version revision))
+(def ^:private semantic-version "1.0")
+(defn- format-version [revision] (format "%s.%s-SNAPSHOT" semantic-version revision))
 (def ^:private version (format-version rev-count))
 (def ^:private next-version (format-version (inc rev-count)))
 (def ^:private tag (str "v" version))
+(def ^:private basis (b/create-basis {:root    nil
+                                      :user    nil
+                                      :project "deps.edn"}))
 
 (defn- die
   ([code message & args]
@@ -42,12 +47,15 @@
                           "  * If you intend to create a new commit, use version %s"]) version next-version))
   params)
 
+(defn- scm-clean?
+  ([] (scm-clean? {}))
+  ([opts]
+   (string/blank? (:out (git ["status" "--porcelain"] (assoc opts :out :capture))))))
+
 (defn- assert-scm-clean [params]
   (println "\nChecking that working directory is clean...")
-  (let [git-changes (:out (git ["status" "--porcelain"] {:out :capture}))]
-    (when-not (string/blank? git-changes)
-      (println git-changes)
-      (die 12 "Git working directory must be clean. Run `git commit`")))
+  (when-not (scm-clean?)
+    (die 12 "Git working directory must be clean. Run `git commit`"))
   params)
 
 (defn- assert-scm-tagged [params]
@@ -64,14 +72,26 @@
                             "Proceed with caution, because this tag may have already been released. If you've determined it's safe, run `git tag -d %s` before re-running `bin/tag-release`."]) tag tag)))
   params)
 
-(defn- build-template "Create the standalone_template.html file" [params]
-  (println "\nBuilding standalone_template.html...")
-  (when-not (zero? (:exit (b/process {:command-args ["clojure" "-A:cljs" "-X:build-template"]})))
-    (die 16 "\nCould not build standalone_template.html."))
+(defn- build-template "Create the template html file" [params]
+  (println "\nBuilding template html...")
+  (when-not (zero? (:exit (b/process {:command-args ["clojure" "-X:build-template"]})))
+    (die 16 "\nCould not build template html."))
+  params)
+
+(defn- copy-template-to-jar-resources [params]
+  ;; Usually the template file is ignored. During a release we put it in the
+  ;; classes directory so that it is available when Schema Voyager is used as a
+  ;; dependency. (It's used by `standalone`, the primary interface into Schema
+  ;; Voyager). This lets us keep the large template file out of version control.
+
+  ;; IMPORTANT: keep this in sync with
+  ;; schema-voyager.build.standalone-html/template-file-name
+  (b/copy-file {:src    "resources/standalone-template.html"
+                :target "target/classes/standalone-template.html"})
   params)
 
 (defn- build-standalone-examples [params]
-  (println "\nBuilding standalone HTML for GitHub Pages...")
+  (println "\nBuilding sample projects for GitHub Pages...")
   (when-not (-> {:command-args ["clojure" "-X:cli" "standalone"
                                 (str
                                  {:sources     [{:file/name "resources/mbrainz-schema/schema.edn"}
@@ -81,22 +101,18 @@
                 b/process
                 :exit
                 zero?)
-    (die 17 "\nCould not create mbrainz-schema.html"))
+    (die 17 "\nCouldn't create mbrainz-schema.html"))
   (when-not (-> {:command-args ["clojure" "-X:cli" "standalone"
                                 (str {:sources     [{:file/name "resources/schema-voyager-schema/schema.edn"}]
                                       :output-path "_site/schema-voyager-schema.html"})]}
                 b/process
                 :exit
                 zero?)
-    (die 18 "\nCould not create schema-voyager-schema.html"))
-  (when-not (zero? (:exit (git ["commit" "-a" "--no-gpg-sign" "-m" "Deploy updates"] {:dir "./_site"})))
-    (die 19 "\nCould not commit GitHub Pages"))
-  params)
-
-(defn- post-release-message "Suggest updating the docs to reference the new release." [params]
-  (println (format "\nRelease finished. Now update /doc/installation-and-usage.md to reference {:git/tag \"%s\", :git/sha \"%s\"}"
-                   tag
-                   (subs (git-rev) 0 8)))
+    (die 18 "\nCouldn't create schema-voyager-schema.html"))
+  (when-not (or (scm-clean? {:dir "./_site"})
+                (zero? (:exit (git ["commit" "-a" "--no-gpg-sign" "-m" "Deploy updates"]
+                                   {:dir "./_site"}))))
+    (die 19 "\nCouldn't commit GitHub Pages"))
   params)
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
@@ -113,7 +129,6 @@
   * Git tag for current release exists in local repo
   * CHANGELOG.md references new tag"
   [params]
-  (build-template params)
   (assert-changelog-updated params)
   ;; after assertions about content, so any change can be committed/amended
   (assert-scm-clean params)
@@ -121,15 +136,36 @@
   (assert-scm-tagged params)
   params)
 
+(defn jar
+  [params]
+  (-> params
+      (assoc :lib lib
+             :version version
+             :basis   basis
+             :tag     (git-rev))
+      (build-template)
+      (copy-template-to-jar-resources)
+      ;; TODO: jar doesn't really use anything from /resources. Should it be
+      ;; copied into jar?
+      (bb/jar)))
+
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn release
   "Release the library.
 
   * Confirm that we are ready to release
+  * Build the content for GitHub Pages
   * Ensure the tag is available on Github"
   [params]
-  (check-release params)
-  (build-standalone-examples params)
-  (git-push params)
-  (post-release-message params)
-  params)
+  (let [params (assoc params :lib lib :version version)]
+    (-> params
+        (bb/clean)
+        (check-release)
+        (jar)
+        ;; After jar (and more importantly build-template), so that examples agree
+        ;; with released template.
+        (build-standalone-examples)
+        (bb/deploy)
+        (git-push))
+    (println "\nDone")
+    params))

@@ -7,6 +7,7 @@
   file also depends on `schema-voyager.build.standalone-html`, but it does
   require hiccup, letting us use hiccup only when necessary."
   (:require
+   [clojure.java.io :as io]
    [clojure.tools.build.api :as b]
    [hiccup.page :as hiccup.page]
    [schema-voyager.build.db :as build.db]
@@ -40,7 +41,7 @@
 (defn standalone-html
   []
   (println "\nCombining HTML, CSS and JS into template file...")
-  (spit standalone-html/template-file
+  (spit (io/file "resources" standalone-html/template-file-name)
         ;; IMPORTANT: keep this in sync with index.html
         (hiccup.page/html5
          [:head
@@ -69,9 +70,9 @@
   ;; projects. Before they couldn't compile the app (shadow-cljs.edn wasn't
   ;; available, among other things). Now they just substitute their data into
   ;; the template.
-  [_]
+  [params]
   (create-placeholder-db)
   (optimized-js)
   (optimized-css)
   (standalone-html)
-  (println "\nDone"))
+  params)

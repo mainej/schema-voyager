@@ -13,3 +13,4 @@ resources/schema_voyager_db.edn
 /dev/ingest/projects
 schema-voyager.html
 _site
+resources/standalone-template.html
