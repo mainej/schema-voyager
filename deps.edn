@@ -1,6 +1,5 @@
 {:paths       ["src" "resources"]
  :deps        {datascript/datascript {:mvn/version "1.2.1"}}
- :tools/usage {:ns-default schema-voyager.cli}
  :aliases     {:cljs           {:extra-deps {com.github.mainej/headlessui-reagent {:mvn/version "1.4.1.40"}
                                              dorothy/dorothy                      {:mvn/version "0.0.7"}
                                              funcool/promesa                      {:mvn/version "6.0.2"}
