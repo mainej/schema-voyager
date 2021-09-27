@@ -2,7 +2,7 @@
 
 Your schema data is stored in many places.
 A running Datomic database is the authority on what attributes and constants are installed, and what their core properties are.
-To augment this, you will maintain a file of [supplemental properties](/doc/annotation.md).
+To augment this, you'll maintain a file of [supplemental properties](/doc/annotation.md).
 You can imagine other places where you might store data (see below for more options) but the point is, you have many sources of schema data.
 
 Schema Voyager calls each of these sources ...wait for it... a **"source"**.

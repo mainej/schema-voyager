@@ -6,7 +6,7 @@ It pulls in those sources and creates a standalone web page where you can explor
 
 ## As an alias
 
-In most cases you will be working on a team and several developers will need to be able to re-generate the standalone web page.
+In most cases you'll be working on a team and several developers will need to be able to re-generate the standalone web page.
 The easiest way to share the command to do this is to create a `deps.edn` alias that invokes `schema-voyager.cli`.
 
 ```clojure
