@@ -18,6 +18,5 @@
         replaced    (string/replace contents
                                     (pr-str (str db-template-placeholder))
                                     (pr-str (pr-str db)))]
-    (when-not (.exists (.getParentFile target-file))
-      (.mkdirs (.getParentFile target-file)))
+    (io/make-parents target-file)
     (spit target-file replaced :append false)))
