@@ -1,0 +1,83 @@
+[;;;; As defined by Datomic
+
+ ;; Limited to attributes that Schema Voyager 'understands' in some way. Other
+ ;; attributes are displayed, but not given special treatment or meaning in the
+ ;; UI.
+ {:db/ident       :db/ident,
+  :db/valueType   :db.type/keyword,
+  :db/cardinality :db.cardinality/one,
+  :db/unique      :db.unique/identity,
+  :db/doc         "Attribute used to uniquely name an entity."}
+ {:db/ident       :db/valueType,
+  :db/valueType   :db.type/ref,
+  :db/cardinality :db.cardinality/one,
+  :db/doc         "Property of an attribute that specifies the attribute's value type. Built-in value types include, :db.type/keyword, :db.type/string, :db.type/ref, :db.type/instant, :db.type/long, :db.type/bigdec, :db.type/boolean, :db.type/float, :db.type/uuid, :db.type/double, :db.type/bigint,  :db.type/uri."}
+ {:db/ident       :db/cardinality,
+  :db/valueType   :db.type/ref,
+  :db/cardinality :db.cardinality/one,
+  :db/doc         "Property of an attribute. Two possible values: :db.cardinality/one for single-valued attributes, and :db.cardinality/many for many-valued attributes. Defaults to :db.cardinality/one."}
+ {:db/ident       :db/unique,
+  :db/valueType   :db.type/ref,
+  :db/cardinality :db.cardinality/one,
+  :db/doc         "Property of an attribute. If value is :db.unique/value, then attribute value is unique to each entity. Attempts to insert a duplicate value for a temporary entity id will fail. If value is :db.unique/identity, then attribute value is unique, and upsert is enabled. Attempting to insert a duplicate value for a temporary entity id will cause all attributes associated with that temporary id to be merged with the entity already in the database. Defaults to nil."}
+ {:db/ident       :db/doc,
+  :db/valueType   :db.type/string,
+  :db/cardinality :db.cardinality/one,
+  :db/fulltext    true,
+  :db/doc         "Documentation string for an entity."}
+ {:db/ident       :db/tupleType,
+  :db/valueType   :db.type/keyword,
+  :db/cardinality :db.cardinality/one}
+ {:db/ident       :db/tupleTypes,
+  :db/valueType   :db.type/tuple,
+  :db/cardinality :db.cardinality/one,
+  :db/tupleType   :db.type/keyword}
+ {:db/ident       :db/tupleAttrs,
+  :db/valueType   :db.type/tuple,
+  :db/cardinality :db.cardinality/one,
+  :db/tupleType   :db.type/keyword}
+
+ {:db/ident       :db.entity/attrs,
+  :db/valueType   :db.type/keyword,
+  :db/cardinality :db.cardinality/many}
+ {:db/ident       :db.entity/preds,
+  :db/valueType   :db.type/symbol,
+  :db/cardinality :db.cardinality/many}
+
+ {:db/ident :db.cardinality/one,
+  :db/doc   "One of two legal values for the :db/cardinality attribute. Specify :db.cardinality/one for single-valued attributes, and :db.cardinality/many for many-valued attributes."}
+ {:db/ident :db.cardinality/many,
+  :db/doc   "One of two legal values for the :db/cardinality attribute. Specify :db.cardinality/one for single-valued attributes, and :db.cardinality/many for many-valued attributes."}
+ {:db/ident :db.unique/value,
+  :db/doc   "Specifies that an attribute's value is unique. Attempts to create a new entity with a colliding value for a :db.unique/value will fail."}
+ {:db/ident :db.unique/identity,
+  :db/doc   "Specifies that an attribute's value is unique. Attempts to create a new entity with a colliding value for a :db.unique/value will become upserts."}
+ {:db/ident :db.type/ref,
+  :db/doc   "Value type for references. All references from one entity to another are through attributes with this value type."}
+ {:db/ident :db.type/keyword,
+  :db/doc   "Value type for keywords. Keywords are used as names, and are interned for efficiency. Keywords map to the native interned-name type in languages that support them."}
+ {:db/ident :db.type/long,
+  :db/doc   "Fixed integer value type. Same semantics as a Java long: 64 bits wide, two's complement binary representation."}
+ {:db/ident :db.type/string,
+  :db/doc   "Value type for strings."}
+ {:db/ident :db.type/boolean,
+  :db/doc   "Boolean value type."}
+ {:db/ident :db.type/instant,
+  :db/doc   "Value type for instants in time. Stored internally as a number of milliseconds since midnight, January 1, 1970 UTC. Representation type will vary depending on the language you are using."}
+ {:db/ident :db.type/fn,
+  :db/doc   "Value type for database functions. See Javadoc for Peer.function."}
+ {:db/ident :db.type/uuid,
+  :db/doc   "Value type for UUIDs. Maps to java.util.UUID on the JVM."}
+ {:db/ident :db.type/double,
+  :db/doc   "Floating point value type. Same semantics as a Java double: double-precision 64-bit IEEE 754 floating point."}
+ {:db/ident :db.type/float,
+  :db/doc   "Floating point value type. Same semantics as a Java float: single-precision 32-bit IEEE 754 floating point."}
+ {:db/ident :db.type/uri,
+  :db/doc   "Value type for URIs. Maps to java.net.URI on the JVM."}
+ {:db/ident :db.type/bigint,
+  :db/doc   "Value type for arbitrary precision integers. Maps to java.math.BigInteger on the JVM."}
+ {:db/ident :db.type/bigdec,
+  :db/doc   "Value type for arbitrary precision floating point numbers. Maps to java.math.BigDecimal on the JVM."}
+ {:db/ident :db.type/tuple}
+ {:db/ident :db.type/symbol}
+ ]

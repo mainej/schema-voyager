@@ -55,7 +55,7 @@
 (defn- assert-scm-clean [params]
   (println "\nChecking that working directory is clean...")
   (when-not (scm-clean?)
-    (die 12 "Git working directory must be clean. Run `git commit`"))
+    (die 12 "\nGit working directory must be clean. Run `git commit`"))
   params)
 
 (defn- assert-scm-tagged [params]
@@ -85,27 +85,47 @@
   ;; Voyager). This lets us keep the large template file out of version control.
 
   ;; IMPORTANT: keep this in sync with
-  ;; schema-voyager.build.standalone-html/template-file-name
+  ;; `schema-voyager.build.standalone-html/template-file-name`
+  ;; We intentionally do not depend on `schema-voyager.build.standalone-html`,
+  ;; so that the release can be run as `clojure -T:release`
   (b/copy-file {:src    "resources/standalone-template.html"
                 :target "target/classes/standalone-template.html"})
   params)
 
+(defn- build-standalone-example [params]
+  (b/process {:command-args ["clojure" "-X:cli" "standalone" (str params)]}))
+
 (defn- build-standalone-examples [params]
   (println "\nBuilding sample projects for GitHub Pages...")
-  (when-not (-> {:command-args ["clojure" "-X:cli" "standalone"
-                                (str
-                                 {:sources     [{:file/name "resources/mbrainz-schema/schema.edn"}
-                                                {:file/name "resources/mbrainz-schema/enums.edn"}
-                                                {:file/name "resources/mbrainz-schema/supplemental.edn"}]
-                                  :output-path "_site/mbrainz-schema.html"})]}
-                b/process
+  ;; expects _site to have been initialized:
+  ;; git fetch origin gh-pages
+  ;; git worktree add _site gh-pages
+  (when-not (-> {:sources     [{:file/name "resources/mbrainz-schema/schema.edn"}
+                               {:file/name "resources/mbrainz-schema/enums.edn"}
+                               {:file/name "resources/mbrainz-schema/supplemental.edn"}]
+                 :output-path "_site/mbrainz-schema.html"}
+                build-standalone-example
                 :exit
                 zero?)
     (die 17 "\nCouldn't create mbrainz-schema.html"))
-  (when-not (-> {:command-args ["clojure" "-X:cli" "standalone"
-                                (str {:sources     [{:file/name "resources/schema-voyager-schema/schema.edn"}]
-                                      :output-path "_site/schema-voyager-schema.html"})]}
-                b/process
+  ;; A meta view of Datomic's schema
+  (when-not (-> {:sources     [{:file/name "resources/datomic-schema/schema.edn"}
+                               {:file/name "resources/datomic-schema/fixes.edn"}
+                               {:file/name "resources/datomic-schema/supplemental.edn"}]
+                 :output-path "_site/datomic-schema.html"}
+                build-standalone-example
+                :exit
+                zero?)
+    (die 18 "\nCouldn't create schema-voyager-schema.html"))
+  ;; A meta view of Schema Voyager. Shows Datomic properties and supplemental
+  ;; Schema Voyager properties and their relationships.
+  (when-not (-> {:sources     [{:file/name "resources/datomic-schema/schema.edn"}
+                               {:file/name "resources/datomic-schema/fixes.edn"}
+                               {:file/name "resources/datomic-schema/supplemental.edn"}
+                               {:file/name "resources/schema-voyager-schema/schema.edn"}
+                               {:file/name "resources/schema-voyager-schema/supplemental.edn"}]
+                 :output-path "_site/schema-voyager-schema.html"}
+                build-standalone-example
                 :exit
                 zero?)
     (die 18 "\nCouldn't create schema-voyager-schema.html"))
@@ -124,7 +144,6 @@
 (defn check-release
   "Check that the library is ready to be released.
 
-  * Template resource built
   * No outstanding commits
   * Git tag for current release exists in local repo
   * CHANGELOG.md references new tag"
@@ -154,8 +173,11 @@
   "Release the library.
 
   * Confirm that we are ready to release
-  * Build the content for GitHub Pages
-  * Ensure the tag is available on Github"
+  * Build template file
+  * Build JAR, including the template
+  * Build the content for GitHub Pages from the template
+  * Deploy the JAR to Clojars
+  * Ensure everything is available on Github"
   [params]
   (let [params (assoc params :lib lib :version version)]
     (-> params

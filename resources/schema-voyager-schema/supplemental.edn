@@ -1,0 +1,18 @@
+[
+ ;;;; Supplemental
+
+ ;; Relocations
+ {:db/ident :db.schema/deprecated?,      :db.schema/part-of [#schema/agg :db]}
+ {:db/ident :db.schema/see-also,         :db.schema/part-of [#schema/agg :db]}
+ {:db/ident :db.schema/part-of,          :db.schema/part-of [#schema/agg :db]}
+ {:db/ident :db.schema/references,       :db.schema/part-of [#schema/agg :db
+                                                             #schema/agg :db.schema.tuple]}
+ {:db/ident :db.schema/tuple-references, :db.schema/part-of [#schema/agg :db]}
+
+ ;; References
+ {:db/ident :db.schema/part-of          :db.schema/references [#schema/agg :db.schema.collection]}
+ {:db/ident :db.schema/references       :db.schema/references [#schema/agg :db.schema.collection]}
+ {:db/ident :db.schema/see-also         :db.schema/references [#schema/agg :db]}
+ {:db/ident :db.schema/tuple-references :db.schema/references [#schema/agg :db.schema.tuple]}
+
+ ]

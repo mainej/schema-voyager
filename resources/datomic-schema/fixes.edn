@@ -1,0 +1,17 @@
+[;;;; Fixes to Datomic
+
+ ;; Redefinitions
+ ;; Datomic defines these as keywords, but I consider them refs, so they can be assigned :db.schema/references
+ {:db/ident :db/tupleType,    :db/valueType :db.type/ref}
+ {:db/ident :db.entity/attrs, :db/valueType :db.type/ref}
+ ;; Similarly, Datomic defines these as tuples of keywords, but I consider them tuples of refs.
+ {:db/ident :db/tupleAttrs, :db/tupleType :db.type/ref}
+ {:db/ident :db/tupleTypes, :db/tupleType :db.type/ref}
+
+ ;; Missing docs
+ {:db/ident :db/tupleAttrs,   :db/doc "Property of an attribute. Indicates that the attribute is a composite tuple, derived from other attributes of the same entity. References the other attributes that compose this attribute."}
+ {:db/ident :db/tupleType,    :db/doc "Property of an attribute. Indicates that the attribute is a homogeneous tuple, a variable length composite. References the value type of the elements of the tuple."}
+ {:db/ident :db/tupleTypes,   :db/doc "Property of an attribute. Indicates that the attribute is a heterogeneous tuple, a fixed length composite. References the value types of the elements of the tuple."}
+ {:db/ident :db.entity/attrs, :db/doc "List of required attributes on entities transacted with this entity spec."}
+ {:db/ident :db.entity/preds, :db/doc "List of validation functions that will be run on entities transacted with this entity spec."}
+ ]

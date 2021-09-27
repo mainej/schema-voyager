@@ -1,0 +1,12 @@
+[;;;; Supplemental
+
+ ;; References
+ {:db/ident :db/cardinality  :db.schema/references [#schema/enum :db.cardinality]}
+ {:db/ident :db/tupleAttrs   :db.schema/references [#schema/agg :db]}
+ {:db/ident :db/tupleType    :db.schema/references [#schema/enum :db.type]}
+ {:db/ident :db/tupleTypes   :db.schema/references [#schema/enum :db.type]}
+ {:db/ident :db/unique       :db.schema/references [#schema/enum :db.unique]}
+ {:db/ident :db/valueType    :db.schema/references [#schema/enum :db.type]}
+ {:db/ident :db.entity/attrs :db.schema/references [#schema/agg :db]}
+
+ ]
