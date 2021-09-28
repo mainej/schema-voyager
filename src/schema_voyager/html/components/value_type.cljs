@@ -42,16 +42,10 @@
        (cond tuple? tuple-composition
              ref?   valueType
              :else  ::default)
-       (cond
-         ref?
-         (if (seq references) :referred :not-referred)
-
-         (= :db.type.tuple/homogeneous tuple-composition)
-         (if (= :db.type/ref tupleType)
-           (if (seq references) :referred :not-referred)
-           ::default)
-
-         :else
+       (if (and (seq references)
+                (or ref?
+                    (= :db.type/ref tupleType)))
+         :referred
          ::default)])))
 
 ;; composite tuples
@@ -68,28 +62,25 @@
    "It's managed by Datomic, and should not be set manually."])
 
 ;; homogeneous tuples
-(def ^:private homogeneous-one-span [:span "This attribute has " card-one-abbr " value, a " homogeneous-abbr " " tuple-abbr " of variable length. "])
-(def ^:private homogeneous-many-span [:span "This attribute has " card-many-abbr " values, " homogeneous-abbr " " tuples-abbr " of variable length. "])
-(def ^:private homogeneous-one-ref-span [:span "Each member of the " tuple-abbr " is a " reference-abbr ": "])
-(def ^:private homogeneous-many-ref-span [:span "Each member of each " tuple-abbr " is a " reference-abbr ": "])
-(def ^:private homogeneous-one-scalar-span [:span "Each member of the " tuple-abbr " is a scalar: "])
-(def ^:private homogeneous-many-scalar-span [:span "Each member of each " tuple-abbr " is a scalar: "])
+(def ^:private homogeneous-one-span [:span
+                                     "This attribute has " card-one-abbr " value, a " homogeneous-abbr " " tuple-abbr " of variable length. "
+                                     "Each member of the tuple "])
+(def ^:private homogeneous-many-span [:span
+                                      "This attribute has " card-many-abbr " values, " homogeneous-abbr " " tuples-abbr " of variable length. "
+                                      "Each member of each tuple "])
 (defn- homogeneous-referred-span [{:keys [db.schema/references]}]
-  [angle-span [:span [util/coll-links references] " {2,}"]])
-(defn- homogeneous-not-referred-span [{:keys [db/tupleType]}]
-  [angle-span [:span [keyword-abbr tupleType] " {2,}"]])
+  [:span references-abbr " one " [util/coll-links references] "."])
+(defn- homogeneous-unreferred-span [{:keys [db/tupleType]}]
+  [:span "is one " [keyword-abbr tupleType] "."])
+
 (defmethod p [:db.cardinality/one :db.type.tuple/homogeneous :referred] [attribute]
-  [:p homogeneous-one-span homogeneous-one-ref-span [homogeneous-referred-span attribute] "."])
-(defmethod p [:db.cardinality/one :db.type.tuple/homogeneous :not-referred] [attribute]
-  [:p homogeneous-one-span homogeneous-one-ref-span [homogeneous-not-referred-span attribute] "."])
+  [:p homogeneous-one-span [homogeneous-referred-span attribute]])
 (defmethod p [:db.cardinality/one :db.type.tuple/homogeneous ::default] [attribute]
-  [:p homogeneous-one-span homogeneous-one-scalar-span [homogeneous-not-referred-span attribute] "."])
+  [:p homogeneous-one-span [homogeneous-unreferred-span attribute]])
 (defmethod p [:db.cardinality/many :db.type.tuple/homogeneous :referred] [attribute]
-  [:p homogeneous-many-span homogeneous-many-ref-span [homogeneous-referred-span attribute] "."])
-(defmethod p [:db.cardinality/many :db.type.tuple/homogeneous :not-referred] [attribute]
-  [:p homogeneous-many-span homogeneous-many-ref-span [homogeneous-not-referred-span attribute] "."])
+  [:p homogeneous-many-span [homogeneous-referred-span attribute]])
 (defmethod p [:db.cardinality/many :db.type.tuple/homogeneous ::default] [attribute]
-  [:p homogeneous-many-span homogeneous-many-scalar-span [homogeneous-not-referred-span attribute] "."])
+  [:p homogeneous-many-span [homogeneous-unreferred-span attribute]])
 
 ;; heterogeneous tuples
 (defn- heterogeneous-one-span [{:keys [db/tupleTypes]}]
@@ -125,13 +116,13 @@
   [:p
    "This attribute " references-abbr " " card-one-abbr " value, of type "
    [util/coll-links references] "."])
-(defmethod p [:db.cardinality/one :db.type/ref :not-referred] [_attribute]
+(defmethod p [:db.cardinality/one :db.type/ref ::default] [_attribute]
   [:p "This attribute " references-abbr " " card-one-abbr " value."])
 (defmethod p [:db.cardinality/many :db.type/ref :referred] [{:keys [db.schema/references]}]
   [:p
    "This attribute " references-abbr " " card-many-abbr " values, of type "
    [util/coll-links references] "."])
-(defmethod p [:db.cardinality/many :db.type/ref :not-referred] [_attribute]
+(defmethod p [:db.cardinality/many :db.type/ref ::default] [_attribute]
   [:p "This attribute " references-abbr " " card-many-abbr " values."])
 
 ;; scalars
@@ -148,17 +139,10 @@
       [(cond tuple? tuple-composition
              ref?   valueType
              :else  ::default)
-       (cond
-         ref?
-         (if (seq references) :referred :not-referred)
-
-         (= :db.type.tuple/homogeneous tuple-composition)
-         (if (and (= :db.type/ref tupleType)
-                  (seq references))
-           :referred
-           ::default)
-
-         :else
+       (if (and (seq references)
+                (or ref?
+                    (= :db.type/ref tupleType)))
+         :referred
          ::default)])))
 
 ;; composite tuples
@@ -166,10 +150,10 @@
   [tuple-attrs-span attribute])
 
 ;; homogeneous tuples
-(defmethod shorthand-span [:db.type.tuple/homogeneous :referred] [attribute]
-  [homogeneous-referred-span attribute])
-(defmethod shorthand-span [:db.type.tuple/homogeneous ::default] [attribute]
-  [homogeneous-not-referred-span attribute])
+(defmethod shorthand-span [:db.type.tuple/homogeneous :referred] [{:keys [db.schema/references]}]
+  [angle-span [:span [util/coll-links references] " {2,}"]])
+(defmethod shorthand-span [:db.type.tuple/homogeneous ::default] [{:keys [db/tupleType]}]
+  [angle-span [:span [keyword-abbr tupleType] " {2,}"]])
 
 ;; heterogeneous tuples
 (defmethod shorthand-span [:db.type.tuple/heterogeneous ::default] [attribute]
@@ -178,7 +162,7 @@
 ;; references
 (defmethod shorthand-span [:db.type/ref :referred] [{:keys [db.schema/references]}]
   [util/coll-links references])
-(defmethod shorthand-span [:db.type/ref :not-referred] [_attribute]
+(defmethod shorthand-span [:db.type/ref ::default] [_attribute]
   [keyword-abbr :db.type/ref])
 
 ;; scalars
