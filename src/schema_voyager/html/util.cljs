@@ -76,6 +76,14 @@
        (interpose ", ")
        (into [:span])))
 
+(defn or-list [items]
+  (if (= 1 (count items))
+    (first items)
+    (vec
+     (concat [:span]
+             (interpose ", " (butlast items))
+             [" or " (last items)]))))
+
 (def link :a.hover:underline.focus:outline-none.focus:underline)
 
 (defn coll-link [coll]
@@ -87,6 +95,9 @@
    [aggregate-abbr coll]])
 
 (defn coll-links [colls]
+  [or-list (map coll-link colls)])
+
+(defn coll-pipe-links [colls]
   [pipe-list (map coll-link colls)])
 
 (defn attr-deprecated-abbr [{:keys [db.schema/deprecated?]}]
@@ -119,7 +130,7 @@
    [attr-deprecated-abbr attr]])
 
 (defn attr-links [attributes]
-  [pipe-list (map attr-link attributes)])
+  [or-list (map attr-link attributes)])
 
 (def lock-closed
   [:svg.inline.fill-none.text-purple-700.stroke-current.stroke-2.w-4.h-4 {:viewBox "0 0 24 24"}

@@ -92,8 +92,7 @@
     (when doc
       [:p doc])
     (when (seq referenced-by)
-      [:div.text-gray-600 "Referenced by "
-       [util/attr-links referenced-by]])]
+      [:div.text-gray-600 "Referenced by " [util/attr-links referenced-by]])]
    [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl.divide-y
     (for [attribute (sort-by attribute-comparable _part-of)]
       ^{:key (:db/id attribute)}
