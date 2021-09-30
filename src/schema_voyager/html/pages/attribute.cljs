@@ -6,15 +6,15 @@
             [schema-voyager.html.diagrams.query :as diagrams.query]
             [schema-voyager.html.util :as util]))
 
-(defn by-ident [ident]
-  (ds/pull db/db
+(defn- by-ident [db ident]
+  (ds/pull db
            ['*
-            {:db.schema/part-of          ['*]
-             :db.schema/references       ['*]
-             :db.schema/tuple-references ['*
-                                          {:db.schema/references ['*]}]
-             :db.schema/see-also         util/attr-link-pull
-             :db.schema/_see-also        util/attr-link-pull}]
+            {:db.schema/part-of                             ['*]
+             :db.schema/references                          ['*]
+             :db.schema/tuple-references                    ['*
+                                                             {:db.schema/references ['*]}]
+             :db.schema/see-also                            util/attr-link-pull
+             [:db.schema/_see-also :as :db.schema/noted-by] util/attr-link-pull}]
            [:db/ident ident]))
 
 (defn doc-str [{:keys [db/doc]}]
@@ -28,12 +28,12 @@
   (when (seq see-also)
     [:div "See also " [util/attr-links see-also]]))
 
-(defn seen-by-links [{:keys [db.schema/_see-also]}]
-  (when (seq _see-also)
-    [:div "Noted by " [util/attr-links _see-also]]))
+(defn seen-by-links [{:keys [db.schema/noted-by]}]
+  (when (seq noted-by)
+    [:div "Noted by " [util/attr-links noted-by]]))
 
-(defn details-section [{:keys [db/doc db.schema/see-also db.schema/_see-also] :as attribute}]
-  (when (or doc (seq see-also) (seq _see-also))
+(defn details-section [{:keys [db/doc db.schema/see-also db.schema/noted-by] :as attribute}]
+  (when (or doc (seq see-also) (seq noted-by))
     [:div.p-4.sm:p-6.space-y-6
      [doc-str attribute]
      [see-also-links attribute]
@@ -43,7 +43,7 @@
   (cond-> (dissoc attribute
                   :db/id :db/ident :db/doc :db/valueType :db/cardinality
                   :db/tupleAttrs :db/tupleType :db/tupleTypes
-                  :db.schema/part-of :db.schema/_see-also :db.schema/see-also :db.schema/deprecated?
+                  :db.schema/part-of :db.schema/noted-by :db.schema/see-also :db.schema/deprecated?
                   :db.schema/references :db.schema/tuple-references
                   :db.schema.pseudo/type)
     (= unique :db.unique/identity) (dissoc :db/unique)))
@@ -94,5 +94,5 @@
     [additional-fields constant]]])
 
 (defn page [parameters]
-  (let [attr (by-ident (keyword (:id (:path parameters))))]
+  (let [attr (by-ident db/db (keyword (:id (:path parameters))))]
     [panel attr]))
