@@ -1,21 +1,8 @@
 (ns schema-voyager.html.pages.attribute
-  (:require [datascript.core :as ds]
-            [schema-voyager.html.db :as db]
+  (:require [schema-voyager.html.db :as db]
             [schema-voyager.html.components.value-type :as value-type]
             [schema-voyager.html.diagrams.core :as diagrams]
-            [schema-voyager.html.diagrams.query :as diagrams.query]
             [schema-voyager.html.util :as util]))
-
-(defn- by-ident [db ident]
-  (ds/pull db
-           ['*
-            {:db.schema/part-of                             ['*]
-             :db.schema/references                          ['*]
-             :db.schema/tuple-references                    ['*
-                                                             {:db.schema/references ['*]}]
-             :db.schema/see-also                            util/attr-link-pull
-             [:db.schema/_see-also :as :db.schema/noted-by] util/attr-link-pull}]
-           [:db/ident ident]))
 
 (defn doc-str [{:keys [db/doc]}]
   (when doc
@@ -59,7 +46,7 @@
 
 (defn diagram [attr]
   ^{:key (:db/id attr)}
-  [diagrams/erd (diagrams.query/attr-edges db/db attr)])
+  [diagrams/erd (db/attr-edges attr)])
 
 (defn header [{:keys [db/ident db/unique db.schema/deprecated?]} coll-type]
   [:h1.font-bold.flex.items-center.space-x-2
@@ -94,5 +81,5 @@
     [additional-fields constant]]])
 
 (defn page [parameters]
-  (let [attr (by-ident db/db (keyword (:id (:path parameters))))]
+  (let [attr (db/attribute-by-ident (keyword (:id (:path parameters))))]
     [panel attr]))

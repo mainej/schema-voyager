@@ -1,67 +1,12 @@
 (ns schema-voyager.html.pages.collection
   (:require [schema-voyager.html.db :as db]
-            [datascript.core :as ds]
             [schema-voyager.html.components.value-type :as value-type]
             [schema-voyager.html.diagrams.core :as diagrams]
-            [schema-voyager.html.diagrams.query :as diagrams.query]
             [schema-voyager.html.util :as util]))
-
-(defn- eid-by-type-and-name [db collection-type collection-name]
-  (ds/q '[:find ?collection .
-          :in $ ?collection-type ?collection-name
-          :where
-          [?collection :db.schema.collection/type ?collection-type]
-          [?collection :db.schema.collection/name ?collection-name]
-          [?collection :db.schema.pseudo/type :collection]]
-        db collection-type collection-name))
-
-(def ^:private collection-pull
-  ['*
-   {[:db.schema/_part-of :as :db.schema.collection/attributes]
-    ['*
-     {:db.schema/references       ['*]
-      :db.schema/tuple-references ['*
-                                   {:db.schema/references ['*]}]}]
-
-    [:db.schema/_references :as :db.schema.collection/referenced-by-attrs]
-    ;; could actually be an attr or a tuple that references the collection
-    (into #_attr util/attr-link-pull
-          ;; Reverse lookups always come back as vectors. I think it's true to
-          ;; say that a db.schema/tuple-references belong to one and only one
-          ;; attribute. If that's so, a better name for this attribute would be
-          ;; :db.schema.tuple/attr, presuming it would be updated by a `first`
-          ;; after being fetched. But since I'm not 100% sure it's singular,
-          ;; better to treat it as a vector of attributes. See also
-          ;; `flatten-tuple-attrs`.
-          #_tuple [{[:db.schema/_tuple-references :as :db.schema.tuple/attrs]
-                    util/attr-link-pull}])}])
-
-(defn flatten-tuple-attrs [attrs-or-tuples]
-  (mapcat (fn [attr-or-tuple]
-            (or (:db.schema.tuple/attrs attr-or-tuple)
-                [attr-or-tuple]))
-          attrs-or-tuples))
-
-(defn- attribute-comparable
-  "Helper for sorting attributes. Returns items in this order:
-  * Unique attributes
-  * Deprecated unique attributes (rare)
-  * Regular attributes
-  * Deprecated attributes
-
-  Further sorts alphabetically within each group."
-  [{:keys [db.schema/deprecated? db/unique db/ident]}]
-  [(not= :db.unique/identity unique) deprecated? ident])
-
-(defn- by-type-and-name [db collection-type collection-name]
-  (-> (ds/pull db collection-pull (eid-by-type-and-name db collection-type collection-name))
-      (update :db.schema.collection/referenced-by-attrs flatten-tuple-attrs)
-      (update :db.schema.collection/referenced-by-attrs #(sort-by :db/ident %))
-      (update :db.schema.collection/attributes #(sort-by attribute-comparable %))))
 
 (defn collection-from-route
   [collection-type parameters]
-  (by-type-and-name db/db collection-type (keyword (:id (:path parameters)))))
+  (db/collection-by-type-and-name collection-type (keyword (:id (:path parameters)))))
 
 (def ^:private chevron-right
   [:svg.fill-none.stroke-current.stroke-2.w-4.h-4 {:viewBox "0 0 24 24"}
@@ -128,4 +73,4 @@
        chevron-right])]
    [:div
     ^{:key (:db/id coll)}
-    [diagrams/erd (diagrams.query/coll-edges db/db coll)]]])
+    [diagrams/erd (db/coll-edges coll)]]])

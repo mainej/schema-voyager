@@ -1,26 +1,7 @@
 (ns schema-voyager.html.pages.collections
-  (:require [datascript.core :as ds]
-            [schema-voyager.html.db :as db]
+  (:require [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]
-            [schema-voyager.html.diagrams.core :as diagrams]
-            [schema-voyager.html.diagrams.query :as diagrams.query]))
-
-(defn collections [db collection-type]
-  (->> (ds/q '[:find [?coll ...]
-               :in $ ?collection-type
-               :where
-               [?coll :db.schema.collection/type ?collection-type]
-               [?coll :db.schema.pseudo/type :collection]]
-             db collection-type)
-       (ds/pull-many db '[*])
-       (sort-by :db.schema.collection/name)))
-
-(defn entity-specs [db]
-  (->> (ds/q '[:find [?spec ...]
-               :where [?spec :db.schema.pseudo/type :entity-spec]]
-             db)
-       (ds/pull-many db '[*])
-       (sort-by :db/ident)))
+            [schema-voyager.html.diagrams.core :as diagrams]))
 
 (defn collection-list [collection]
   [:ul
@@ -50,17 +31,17 @@
    [list-section
     [:span.flex.items-center.gap-x-1 "Aggregates" [util/aggregate-abbr {:db.schema.collection/type :aggregate}]]
     "Aggregates are collections of attributes that often co-exist on an entity. They are analogous to a SQL table, though some attributes may appear on many aggregates."
-    [collection-list (collections db/db :aggregate)]]
-   (when-let [enums (seq (collections db/db :enum))]
+    [collection-list (db/collections-by-type :aggregate)]]
+   (when-let [enums (seq (db/collections-by-type :enum))]
      [list-section
       [:span.flex.items-center.gap-x-1 "Enums" [util/aggregate-abbr {:db.schema.collection/type :enum}]]
       "Enums are collections of named constants. They usually specify the various values that an attribute may take."
       [collection-list enums]])
-   (when-let [specs (seq (entity-specs db/db))]
+   (when-let [specs (seq (db/entity-specs))]
      [list-section
       "Entity Specs"
       "Entity specs are constraints that can be placed on an entity during a transaction. They require attributes, run predicate functions for validation, or both."
       [spec-list specs]])
    [:div
     ^{:key :collections}
-    [diagrams/erd (diagrams.query/colls-edges db/db)]]])
+    [diagrams/erd (db/colls-edges)]]])

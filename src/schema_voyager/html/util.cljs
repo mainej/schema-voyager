@@ -105,11 +105,6 @@
     [:<> " "
      [char-abbr {:class [:bg-gray-300 :text-gray-800]} "Deprecated"]]))
 
-(def attr-link-pull
-  [:db/ident
-   :db.schema/deprecated?
-   {:db.schema/part-of ['*]}])
-
 (defn sole [coll]
   (when (= 1 (count coll))
     (first coll)))

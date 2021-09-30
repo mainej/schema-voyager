@@ -1,17 +1,18 @@
-{:paths       ["src" "resources"]
- :deps        {datascript/datascript {:mvn/version "1.2.1"}}
- :aliases     {:cljs           {:extra-deps {com.github.mainej/headlessui-reagent {:mvn/version "1.4.1.40"}
-                                             dorothy/dorothy                      {:mvn/version "0.0.7"}
-                                             funcool/promesa                      {:mvn/version "6.0.2"}
-                                             metosin/reitit-frontend              {:mvn/version "0.5.13"}
-                                             reagent/reagent                      {:mvn/version "1.1.0"}
-                                             thheller/shadow-cljs                 {:mvn/version "2.15.10"}}}
-               :datomic        {:extra-deps {com.datomic/client-cloud {:mvn/version "0.8.113"}
-                                             com.datomic/dev-local    {:mvn/version "0.9.235"}}}
-               :cli            {:ns-default schema-voyager.cli}
-               :build-template {:extra-deps {hiccup/hiccup                 {:mvn/version "2.0.0-alpha2"}
-                                             io.github.clojure/tools.build {:git/tag "v0.5.0" :git/sha "7d77952"}}
-                                :exec-fn    schema-voyager.build.template-html/make-template}
-               ;; call with clojure -T:release COMMAND
-               :release        {:deps        {io.github.seancorfield/build-clj {:git/tag "v0.4.0" :git/sha "54e39ae"}}
-                                :ns-default  release}}}
+{:paths   ["src" "resources"]
+ :deps    {datascript/datascript {:mvn/version "1.2.1"}}
+ :aliases {:cljs           {:extra-deps {com.github.mainej/headlessui-reagent {:mvn/version "1.4.1.40"}
+                                         dorothy/dorothy                      {:mvn/version "0.0.7"}
+                                         funcool/promesa                      {:mvn/version "6.0.2"}
+                                         metosin/reitit-frontend              {:mvn/version "0.5.13"}
+                                         reagent/reagent                      {:mvn/version "1.1.0"}
+                                         thheller/shadow-cljs                 {:mvn/version "2.15.10"}}}
+           :datomic        {:extra-deps {com.datomic/client-cloud {:mvn/version "0.8.113"}
+                                         com.datomic/dev-local    {:mvn/version "0.9.235"}}}
+           :cli            {:ns-default schema-voyager.cli}
+           :test           {:extra-paths ["test"]}
+           :build-template {:extra-deps {hiccup/hiccup                 {:mvn/version "2.0.0-alpha2"}
+                                         io.github.clojure/tools.build {:git/tag "v0.5.0" :git/sha "7d77952"}}
+                            :exec-fn    schema-voyager.build.template-html/make-template}
+           ;; call with clojure -T:release COMMAND
+           :release        {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.4.0" :git/sha "54e39ae"}}
+                            :ns-default release}}}

@@ -1,7 +1,5 @@
 (ns schema-voyager.build.db
-  (:require
-    [datascript.core :as ds]
-    [schema-voyager.data :as data]))
+  (:require [schema-voyager.db :as db]))
 
 (def ^:private default-db-path "resources/schema_voyager_db.edn")
 
@@ -9,7 +7,7 @@
   "Drops data processed by [[schema-voyager.data/process]] into a new DataScript
   DB."
   [data]
-  (ds/db-with (ds/empty-db data/metaschema) data))
+  (db/into-db data))
 
 (defn save-db
   "Persists a DataScript `db` at a given `file-path`."

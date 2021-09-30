@@ -1,6 +1,5 @@
 (ns schema-voyager.html.components.value-type
-  (:require [datascript.core :as ds]
-            [schema-voyager.html.db :as db]
+  (:require [schema-voyager.html.db :as db]
             [schema-voyager.html.util :as util]))
 
 (defn tuple-composition [{:keys [db/tupleAttrs db/tupleType db/tupleTypes]}]
@@ -28,7 +27,7 @@
   [:abbr {:title (pr-str kw)} (name kw)])
 
 (defn- tuple-attrs-list [{:keys [db/tupleAttrs]}]
-  (let [attrs (ds/pull-many db/db util/attr-link-pull tupleAttrs)]
+  (let [attrs (db/attr-links-by-ident tupleAttrs)]
     [angle-list (map (fn [attr]
                        ^{:key (:db/ident attr)}
                        [util/attr-link attr])
