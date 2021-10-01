@@ -278,7 +278,7 @@ For instance, you may want to point to an attribute that supersedes a deprecated
 ```clojure
 {:db/ident              :track/artistCredit
  :db.schema/deprecated? true
- :db.schema/see-also    [{:db/ident :track/artist}]}
+ :db.schema/see-also    [{:db/ident :track/artists}]}
 ```
 
 ## Where to go from here

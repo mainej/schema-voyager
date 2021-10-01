@@ -37,12 +37,25 @@
   [data]
   (ds/db-with (ds/empty-db metaschema) data))
 
-(def attr-link-pull
+;; Helper Queries
+
+(def ^:private attr-link-pull
   [:db/ident
    :db.schema/deprecated?
    {:db.schema/part-of ['*]}])
 
-(def attr-pull
+(defn attr-links-by-ident
+  "There are a few places we need attributes (to generate links to them) but we
+  actually only have keywords, not refs to attributes.
+
+  This converts the idents to real attributes."
+  [db idents]
+  (when (seq idents)
+    (ds/pull-many db attr-link-pull idents)))
+
+;;;; Attribute page Queries
+
+(def ^:private attr-pull
   ['*
    {:db.schema/part-of                             ['*]
     :db.schema/references                          ['*]
@@ -53,6 +66,8 @@
 
 (defn attribute-by-ident [db ident]
   (ds/pull db attr-pull [:db/ident ident]))
+
+;;;; Collection page Queries
 
 (defn- collection-eid-by-type-and-name [db collection-type collection-name]
   (ds/q '[:find ?collection .
@@ -84,7 +99,7 @@
           #_tuple [{[:db.schema/_tuple-references :as :db.schema.tuple/attrs]
                     attr-link-pull}])}])
 
-(defn flatten-tuple-attrs [attrs-or-tuples]
+(defn- flatten-tuple-attrs [attrs-or-tuples]
   (mapcat (fn [attr-or-tuple]
             (or (:db.schema.tuple/attrs attr-or-tuple)
                 [attr-or-tuple]))
@@ -109,14 +124,7 @@
       (update :db.schema.collection/referenced-by-attrs #(sort-by :db/ident %))
       (update :db.schema.collection/attributes #(sort-by attribute-comparable %))))
 
-(defn attr-links-by-ident
-  "There are a few places we need attributes (to generate links to them) but we
-  actually only have keywords, not refs to attributes.
-
-  This converts the idents to real attributes."
-  [db idents]
-  (when (seq idents)
-    (ds/pull-many db attr-link-pull idents)))
+;;;; Spec page Queries
 
 (defn entity-spec-by-ident [db ident]
   (-> (ds/pull db ['*] [:db/ident ident])
@@ -127,6 +135,8 @@
                   (if (sequential? pred-or-preds)
                     pred-or-preds
                     [pred-or-preds]))))))
+
+;;;; Homepage Queries
 
 (defn collections-by-type [db collection-type]
   (->> (ds/q '[:find [?coll ...]
@@ -180,13 +190,9 @@
 (defn coll-edges
   "All the edges either into or out of this collection."
   [db coll]
-  (let [coll-eid (ds/q '[:find ?coll .
-                         :in $ ?collection-type ?collection-name
-                         :where
-                         [?coll :db.schema.collection/type ?collection-type]
-                         [?coll :db.schema.collection/name ?collection-name]
-                         [?coll :db.schema.pseudo/type :collection]]
-                       db (:db.schema.collection/type coll) (:db.schema.collection/name coll))
+  (let [coll-eid (collection-eid-by-type-and-name db
+                                                  (:db.schema.collection/type coll)
+                                                  (:db.schema.collection/name coll))
         sources  (ds/q (assoc active-edge-q :in '[$ ?source])
                        db coll-eid)
         targets  (ds/q (assoc active-edge-q :in '[$ ?target])

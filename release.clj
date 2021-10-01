@@ -141,19 +141,24 @@
     (die 15 "\nCouldn't create tag %s." tag))
   params)
 
+(defn run-tests [params]
+  (-> params bb/run-tests))
+
 (defn check-release
   "Check that the library is ready to be released.
 
+  * Tests pass
   * No outstanding commits
   * Git tag for current release exists in local repo
   * CHANGELOG.md references new tag"
   [params]
-  (assert-changelog-updated params)
-  ;; after assertions about content, so any change can be committed/amended
-  (assert-scm-clean params)
-  ;; last, so that correct commit is tagged
-  (assert-scm-tagged params)
-  params)
+  (-> params
+      (run-tests)
+      (assert-changelog-updated)
+      ;; after assertions about content, so any change can be committed/amended
+      (assert-scm-clean)
+      ;; last, so that correct commit is tagged
+      (assert-scm-tagged)))
 
 (defn jar
   [params]
