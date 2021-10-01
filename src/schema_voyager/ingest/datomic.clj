@@ -22,11 +22,12 @@
         conn   (d/connect client {:db-name db-name})]
     (d/db conn)))
 
-(def base-coll-exclusions
+(def datomic-coll-exclusions
   "These are collections installed by Datomic itself, as of release 480-8770.
-  Typically, you don't want to document them, so they are excluded by default.
-  You can control which collections are excluded, either more or fewer, by
-  passing `coll-exclusions` to [[ingest]]."
+  Typically, you don't want to document them, so they are excluded by default,
+  along with all of their attributes. You can re-enable certain attributes, and
+  their associated collection, by passing `datomic-entity-inclusions` to
+  [[ingest]]."
   #{#schema/agg :db.alter
     #schema/agg :db.attr
     #schema/agg :db.entity
@@ -44,12 +45,17 @@
 (defn excluded-attr?
   "Individual attributes can be ignored by including their :db/ident in
   `entity-exclusions`. Entire collections worth of attributes can be ignored by
-  including the collection in `coll-exclusions`."
-  [attr {:keys [entity-exclusions coll-exclusions]
-         :or   {entity-exclusions #{}
-                coll-exclusions   base-coll-exclusions}}]
-  (or (contains? entity-exclusions (:db/ident attr))
-      (some coll-exclusions (data/attribute-derive-part-of attr))))
+  including the collection in `coll-exclusions`. Attributes installed by Datomic
+  itself are excluded unless they are part of `datomic-entity-inclusions`."
+  [attr {:keys [entity-exclusions coll-exclusions datomic-entity-inclusions]
+         :or   {entity-exclusions         #{}
+                coll-exclusions           #{}
+                datomic-entity-inclusions #{}}}]
+  (let [coll (data/attribute-derive-part-of attr)]
+    (or (contains? entity-exclusions (:db/ident attr))
+        (some coll-exclusions coll)
+        (and (some datomic-coll-exclusions coll)
+             (not (contains? datomic-entity-inclusions (:db/ident attr)))))))
 
 (defn ingest
   "Converts all attributes from a Datomic database `db` into the form that

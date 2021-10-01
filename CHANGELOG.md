@@ -7,6 +7,12 @@ log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 Centralized and tested logic for extracting data for views, eliminating or
 reducing view logic.
 
+### Changed
+* Simplified method of including Datomic's attributes in schema. If you were
+  using `:coll-exclusions` and `:entity-exclusions` to include Datomic
+  attributes in your schema, instead you should now add those attributes to
+  `:datomic-entity-inclusions`.
+
 ## [1.0.197] - 2021-09-26
 First 1.0 release.
 
