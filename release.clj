@@ -5,7 +5,7 @@
 
 (def ^:private lib 'com.github.mainej/schema-voyager)
 (def ^:private rev-count (Integer/parseInt (b/git-count-revs nil)))
-(def ^:private semantic-version "1.0")
+(def ^:private semantic-version "1.1")
 (defn- format-version [revision] (format "%s.%s" semantic-version revision))
 (def ^:private version (format-version rev-count))
 (def ^:private next-version (format-version (inc rev-count)))
@@ -36,6 +36,11 @@
                  (zero? (:exit (git ["push" "origin"] {})))
                  (zero? (:exit (git ["push" "origin" "gh-pages"] {}))))
     (die 15 "\nCouldn't sync with github."))
+  params)
+
+(defn- assert-clojars-creds [params]
+  (when-not (System/getenv "CLOJARS_USERNAME")
+    (die 20 "\nMissing required CLOJARS_* credentials."))
   params)
 
 (defn- assert-changelog-updated [params]
@@ -186,6 +191,7 @@
   [params]
   (let [params (assoc params :lib lib :version version)]
     (-> params
+        (assert-clojars-creds)
         (bb/clean)
         (check-release)
         (jar)

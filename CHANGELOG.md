@@ -4,6 +4,7 @@ log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.1.208] - 2021-09-26
 Centralized and tested logic for extracting data for views, eliminating or
 reducing view logic.
 
@@ -40,7 +41,8 @@ supplemental files.
 This project has existed for some time, but this is the first release that can
 be used from other projects without cloning this library.
 
-[Unreleased]: https://github.com/mainej/f-form/compare/v1.0.197...main
+[Unreleased]: https://github.com/mainej/f-form/compare/v1.1.208...main
+[1.1.208]: https://github.com/mainej/f-form/compare/v1.0.197...v1.1.208
 [1.0.197]: https://github.com/mainej/f-form/compare/v1.0.192-SNAPSHOT...v1.0.197
 [1.0.192-SNAPSHOT]: https://github.com/mainej/f-form/compare/v0.1.186...v1.0.192-SNAPSHOT
 [0.1.186]: https://github.com/mainej/f-form/compare/v0.1.171...v0.1.186
