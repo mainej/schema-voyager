@@ -4,6 +4,9 @@ log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+Centralized and tested logic for extracting data for views, eliminating or
+reducing view logic.
+
 ## [1.0.197] - 2021-09-26
 First 1.0 release.
 

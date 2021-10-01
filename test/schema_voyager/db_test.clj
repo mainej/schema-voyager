@@ -141,41 +141,28 @@
                (-> (db/attribute-by-ident db :timestamp/updated-at)
                    sanitize
                    :db.schema/part-of))))
-    (t/testing "refereences"
+    (t/testing "references"
       (t/is (= [#schema/agg :country]
                (-> (db/attribute-by-ident db :address/country)
                    sanitize
-                   :db.schema/references)))
+                   :db/valueType)))
 
       (t/is (= [#schema/enum :region.usa
                 #schema/enum :region.can]
                (-> (db/attribute-by-ident db :address/region)
                    sanitize
-                   :db.schema/references))))
-    ;; TODO: introduce :db.schema.tuple-elem and move logic for interpreeting
-    ;; :db.schema.tuple/position into db
-    ;; for heterogeneous tuples:
-    #_[{:db.schema.tuple-elem/type :db.type/long}
-       {:db.schema.tuple-elem/type :db.type/ref
-        :db.schema.tuple-elem/refs [#schema/agg :comment]}]
-
-    ;; for homogeneous tuples:
-    #_{:db.schema.tuple-elem/type :db.type/long}
-    ;; or
-    #_{:db.schema.tuple-elem/type :db.type/ref
-       :db.schema.tuple-elem/refs [#schema/agg :comment]}
+                   :db/valueType))))
     (t/testing "heterogeneous tuple references"
       (let [attr (sanitize (db/attribute-by-ident db :post/ranked-comments))]
-        (t/is (= [{:db.schema.tuple/position 1
-                   :db.schema/references     [#schema/agg :comment]}]
-                 (:db.schema/tuple-references attr)))
-        (t/is (= [:db.type/long :db.type/ref]
+        (t/is (= :db.type/tuple.heterogeneous
+                 (:db/valueType attr)))
+        (t/is (= [:db.type/long [#schema/agg :comment]]
                  (:db/tupleTypes attr)))))
     (t/testing "homogeneous tuple references"
       (let [attr (sanitize (db/attribute-by-ident db :label/top-artists))]
+        (t/is (= :db.type/tuple.homogeneous
+                 (:db/valueType attr)))
         (t/is (= [#schema/agg :artist]
-                 (:db.schema/references attr)))
-        (t/is (= :db.type/ref
                  (:db/tupleType attr)))))))
 
 (t/deftest attr-page-query
@@ -202,7 +189,7 @@
                                   {:db/ident              :a/aaa
                                    :db.schema/deprecated? true
                                    :db.schema/part-of     [#schema/agg :a]}]
-              :db/valueType      :db.type/tuple
+              :db/valueType      :db.type/tuple.composite
               :db.schema/part-of [#schema/agg :a]}
              (sanitize (db/attribute-by-ident db :a/zzz+aaa))))))
 
@@ -258,21 +245,18 @@
                :db/unique      :db.unique/identity
                :db/cardinality :db.cardinality/one}
               ;; alphabetical second
-              {:db/ident             :a/bs
-               :db/cardinality       :db.cardinality/many
-               :db/valueType         :db.type/ref
+              {:db/ident       :a/bs
+               :db/cardinality :db.cardinality/many
                ;; includes references
-               :db.schema/references [#schema/agg :b]}
-              {:db/ident                   :a/pos+b,
-               :db/cardinality             :db.cardinality/one,
-               :db/valueType               :db.type/tuple,
+               :db/valueType   [#schema/agg :b]}
+              {:db/ident       :a/pos+b
+               :db/cardinality :db.cardinality/one
+               :db/valueType   :db.type/tuple.heterogeneous
                ;; includes tuple references
-               :db/tupleTypes              [:db.type/long :db.type/ref],
-               :db.schema/tuple-references [{:db.schema/references     [#schema/agg :b],
-                                             :db.schema.tuple/position 1}]}
+               :db/tupleTypes  [:db.type/long [#schema/agg :b]]}
               ;;includes tupleAttrs
               {:db/ident       :a/zzz+aaa
-               :db/valueType   :db.type/tuple
+               :db/valueType   :db.type/tuple.composite
                :db/cardinality :db.cardinality/one
                :db/tupleAttrs  [{:db/ident          :a/zzz
                                  :db.schema/part-of [#schema/agg :a]}

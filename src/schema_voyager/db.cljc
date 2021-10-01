@@ -57,6 +57,43 @@
                                idents)))
     entity))
 
+(defn- enrich-value-type
+  "Substitute `:db.type/ref` with references, when we have them."
+  [value-type references]
+  (if (and (= :db.type/ref value-type) (seq references))
+    references
+    value-type))
+
+(defn- enrich-attr-type
+  "Classify tuples, and when we have supplemental refs, subsitute them in for
+  the `:db.type/ref` keyword in `:db/valueType`, `:db/tupleType` and
+  `:db/tupleTypes`."
+  [{:keys [db/valueType db/tupleAttrs db/tupleType db/tupleTypes db.schema/references db.schema/tuple-references] :as attr}]
+  (cond
+    (nil? valueType)
+    #_=> attr
+    (not= :db.type/tuple valueType)
+    #_=> (-> attr
+             (update :db/valueType enrich-value-type references)
+             (dissoc :db.schema/references))
+    :else
+    #_=> (cond
+           tupleAttrs (-> attr
+                          (assoc :db/valueType :db.type/tuple.composite))
+           tupleType  (-> attr
+                          (assoc :db/valueType :db.type/tuple.homogeneous)
+                          (update :db/tupleType enrich-value-type references)
+                          (dissoc :db.schema/references))
+           tupleTypes (let [refs-by-position (zipmap (map :db.schema.tuple/position tuple-references)
+                                                     (map :db.schema/references tuple-references))]
+                        (-> attr
+                            (assoc :db/valueType :db.type/tuple.heterogeneous)
+                            (update :db/tupleTypes (fn [value-types]
+                                                     (map-indexed (fn [position value-type]
+                                                                    (enrich-value-type value-type (get refs-by-position position)))
+                                                                  value-types)))
+                            (dissoc :db.schema/tuple-references))))))
+
 ;;;; Attribute page Queries
 
 (def ^:private attr-pull
@@ -71,7 +108,8 @@
 (defn attribute-by-ident [db ident]
   (-> db
       (ds/pull attr-pull [:db/ident ident])
-      (promote-attrs db :db/tupleAttrs)))
+      (promote-attrs db :db/tupleAttrs)
+      (enrich-attr-type)))
 
 ;;;; Collection page Queries
 
@@ -131,7 +169,9 @@
       (update :db.schema.collection/attributes (fn [attributes]
                                                  (->> attributes
                                                       (map (fn [attribute]
-                                                             (promote-attrs attribute db :db/tupleAttrs)))
+                                                             (-> attribute
+                                                                 (promote-attrs db :db/tupleAttrs)
+                                                                 (enrich-attr-type))))
                                                       (sort-by attribute-comparable))))))
 
 ;;;; Spec page Queries
