@@ -29,9 +29,6 @@
 (defn entity-spec-by-ident [ident]
   (db/entity-spec-by-ident db ident))
 
-(defn attr-links-by-ident [idents]
-  (db/attr-links-by-ident db idents))
-
 (defn collections-by-type [collection-type]
   (db/collections-by-type db collection-type))
 

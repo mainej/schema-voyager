@@ -178,6 +178,34 @@
         (t/is (= :db.type/ref
                  (:db/tupleType attr)))))))
 
+(t/deftest attr-page-query
+  (let [db (ingest [{:static/data [{:db/ident       :a/zzz
+                                    :db/valueType   :db.type/uuid
+                                    :db/unique      :db.unique/identity
+                                    :db/cardinality :db.cardinality/one}
+
+                                   {:db/ident              :a/aaa
+                                    :db/valueType          :db.type/string
+                                    :db/cardinality        :db.cardinality/one
+                                    :db.schema/deprecated? true}
+
+                                   {:db/ident       :a/zzz+aaa
+                                    :db/valueType   :db.type/tuple
+                                    :db/cardinality :db.cardinality/one
+                                    :db/tupleAttrs  [:a/zzz :a/aaa]}]}])]
+    ;; there are lots of other things to test about an attr page query, but most
+    ;; of it is done above
+    (t/is (= {:db/cardinality    :db.cardinality/one
+              :db/ident          :a/zzz+aaa
+              :db/tupleAttrs     [{:db/ident          :a/zzz
+                                   :db.schema/part-of [#schema/agg :a]}
+                                  {:db/ident              :a/aaa
+                                   :db.schema/deprecated? true
+                                   :db.schema/part-of     [#schema/agg :a]}]
+              :db/valueType      :db.type/tuple
+              :db.schema/part-of [#schema/agg :a]}
+             (sanitize (db/attribute-by-ident db :a/zzz+aaa))))))
+
 (def agg-with-incoming-and-outgoing-references
   [{:db/ident       :b/id
     :db/cardinality :db.cardinality/one
@@ -203,6 +231,11 @@
     :db/valueType          :db.type/string
     :db/cardinality        :db.cardinality/one
     :db.schema/deprecated? true}
+
+   {:db/ident       :a/zzz+aaa
+    :db/valueType   :db.type/tuple
+    :db/cardinality :db.cardinality/one
+    :db/tupleAttrs  [:a/zzz :a/aaa]}
 
    {:db/ident             :c/a
     :db/valueType         :db.type/ref
@@ -237,6 +270,16 @@
                :db/tupleTypes              [:db.type/long :db.type/ref],
                :db.schema/tuple-references [{:db.schema/references     [#schema/agg :b],
                                              :db.schema.tuple/position 1}]}
+              ;;includes tupleAttrs
+              {:db/ident       :a/zzz+aaa
+               :db/valueType   :db.type/tuple
+               :db/cardinality :db.cardinality/one
+               :db/tupleAttrs  [{:db/ident          :a/zzz
+                                 :db.schema/part-of [#schema/agg :a]}
+                                {:db/ident              :a/aaa
+                                 :db.schema/deprecated? true
+                                 :db.schema/part-of     [#schema/agg :a]}]}
+
               ;; deprecated last
               {:db/ident              :a/aaa
                :db/valueType          :db.type/string
@@ -272,8 +315,7 @@
               #schema/enum :e
               #schema/enum :z]
              (sanitize (db/collections-by-type db :enum))))
-    (t/is (= [{:db/ident        :s/s
-               :db.entity/attrs [:a/a :e/c]}]
+    (t/is (= [{:db/ident :s/s}]
              (sanitize (db/entity-specs db))))))
 
 (defn- sanitize-edge-query [edges]
@@ -297,10 +339,10 @@
     ;; * regular and tuple references
     ;; * excluding deprecated attributes
     (t/is (= #{[#schema/agg :a :a/pos+b #schema/agg :b]
-               [#schema/agg :a :a/bs #schema/agg :b]
-               [#schema/agg :c :c/a #schema/agg :a]
+               [#schema/agg :a :a/bs    #schema/agg :b]
+               [#schema/agg :c :c/a     #schema/agg :a]
                [#schema/agg :c :c/pos+a #schema/agg :a]
-               [#schema/agg :z :z/b #schema/agg :b]}
+               [#schema/agg :z :z/b     #schema/agg :b]}
              (sanitize-edge-query (db/colls-edges db))))))
 
 (t/deftest collection-diagram-query
@@ -317,8 +359,8 @@
     ;; same as full-diagram-query, but only edges where this collection is
     ;; either the source or dest
     (t/is (= #{[#schema/agg :a :a/pos+b #schema/agg :b]
-               [#schema/agg :a :a/bs #schema/agg :b]
-               [#schema/agg :c :c/a #schema/agg :a]
+               [#schema/agg :a :a/bs    #schema/agg :b]
+               [#schema/agg :c :c/a     #schema/agg :a]
                [#schema/agg :c :c/pos+a #schema/agg :a]}
              (sanitize-edge-query (db/coll-edges db #schema/agg :a))))))
 

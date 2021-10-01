@@ -44,14 +44,18 @@
    :db.schema/deprecated?
    {:db.schema/part-of ['*]}])
 
-(defn attr-links-by-ident
+(defn- promote-attrs
   "There are a few places we need attributes (to generate links to them) but we
   actually only have keywords, not refs to attributes.
 
-  This converts the idents to real attributes."
-  [db idents]
-  (when (seq idents)
-    (ds/pull-many db attr-link-pull idents)))
+  This converts the idents to real attributes, maintaing order."
+  [entity db prop]
+  (if (seq (prop entity))
+    (update entity prop (fn [idents]
+                          ;; not pull-many to maintain order
+                          (map #(ds/pull db attr-link-pull %)
+                               idents)))
+    entity))
 
 ;;;; Attribute page Queries
 
@@ -65,7 +69,9 @@
     [:db.schema/_see-also :as :db.schema/noted-by] attr-link-pull}])
 
 (defn attribute-by-ident [db ident]
-  (ds/pull db attr-pull [:db/ident ident]))
+  (-> db
+      (ds/pull attr-pull [:db/ident ident])
+      (promote-attrs db :db/tupleAttrs)))
 
 ;;;; Collection page Queries
 
@@ -122,13 +128,17 @@
                                                                    collection-name))
       (update :db.schema.collection/referenced-by-attrs flatten-tuple-attrs)
       (update :db.schema.collection/referenced-by-attrs #(sort-by :db/ident %))
-      (update :db.schema.collection/attributes #(sort-by attribute-comparable %))))
+      (update :db.schema.collection/attributes (fn [attributes]
+                                                 (->> attributes
+                                                      (map (fn [attribute]
+                                                             (promote-attrs attribute db :db/tupleAttrs)))
+                                                      (sort-by attribute-comparable))))))
 
 ;;;; Spec page Queries
 
 (defn entity-spec-by-ident [db ident]
   (-> (ds/pull db ['*] [:db/ident ident])
-      (update :db.entity/attrs #(attr-links-by-ident db %))
+      (promote-attrs db :db.entity/attrs)
       (update :db.entity/preds
               (fn [pred-or-preds]
                 (when pred-or-preds
@@ -152,7 +162,7 @@
   (->> (ds/q '[:find [?spec ...]
                :where [?spec :db.schema.pseudo/type :entity-spec]]
              db)
-       (ds/pull-many db '[*])
+       (ds/pull-many db '[:db/id :db/ident])
        (sort-by :db/ident)))
 
 ;;;; Diagram Queries

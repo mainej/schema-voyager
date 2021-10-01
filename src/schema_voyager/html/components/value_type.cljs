@@ -1,6 +1,5 @@
 (ns schema-voyager.html.components.value-type
-  (:require [schema-voyager.html.db :as db]
-            [schema-voyager.html.util :as util]))
+  (:require [schema-voyager.html.util :as util]))
 
 (defn tuple-composition [{:keys [db/tupleAttrs db/tupleType db/tupleTypes]}]
   (cond
@@ -27,11 +26,10 @@
   [:abbr {:title (pr-str kw)} (name kw)])
 
 (defn- tuple-attrs-list [{:keys [db/tupleAttrs]}]
-  (let [attrs (db/attr-links-by-ident tupleAttrs)]
-    [angle-list (map (fn [attr]
-                       ^{:key (:db/ident attr)}
-                       [util/attr-link attr])
-                     attrs)]))
+  [angle-list (map (fn [attr]
+                     ^{:key (:db/ident attr)}
+                     [util/attr-link attr])
+                   tupleAttrs)])
 
 (defn- heterogeneous-types-list [{:keys [db/tupleTypes db.schema/tuple-references]}]
   (let [refs-by-position (zipmap (map :db.schema.tuple/position tuple-references)
@@ -47,11 +45,10 @@
                   tupleTypes)]))
 
 (defn- dispatch [{:keys [db/valueType db.schema/references db/tupleType] :as attribute}]
-  (let [tuple?            (= :db.type/tuple valueType)
-        ref?              (= :db.type/ref valueType)
-        tuple-ref?        (= :db.type/ref tupleType)
-        tuple-composition (tuple-composition attribute)]
-    [(cond tuple? tuple-composition
+  (let [tuple?     (= :db.type/tuple valueType)
+        ref?       (= :db.type/ref valueType)
+        tuple-ref? (= :db.type/ref tupleType)]
+    [(cond tuple? (tuple-composition attribute)
            ref?   valueType
            :else  ::default)
      (if (and (seq references)
