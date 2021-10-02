@@ -82,6 +82,8 @@ For example, `:track` is the aggregate that contains the attributes `:track/arti
 An **enum** is a collection of constants.
 For example, `:medium.format` is the enum that contains the constants `:medium.format/cd` and `:medium.format/dvd`.
 
+#### Referencing collections
+
 When referencing aggregates and enums, generally you'll write them like this:
 ```clojure
 #schema/agg :artist
@@ -113,7 +115,7 @@ In these cases, you can use the longer form:
 
 With this terminology in hand, it's time to learn how to annotate your schema.
 
-To annotate you add supplemental properties, most of which are in the `:db.schema` namespace, directly to attributes.
+To annotate you add supplemental properties–most of which are in the `:db.schema` namespace–directly to attributes.
 
 For example, suppose you've installed the following schema for people's names.
 ```clojure

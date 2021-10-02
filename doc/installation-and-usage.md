@@ -6,7 +6,8 @@ It pulls in those sources and creates a standalone web page where you can explor
 
 ## As an alias
 
-In most cases you'll be working on a team and several developers will need to be able to re-generate the standalone web page.
+In many cases you'll be working on a team.
+Several developers will each need to re-generate the standalone web page.
 The easiest way to share the command to do this is to create a `deps.edn` alias that invokes `schema-voyager.cli`.
 
 ```clojure
@@ -69,9 +70,11 @@ clojure -X:schema standalone \
              {:file/name "resources/supplemental-schema.edn"}]'
 ```
 
+Similarly, you can override the location of the generated file with `:output-path '"another/path/schema.html"'`
+
 ## As a script
 
-You can create a script which calls `schema-voyager.cli/standalone` directly.
+Alternatively, scripts can call `schema-voyager.cli/standalone` directly.
 
 ```clojure
 (ns my.ns
@@ -82,7 +85,7 @@ You can create a script which calls `schema-voyager.cli/standalone` directly.
     :db/valueType :db.type/string
     :db/cardinality :db.cardinality/one}])
 
-(defn -main [_]
+(defn -main []
   (cli/standalone {:sources [{:static/data schema}]}))
 ```
 

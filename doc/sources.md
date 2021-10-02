@@ -1,9 +1,9 @@
-## Where is your data?
+## Where is your schema?
 
 Your schema data is stored in many places.
 A running Datomic database is the authority on what attributes and constants are installed, and what their core properties are.
-To augment this, you'll maintain a file of [supplemental properties](/doc/annotation.md).
-You can imagine other places where you might store data (see below for more options) but the point is, you have many sources of schema data.
+To augment this, you're likely to maintain a file of [supplemental properties](/doc/annotation.md).
+You can imagine other places where you might store data (see below for all the options) but the point is, you have many sources of schema data.
 
 Schema Voyager calls each of these sources ...wait for it... a **"source"**.
 A source is anything from which a vector of schema data can be extracted.
@@ -22,7 +22,8 @@ Schema Voyager extracts schema data by quering for idents:
 ;; =>
 [{:db/ident       :person/given-name
   :db/valueType   :db.type/string
-  :db/cardinality :db.cardinality/one}]
+  :db/cardinality :db.cardinality/one}
+  ,,,]
 ```
 
 Given a "file source":
@@ -37,10 +38,11 @@ Schema Voyager extracts schema data by reading the file:
 (schema-voyager.cli/extract-source file-source)
 ;; => 
 [{:db/ident              :person/given-name
-  :db.schema/deprecated? true}]
+  :db.schema/deprecated? true}
+  ,,,]
 ```
 
-Read on to learn about the sources Schema Voyager understands and how to merge them.
+Read on to learn about the sources Schema Voyager understands and how it merges them.
 
 ## How to use with `schema-voyager.cli`
 
@@ -53,11 +55,15 @@ Then it turns that data into a web page.
 This document focus on the first part, ingestion.
 
 `schema.voyager.cli/ingest` accepts a vector of sources.
-(See below for how to specify each type of source.)
 It extracts schema data from each source in turn, then merges all the data.
 
-As an example of the ingestion process, the above example about `:person/given-name` included schema data from two sources, a Datomic source and a file source.
-`schema.voyager.cli/ingest` would merge these two sources of data into a single entity:
+## Example of ingestion and merging
+
+Let's follow the ingestion process.
+The above example about `:person/given-name` included schema data from two sources, a Datomic source and a file source.
+From the Datomic source we learned the `:db/valueType` and `:db/cardinality` of the attribute.
+From the supplemental file source we also learned that this attribute has been `:db.schema/deprecated?`.
+`schema.voyager.cli/ingest` merges these two sources of data into a single entity:
 
 ```clojure
 [{;; From datomic-source
@@ -68,7 +74,8 @@ As an example of the ingestion process, the above example about `:person/given-n
   :db.schema/deprecated? true}]
 ```
 
-`schema-voyager.cli/ingest` then processes this data to derive missing properties:
+`schema-voyager.cli/ingest` then processes this data to derive missing properties.
+Since it wasn't set explicitly by prior sources, Schema Voyager derives that `:person/given-name` is part of the `:person` aggregate.
 
 ```clojure
 [{:db/ident              :person/given-name
@@ -79,10 +86,27 @@ As an example of the ingestion process, the above example about `:person/given-n
   :db.schema/part-of     [#schema/agg :person]}]
 ```
 
-Finally, this data is saved for later consumption by the web page which displays your schema.
+After merging, the resulting data is saved for later consumption by the web page which displays your schema.
+
+Let's reiterate.
+You can specify many sources.
+Properties from later sources will be merged with those from earlier sources.
+Thus, later sources can add or override properties defined in earlier sources by re-using a `:db/ident` instead of re-specifying the entire attribute.
+
+```clojure
+(schema-voyager.cli/ingest 
+  {:sources [{:datomic/db-name       "my-db-name",
+              :datomic/client-config {:server-type :dev-local, :system "my-system"}}
+             {:file/name "path/to/supplemental-schema.edn"}]})
+```
+
+> Observe this example carefully.
+> Most projects will use something like this, with a pair of sources, a Datomic source augmented by a supplemental file source.
 
 ## Types of sources
 
+OK, so you should understand how sources are merged.
+With that information, let's explore the sources from which Schema Voyager can extract schema data.
 Schema Voyager knows how to ingest four types of sources.
 
 ### Datomic source
@@ -156,22 +180,6 @@ A "function source" specifies a function which returns schema data.
 
 The `:fn/name` will be resolved and called with a single argument, either the value provided in `:fn/args`, or an empty hashmap.
 
-## Merging sources
-
-You can specify many sources.
-Properties from later sources will be merged with those from earlier sources.
-Thus, later sources can add or override properties defined in earlier sources by re-using a `:db/ident` instead of re-specifying the entire attribute.
-
-```clojure
-(schema-voyager.cli/ingest 
-  {:sources [{:datomic/db-name       "my-db-name",
-              :datomic/client-config {:server-type :dev-local, :system "my-system"}}
-             {:file/name "path/to/supplemental-schema.edn"}]})
-```
-
-Observe this example carefully.
-Most projects will use something like this, with a pair of sources, a Datomic source augmented by a supplemental file source.
-
 ## Where should I store my schema and annotations?
 
 If you're documenting an existing database, 99% of the time you'll combine a Datomic source with a file source.
@@ -180,10 +188,11 @@ The file source will supplement the attributes with references and deprecations.
 
 If you're doing database design, before a database actually exists, you can probably get by with a single file source.
 
-The static and fn sources will rarely be needed, unless schema-voyager is being used as part of a larger script.
+If you want the flexibility of defining your schema data with Clojure code, perhaps to organize attributes that all share some common properties, you may want to move your schema definition to a Clojure script which uses static and function sources.
 
+A final note:
 Technically it's possible to install supplemental properties in Datomic, then transact them into Datomic directly on new or existing attributes.
-For example, after transacting this:
+For example, after transacting this bit of schema metadata:
 
 ```clojure
 [{:db/ident       :db.schema/deprecated?
@@ -192,11 +201,11 @@ For example, after transacting this:
   :db/doc         "Whether this attribute or constant has fallen out of use. Often used with :db.schema/see-also, to point to a new way of storing some data."}]
 ```
 
-You could transact this directly into Datomic:
+You could record that an attribute is deprecated directly in Datomic:
 
 ```clojure
-[{:db/ident              :person/given-name
-  :db.schema/deprecated? true}]
+(d/transact conn {:tx-data [{:db/ident              :person/given-name
+                             :db.schema/deprecated? true}]})
 ```
 
 From experience, this is tempting but tends to fall out of date.
