@@ -101,7 +101,7 @@
                                  :fontname "Helvetica"
                                  :fontsize 12})
                 (dot/edge-attrs {:color     (colors :gray-600)
-                                 :penwidth  0.5
+                                 :class     "stroke-half hover:stroke-1"
                                  :arrowsize 0.75})]
                (->> shown-edges
                     diagrams.util/edges-as-nodes

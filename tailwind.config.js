@@ -50,6 +50,9 @@ module.exports = {
             },
             fill: {
                 none: 'none'
+            },
+            strokeWidth: {
+                half: "0.5"
             }
         },
     },
