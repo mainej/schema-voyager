@@ -1,4 +1,4 @@
-# Inference
+# Infer
 
 Here's an idea.
 What if you queried Datomic for unused attributes? 

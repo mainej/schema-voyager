@@ -1,3 +1,5 @@
+# Installation
+
 The primary way of using Schema Voyager is through `schema-voyager.cli/standalone`.
 You tell this function where your [sources](/doc/sources.md) of [schema data](/doc/annotation.md) are.
 It pulls in those sources and creates a standalone web page where you can explore your schema.

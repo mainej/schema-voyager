@@ -1,0 +1,9 @@
+{:cljdoc.doc/tree [["Overview" {:file "README.md"}]
+                   ["Annotate" {:file "doc/annotation.md"}]
+                   ["Source" {:file "doc/sources.md"}]
+                   ["Install" {:file "doc/installation-and-usage.md"}]
+                   ["Explore" {:file "doc/exploring-and-sharing.md"}
+                    ["Advanced exploration" {:file "doc/advanced-exploration.md"}]]
+                   ["Working with Datomic" {}
+                    ["Infer" {:file "doc/datomic-inference.md"}]
+                    ["Troubleshooting" {:file "doc/troubleshooting.md"}]]]}
