@@ -60,16 +60,28 @@
   "Creates a template file with a placeholder string instead of a DataScript DB.
   It's used by `schema-voyager.build.standalone-html/fill-template`, which takes
   an ingested DB, then substitutes that into the template file."
-  ;; This is kind of a hack. It works in contrast to the old approach where the
-  ;; ingested DB was saved and then compiled directly into the JS.
+  ;; OK, what's going on here? Why does this template exist?
   ;;
-  ;; This approach of pre-compiling the template is used for two reasons. First,
-  ;; it makes standalone HTML creation faster, because you only have to ingest
-  ;; the data, instead of also re-compiling the JS. Second, we can distribute
-  ;; the template file as a resource, which makes this library usable from other
-  ;; projects. Before they couldn't compile the app (shadow-cljs.edn wasn't
-  ;; available, among other things). Now they just substitute their data into
-  ;; the template.
+  ;; There are two modes to using Schema Voyager.
+  ;;
+  ;; When you're hacking on Schema Voyager, you use shadow-cljs to compile the
+  ;; CLJS and launch a server. Of course, changes to the .cljs files are shipped
+  ;; to the browser automatically. But, changes to the DataScript DB are too,
+  ;; through the magic of `shadow.resource/inline`. Thus, when you re-run
+  ;; `ingest`, the DB file is updated and then the web page updates. This is
+  ;; great for live interaction with Schema Voyager code--you get quick feedback
+  ;; on changes both to the CLJS rendering and to the ingestion process. But it
+  ;; doesn't work so well with the other mode of using Schema Voyager.
+  ;;
+  ;; As an application author, you don't care about dynamically updating CLJS.
+  ;; You also don't want a DB file, but instead want a single HTML file. That's
+  ;; where this template comes in. We put a placeholder string into the file
+  ;; that usually holds the DB, compile that into the JS (in a release build,
+  ;; `shadow.resource/inline` inlines whatever is in the DB file *at that
+  ;; moment*), and package everything up as an HTML file. Then the application
+  ;; author only has to ingest their schema data and substitute it in place of
+  ;; the placeholder. That's fast and means that we don't have to try to compile
+  ;; Schema Voyager's CLJS from the application's codebase.
   [params]
   (create-placeholder-db)
   (optimized-js)
