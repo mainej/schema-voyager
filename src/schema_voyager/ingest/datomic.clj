@@ -261,6 +261,10 @@
              (when (some infer #{:all :references :tuple-references :heterogeneous-tuple-references})
                (infer-heterogeneous-tuple-references db))))))
 
+(defn- db-from-source
+  [{:keys [client-config db-name]}]
+  (datomic-db client-config db-name))
+
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn cli-ingest
   "A shorthand, used by the CLI, for connecting to a database, ingesting and
@@ -268,8 +272,8 @@
 
   Before calling with the `infer` param, see the warnings in
   /doc/datomic-inference.md."
-  [{:keys [client-config db-name exclusions] inferences :infer}]
-  (let [db (datomic-db client-config db-name)]
+  [{:keys [exclusions] inferences :infer :as source}]
+  (let [db (db-from-source source)]
     (concat (ingest db exclusions)
             (infer db inferences))) )
 
@@ -278,16 +282,13 @@
   "A shorthand, used by the CLI, for connecting to a database and inspecting
   inferences.
 
-  Before using, see the warnings in /doc/datomic-inference.md.
-  "
-  [{:keys [client-config db-name] inferences :infer}]
-  (let [db (datomic-db client-config db-name)]
-    (infer db inferences)) )
+  Before using, see the warnings in /doc/datomic-inference.md."
+  [{inferences :infer :as source}]
+  (infer (db-from-source source) inferences) )
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn cli-attributes
   "A shorthand, used by the CLI, for connecting to a database and inspecting
   attributes."
-  [{:keys [client-config db-name exclusions]}]
-  (let [db (datomic-db client-config db-name)]
-    (ingest db exclusions)) )
+  [{:keys [exclusions] :as source}]
+  (ingest (db-from-source source) exclusions) )

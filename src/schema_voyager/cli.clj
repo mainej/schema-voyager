@@ -40,6 +40,7 @@
        data/process
        build.db/into-db))
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn ingest
   "Ingest schema into Schema Voyager from one or more `source`s.
 
@@ -71,6 +72,7 @@
   (pprint/pprint (ingest/datomic-attributes (datomic-config params)))
   (shutdown-agents))
 
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn standalone
   "Creates a standalone HTML page at `output-path`, after importing the `sources`
   as per [[ingest]].

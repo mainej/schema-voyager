@@ -1,16 +1,11 @@
 (ns schema-voyager.html.util
   (:require [reitit.frontend.easy :as rfe]))
 
-(def nbsp "\u00A0")
-
 (def slash [:span.text-gray-500 "/"])
 (def asterisk [:span.text-blue-600 "*"])
 
 (defn stop [e]
   (.stopPropagation e))
-
-(defn prevent [e]
-  (.preventDefault e))
 
 (def href rfe/href)
 
