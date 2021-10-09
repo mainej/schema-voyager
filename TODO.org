@@ -239,3 +239,6 @@ See https://github.com/felixflores/datomic_schema_grapher for some ideas
 ** DONE run clj -X:build-template
 ** DONE Create tagged version
 * DONE check that find-versions can actually find the tool
+* TODO move resources/assets to src/css and src/html. They shouldn't be distributed with lib
+* TODO exclude unused resources from jar
+  Don't want to create problems for other libs

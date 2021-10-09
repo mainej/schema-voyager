@@ -14,3 +14,4 @@ resources/schema_voyager_db.edn
 schema-voyager.html
 _site
 resources/standalone-template.html
+.java-version

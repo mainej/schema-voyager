@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. This change
 log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Changed
+* Split up project into separate pieces: the core, the web, and the build.
+  The impetus for this was to prevent build failures when CLJDOC analyzed a
+  release. But it also clarifies which pieces are used when, and what their
+  dependencies are. It also makes the jar smaller, though there's more to do on
+  that front.
 
 ## [1.1.208] - 2021-09-26
 Centralized and tested logic for extracting data for views, eliminating or

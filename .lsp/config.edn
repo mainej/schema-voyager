@@ -1,1 +1,1 @@
-{:source-paths #{"src" "release.clj"}}
+{:source-paths #{"src/core" "src/web" "src/build" "release.clj"}}

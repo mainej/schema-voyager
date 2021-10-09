@@ -5,15 +5,12 @@
 
 (def ^:private lib 'com.github.mainej/schema-voyager)
 (def ^:private rev-count (Integer/parseInt (b/git-count-revs nil)))
-(def ^:private semantic-version "1.1")
+(def ^:private semantic-version "1.2")
 (defn- format-version [revision] (format "%s.%s" semantic-version revision))
 (def ^:private version (format-version rev-count))
 (def ^:private next-version (format-version (inc rev-count)))
 (def ^:private tag (str "v" version))
-(def ^:private basis (b/create-basis {:root    nil
-                                      :user    nil
-                                      :project "deps.edn"}))
-
+(def ^:private basis (b/create-basis {:aliases [:datomic]}))
 (defn- die
   ([message & args]
    (die (apply format message args)))
@@ -170,13 +167,22 @@
   (-> params
       (assoc :lib lib
              :version version
-             :basis   basis
-             :tag     (git-rev))
+             :src-dirs ["src/core"]
+             :basis basis
+             :tag (git-rev))
       (build-template)
       (copy-template-to-jar-resources)
       ;; TODO: jar doesn't really use anything from /resources. Should it be
       ;; copied into jar?
       (bb/jar)))
+
+#_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
+(defn install [params]
+  (-> params
+      (assoc :lib lib :version version)
+      (bb/clean)
+      (jar)
+      (bb/install)))
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn release

@@ -1,4 +1,4 @@
-(ns schema-voyager.build.template-html
+(ns schema-voyager.template-html
   "Builds the template file used by `schema-voyager.build.standalone-html/fill-template`.
 
   The dependency order is important here... we want to keep hiccup out of the
@@ -12,6 +12,7 @@
    [hiccup.page :as hiccup.page]
    [schema-voyager.build.db :as build.db]
    [schema-voyager.build.standalone-html :as standalone-html]))
+
 
 (defn- die
   ([code message & args]
