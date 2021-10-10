@@ -1,8 +1,10 @@
 (ns schema-voyager.db.init
-  "Convert ingested schema data into a DataScript DB."
+  "Transact ingested schema data into a DataScript DB."
   (:require [datascript.core :as ds]))
 
 (def metaschema
+  "Definition of the supplemental attributes that can be transacted into the
+  DataScript DB."
   {:db.schema.collection/name  {;; :db/valueType   :db.type/keyword
                                 :db/cardinality :db.cardinality/one
                                 :db/doc         "The name of a collection. Can be any keyword, but usually matches the namespace of other idents in the schema."}
@@ -28,7 +30,7 @@
                                 :db/cardinality :db.cardinality/one
                                 :db/doc         "The position of a ref within a heterogeneous tuple. Zero-indexed."}})
 (defn into-db
-  "Drops data processed by [[schema-voyager.ingest.core/process]] into a new
+  "Transacts data processed by [[schema-voyager.ingest.core/process]] into a new
   DataScript DB."
   [data]
   (ds/db-with (ds/empty-db metaschema) data))

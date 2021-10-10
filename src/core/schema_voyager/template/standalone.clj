@@ -8,13 +8,13 @@
   When you're hacking on Schema Voyager, you use shadow-cljs to compile the CLJS
   and launch a server. Of course, changes to the .cljs files are shipped to the
   browser automatically. This version of the CLJS reads the schema data from a
-  file which contains an EDN version of a DataScript DB. Changes to the
-  DataScript DB are shipped to the browser too, through the magic of
-  `shadow.resource/inline`. Thus, when you re-run `ingest`, the DB file is
-  updated and then the web page updates. This is great for live interaction with
-  Schema Voyager code--you get quick feedback on changes both to the CLJS and to
-  the ingestion process. But it doesn't work so well with the other mode of
-  using Schema Voyager.
+  file which contains an EDN version of a DataScript DB. Changes to the file are
+  shipped to the browser too, through the magic of `shadow.resource/inline`.
+  Thus, when you re-run [[schema-voyager.cli/ingest]], the DB file is updated
+  and then the web page updates. This is great for live interaction with Schema
+  Voyager code—you get quick feedback on changes both to the CLJS and to the
+  ingestion process. But it doesn't work so well with the other mode of using
+  Schema Voyager.
 
   As an application author, you don't care about dynamically updating CLJS. You
   also don't want a DB file, but instead want a single HTML file. That's where

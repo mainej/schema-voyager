@@ -1,9 +1,9 @@
 (ns schema-voyager.db.query
-  "A facade for querying a DataScript DB.
+  "Query a DataScript DB.
 
-  Contains the queries used by the web UI to render each of the pages and
-  diagrams. Also usable from a REPL (and tests) to understand what data is being
-  pulled out of the DataScript db."
+  The primary purpose of these queries is to render each of the pages and
+  diagrams in the web UI. But they are also usable from a REPL (and tests) to
+  understand what data is being pulled out of the DataScript DB."
   (:require [clojure.walk :as walk]
             [datascript.core :as ds]))
 
@@ -76,7 +76,7 @@
     [:db.schema/_see-also :as :db.schema/noted-by] attr-link-pull}])
 
 (defn attribute-by-ident
-  "Pull data for an entity page. Relevant for both constants and attributes."
+  "Page query: data for an entity page, either a constant or an attribute."
   [db ident]
   (-> db
       (ds/pull attr-pull [:db/ident ident])
@@ -133,7 +133,7 @@
   [(not= :db.unique/identity unique) deprecated? ident])
 
 (defn collection-by-type-and-name
-  "Pull data for a collection page, either an aggregate or an enum."
+  "Page query: data for a collection page, either an aggregate or an enum."
   [db collection-type collection-name]
   (-> (ds/pull db collection-pull (collection-eid-by-type-and-name db
                                                                    collection-type
@@ -151,7 +151,7 @@
 ;;;; Spec page Queries
 
 (defn entity-spec-by-ident
-  "Pull data for an entity spec page."
+  "Page query: data for an entity spec page."
   [db ident]
   (-> (ds/pull db ['*] [:db/ident ident])
       (promote-attrs db :db.entity/attrs)
@@ -165,8 +165,8 @@
 ;;;; Homepage Queries
 
 (defn collections-by-type
-  "Pull collections for the homepage. The `collection-type` specifies whether you
-  retrieve `:enum`s or `:aggregate`s."
+  "Page query: collections for the homepage. The `collection-type` specifies
+  whether you retrieve `:enum`s or `:aggregate`s."
   [db collection-type]
   (->> (ds/q '[:find [?coll ...]
                :in $ ?collection-type
@@ -178,7 +178,7 @@
        (sort-by :db.schema.collection/name)))
 
 (defn entity-specs
-  "Pull entity specs for thte homepage."
+  "Page query: entity specs for the homepage."
   [db]
   (->> (ds/q '[:find [?spec ...]
                :where [?spec :db.schema.pseudo/type :entity-spec]]
@@ -213,13 +213,13 @@
     (walk/postwalk-replace entities-by-eid edges)))
 
 (defn colls-edges
-  "All the edges in the whole db."
+  "Diagram query: All the edges in the whole db."
   [db]
   (let [edges (ds/q active-edge-q db)]
     (expand-edge-eids db edges)))
 
 (defn coll-edges
-  "All the edges either into or out of this collection."
+  "Diagram query: All the edges either into or out of this collection."
   [db coll]
   (let [coll-eid (collection-eid-by-type-and-name db
                                                   (:db.schema.collection/type coll)
@@ -232,7 +232,8 @@
     (expand-edge-eids db edges)))
 
 (defn attr-edges
-  "All the edges that this attribute joins. Can be many for tuple-references."
+  "Diagram query: All the edges that this attribute joins. Can be many for
+  tuple-references."
   [db attr]
   (let [attr-eid (:db/id (ds/pull db [:db/id] (:db/ident attr)))
         edges    (ds/q (assoc edge-q :in '[$ ?source-attr])

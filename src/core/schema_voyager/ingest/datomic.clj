@@ -1,11 +1,10 @@
 (ns schema-voyager.ingest.datomic
-  "Tools for ingesting schema information directly from a Datomic database.
+  "Ingest schema data directly from a Datomic database.
 
-  The Datomic database is the authority on which attributes are installed, so
-  most projects will want to ingest schema data from their running Datomic
-  database.
+  A running Datomic database is the authority on which attributes are installed,
+  so many projects will want to ingest schema data from it.
 
-  To use this namespace, [[datomic.client.api]] must be on your classpath."
+  To use this namespace, `datomic.client.api` must be on your classpath."
   (:require [datomic.client.api :as d]
             [schema-voyager.ingest.core :as ingest]
             [clojure.set :as set]))
@@ -25,9 +24,9 @@
 (def datomic-coll-exclusions
   "These are collections installed by Datomic itself, as of release 480-8770.
   Typically, you don't want to document them, so they are excluded by default,
-  along with all of their attributes. You can re-enable certain attributes, and
-  their associated collection, by passing `datomic-entity-inclusions` to
-  [[ingest]]."
+  along with all of their attributes. You can re-enable certain attributes or
+  constants, and their associated collection, by passing
+  `datomic-entity-inclusions` to [[ingest]]."
   #{#schema/agg :db.alter
     #schema/agg :db.attr
     #schema/agg :db.entity
@@ -109,7 +108,8 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  Before using, see the warnings in /doc/datomic-inference.md."
+  Before using, see the warnings in the [inference
+  docs](/doc/datomic-inference.md)."
   ([db] (infer-plain-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?refers-attr [:db/ident :db/valueType]) (pull ?referred-attr [:db/ident :db/valueType])
@@ -135,7 +135,8 @@
   infer that collection-a is a reference. Of course, if your data is structured
   that way, perhaps you would be better suited by a heterogeneous tuple.
 
-  Before using, see the warnings in /doc/datomic-inference.md."
+  Before using, see the warnings in the [inference
+  docs](/doc/datomic-inference.md)."
   ([db] (infer-homogeneous-tuple-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?refers-attr [:db/ident :db/valueType]) (pull ?referred-attr [:db/ident :db/valueType])
@@ -154,7 +155,8 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  Before using, see the warnings in /doc/datomic-inference.md."
+  Before using, see the warnings in the [inference
+  docs](/doc/datomic-inference.md)."
   ([db] (infer-heterogeneous-tuple-references db {}))
   ([db exclusions]
    (->> (d/q '[:find (pull ?tuple-attr [:db/id :db/ident :db/valueType :db/tupleTypes])
@@ -203,7 +205,8 @@
   Ignores attributes that are not in-use and attributes that are excluded per
   the `exclusions`. See [[excluded-attr?]].
 
-  Before using, see the warnings in /doc/datomic-inference.md."
+  Before using, see the warnings in the [inference
+  docs](/doc/datomic-inference.md)."
   ([db] (infer-references db {}))
   ([db exclusions]
    (concat (infer-plain-references db exclusions)
@@ -211,12 +214,14 @@
            (infer-heterogeneous-tuple-references db exclusions))))
 
 (defn infer-deprecations
-  "Infer deprecated attributes and constants, based on whether they are used.
+  "Infer that attributes and constants that do not appear on any entities are
+  deprecated.
 
   Ignores attributes that are excluded per the `exclusions`. See
   [[excluded-attr?]].
 
-  Before using, see the warnings in /doc/datomic-inference.md."
+  Before using, see the warnings in the [inference
+  docs](/doc/datomic-inference.md)."
   ([db] (infer-deprecations db {}))
   ([db exclusions]
    (let [defined (->> (d/q '[:find (pull ?attr [:db/ident :db/valueType])
@@ -248,7 +253,11 @@
 (defn infer
   "Infer deprecations and/or references from db usage.
 
-  Before using, see the warnings in /doc/datomic-inference.md."
+  This is a unified interface for calling the other more specialized `infer-*`
+  methods.
+
+  Before using, see the warnings in the [inference
+  docs](/doc/datomic-inference.md)."
   [db infer]
   (let [infer (set infer)]
     (vec
@@ -267,11 +276,13 @@
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn cli-ingest
-  "A shorthand, used by the CLI, for connecting to a database, ingesting and
-  making inferences all in one step.
+  "A shorthand, used by the CLI, for connecting to a Datomic database, ingesting
+  and making inferences all in one step. Essentially the same as running
+  [[cli-attributes]] and [[cli-inferences]] at the same time.
 
-  Before calling with the `infer` param, see the warnings in
-  /doc/datomic-inference.md."
+  Before calling with the `infer` param, see the warnings in the [inference
+  docs](/doc/datomic-inference.md)."
+  {:arglists '([{:keys [client-config db-name infer exclusions]}])}
   [{:keys [exclusions] inferences :infer :as source}]
   (let [db (db-from-source source)]
     (concat (ingest db exclusions)
@@ -279,16 +290,22 @@
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn cli-inferences
-  "A shorthand, used by the CLI, for connecting to a database and inspecting
-  inferences.
+  "A shorthand, used by the CLI, for connecting to a Datomic database (with
+  [[datomic-db]]) and inferring deprecations and/or references from db usage
+  (with [[infer]]).
 
-  Before using, see the warnings in /doc/datomic-inference.md."
+  Specify what you would like to `infer`, as explained in the [inference
+  docs](/doc/datomic-inference.md), heeding the warnings there."
+  {:arglists '([{:keys [client-config db-name infer]}])}
   [{inferences :infer :as source}]
   (infer (db-from-source source) inferences) )
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
 (defn cli-attributes
-  "A shorthand, used by the CLI, for connecting to a database and inspecting
-  attributes."
+  "A shorthand, used by the CLI, for connecting to a Datomic database (with
+  [[datomic-db]]) and extracting installed attributes (with [[ingest]]).
+
+  See [[excluded-attr?]] for information about how to use `exclusions`."
+  {:arglists '([{:keys [client-config db-name exclusions]}])}
   [{:keys [exclusions] :as source}]
   (ingest (db-from-source source) exclusions) )

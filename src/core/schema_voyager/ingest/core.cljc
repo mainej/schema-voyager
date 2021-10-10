@@ -8,16 +8,25 @@
   (:require [clojure.edn :as edn]
             [clojure.walk :as walk]))
 
-(defn collection [type name]
+(defn collection
+  "Returns a `:db.schema.collection` with the given type (`:aggregate` or
+  `:enum`) and name."
+  [type name]
   #:db.schema.collection{:type type, :name name})
 
-(defn aggregate [name]
+(defn aggregate
+  "Returns an aggregate [[collection]] with the given name."
+  [name]
   (collection :aggregate name))
 
-(defn enum [name]
+(defn enum
+  "Returns an enum [[collection]] with the given name."
+  [name]
   (collection :enum name))
 
-(defn ^:deprecated read-schema-coll [[type name]]
+(defn ^:deprecated read-schema-coll
+  "DEPRECATED: Prefer [[collection]]."
+  [[type name]]
   (collection type name))
 
 (defn read-string
@@ -56,11 +65,20 @@
 (defn- attribute-derive-collection-name [attribute]
   (keyword (namespace (:db/ident attribute))))
 
-(defn attribute-derive-collection [attribute]
+(defn attribute-derive-collection
+  "Derives a collection from an attribute.
+
+  The collection type is based on whether the attribute has a `:db/valueType`
+  and the collection name on the attribute's namespace."
+  [attribute]
   (collection (attribute-derive-collection-type attribute)
               (attribute-derive-collection-name attribute)))
 
-(defn attribute-derive-part-of [attribute]
+(defn attribute-derive-part-of
+  "Ensure the attribute has a `:db.schema/part-of`.
+
+  If it is missing, derives the collection from the attribute."
+  [attribute]
   (get attribute :db.schema/part-of [(attribute-derive-collection attribute)]))
 
 (defn- attribute-with-part-of [attribute]
@@ -90,8 +108,9 @@
   (comp types :db.schema.pseudo/type))
 
 (defn process
-  "Prepare the provided list of schema `elements` for import into the DataScript DB.
-  Each element should be an attribute, constant, entity-spec or collection.
+  "Prepare the provided sequence of schema `elements` for import into the
+  DataScript DB. Each element should be an attribute, constant, entity-spec or
+  collection.
 
   This function has two main purposes. First it gives attributes and constants
   their default `:db.schema/part-of`. Second, it converts literal collection
