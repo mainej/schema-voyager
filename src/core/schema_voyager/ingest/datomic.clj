@@ -7,7 +7,7 @@
 
   To use this namespace, [[datomic.client.api]] must be on your classpath."
   (:require [datomic.client.api :as d]
-            [schema-voyager.data :as data]
+            [schema-voyager.ingest.core :as ingest]
             [clojure.set :as set]))
 
 (defn- lift-ident [item k]
@@ -51,7 +51,7 @@
          :or   {entity-exclusions         #{}
                 coll-exclusions           #{}
                 datomic-entity-inclusions #{}}}]
-  (let [coll (data/attribute-derive-part-of attr)]
+  (let [coll (ingest/attribute-derive-part-of attr)]
     (or (contains? entity-exclusions (:db/ident attr))
         (some coll-exclusions coll)
         (and (some datomic-coll-exclusions coll)
@@ -59,7 +59,7 @@
 
 (defn ingest
   "Converts all attributes from a Datomic database `db` into the form that
-  [[schema-voyager.data/process]] expects.
+  [[schema-voyager.ingest.core/process]] expects.
 
   Ignores attributes that are excluded per the `exclusions`. See
   [[excluded-attr?]]."
@@ -92,7 +92,7 @@
   (->> attr-pairs
        (map (fn [[refers-attr referred-attr]]
               [(lift-ident refers-attr :db/valueType)
-               (data/attribute-derive-collection (lift-ident referred-attr :db/valueType))]))
+               (ingest/attribute-derive-collection (lift-ident referred-attr :db/valueType))]))
        distinct
        (remove (fn [[refers-attr _]]
                  (excluded-attr? refers-attr exclusions)))
@@ -187,7 +187,7 @@
                                                                                     db reference-rules (:db/id refers-attr))
                                                                                (map first)
                                                                                (map #(lift-ident % :db/valueType))
-                                                                               (map data/attribute-derive-collection)
+                                                                               (map ingest/attribute-derive-collection)
                                                                                distinct)]
                                                      (when (seq referred-colls)
                                                        {:db.schema.tuple/position position

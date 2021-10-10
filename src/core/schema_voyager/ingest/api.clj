@@ -1,6 +1,10 @@
-(ns schema-voyager.ingest.core
+(ns schema-voyager.ingest.api
   (:require
+   [schema-voyager.ingest.core :as ingest]
    [schema-voyager.ingest.file :as ingest.file]))
+
+(defn process [data]
+  (ingest/process data))
 
 (defn datomic-attributes [params]
   ;; Do not require Datomic unless it is going to be used.

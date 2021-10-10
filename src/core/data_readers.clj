@@ -1,2 +1,2 @@
-{schema/agg  schema-voyager.data/aggregate
- schema/enum schema-voyager.data/enum}
+{schema/agg  schema-voyager.ingest.core/aggregate
+ schema/enum schema-voyager.ingest.core/enum}

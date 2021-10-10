@@ -1,9 +1,10 @@
 (ns schema-voyager.html.db
-  (:require [reitit.frontend.controllers :as rfc]
-            [reagent.core :as r]
-            [clojure.edn :as edn]
-            [schema-voyager.db :as db]
-            [shadow.resource :as resource]))
+  (:require
+   [clojure.edn :as edn]
+   [reagent.core :as r]
+   [reitit.frontend.controllers :as rfc]
+   [schema-voyager.db.query :as db]
+   [shadow.resource :as resource]))
 
 (def db
   (edn/read-string (resource/inline "schema_voyager_db.edn")))

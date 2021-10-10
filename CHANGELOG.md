@@ -9,6 +9,9 @@ log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
   release. But it also clarifies which pieces are used when, and what their
   dependencies are. It also makes the jar smaller, though there's more to do on
   that front.
+* **BREAKING** Re-organized namespaces, to delineate segments of the core code.
+  Left the primary interface to Schema Voyager, `schema-voyager.cli` untouched,
+  so this change is unlikely to affect many users.
 
 ## [1.1.208] - 2021-09-26
 Centralized and tested logic for extracting data for views, eliminating or

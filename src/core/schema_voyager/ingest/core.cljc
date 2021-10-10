@@ -1,4 +1,4 @@
-(ns schema-voyager.data
+(ns schema-voyager.ingest.core
   "Process data from any kind of a source into a format ready to be put in a
   DataScript DB.
 
@@ -30,7 +30,7 @@
   Still supported, but deprecated:
   ```
   #schema-coll[:enum :foo] ;; => #:db.schema.collection{:type :enum, :name :foo}
-  #schema/coll[:enum :foo] ;; => #:db.schema.collection{:type :enum, :name :foo}
+  #schema/coll[:agg :foo] ;; => #:db.schema.collection{:type :aggregate, :name :foo}
   ```"
   [s]
   #_{:clj-kondo/ignore #{:deprecated-var}}

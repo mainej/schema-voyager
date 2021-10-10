@@ -1,5 +1,5 @@
 (ns schema-voyager.db-test
-  (:require [schema-voyager.db :as db]
+  (:require [schema-voyager.db.query :as db]
             [schema-voyager.cli :as cli]
             [clojure.walk :as walk]
             [clojure.test :as t]))

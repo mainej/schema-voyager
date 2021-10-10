@@ -81,15 +81,15 @@
   params)
 
 (defn- copy-template-to-jar-resources [params]
-  ;; Usually the template file is ignored. During a release we put it in the
-  ;; classes directory so that it is available when Schema Voyager is used as a
+  ;; The template file is Git-ignored. During a release we put it in the classes
+  ;; directory so that it is available when Schema Voyager is used as a
   ;; dependency. (It's used by `standalone`, the primary interface into Schema
   ;; Voyager). This lets us keep the large template file out of version control.
 
   ;; IMPORTANT: keep this in sync with
-  ;; `schema-voyager.build.standalone-html/template-file-name`
-  ;; We intentionally do not depend on `schema-voyager.build.standalone-html`,
-  ;; so that the release can be run as `clojure -T:release`
+  ;; `schema-voyager.template.config/template-file-name`.
+  ;; We intentionally do not depend on `schema-voyager.template.config`, so that
+  ;; the release can be run as `clojure -T:release`.
   (b/copy-file {:src    "resources/standalone-template.html"
                 :target "target/classes/standalone-template.html"})
   params)
