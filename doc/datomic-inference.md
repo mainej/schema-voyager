@@ -54,7 +54,7 @@ clojure -X:schema print-inferences \
     :datomic/infer #{:all}}'
 ```
 
-The argument is a [Datomic source](/doc/sources.md#Datomic-source), with an additional key `:datomic/infer`.
+The argument is a [Datomic source](/doc/sources.md#datomic-source), with an additional key `:datomic/infer`.
 
 Below are valid values for `:datomic/infer`.
 You can include more than one:

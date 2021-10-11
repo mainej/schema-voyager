@@ -48,7 +48,7 @@ You can modify the location by passing `:output-path` to `schema-voyager.cli/sta
 
 ## As an alias, with Datomic
 
-If you need to include a [Datomic source](/doc/sources.md#Datomic-source), as many people do, you must depend on `com.datomic/client-cloud` and/or `com.datomic/dev-local`.
+If you need to include a [Datomic source](/doc/sources.md#datomic-source), as many people do, you must depend on `com.datomic/client-cloud` and/or `com.datomic/dev-local`.
 
 ```clojure
 ;; deps.edn

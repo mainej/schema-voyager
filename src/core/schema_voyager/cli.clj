@@ -77,7 +77,7 @@
   once, copying the output to a file. In the future, use the file as a source,
   instead of re-running the inferences.
 
-  Expects the argument to be a [Datomic source](/doc/sources.md#Datomic-source),
+  Expects the argument to be a [Datomic source](/doc/sources.md#datomic-source),
   that is, it should contain `:datomic/client-config` and `:datomic/db-name`.
   Specify what you would like to `:datomic/infer`, as explained in the
   [inference docs](/doc/datomic-inference.md)."
@@ -90,7 +90,7 @@
 (defn print-attributes
   "Print the attributes Schema Voyager is loading from a Datomic source.
 
-  Expects the argument to be a [Datomic source](/doc/sources.md#Datomic-source),
+  Expects the argument to be a [Datomic source](/doc/sources.md#datomic-source),
   that is, it should contain `:datomic/client-config` and `:datomic/db-name`.
 
   Useful mostly for debugging."

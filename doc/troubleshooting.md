@@ -1,7 +1,7 @@
 
 ## Missing Datomic deps
 
-When using a [Datomic source](/doc/sources.md#Datomic-source), you'll need to add Datomic dependencies.
+When using a [Datomic source](/doc/sources.md#datomic-source), you'll need to add Datomic dependencies.
 Since not all projects that use Schema Voyager will need to connect to Datomic, it is not one of the default dependencies.
 
 If you don't you'll see an error referencing Datomic.
