@@ -3,15 +3,17 @@ All notable changes to this project will be documented in this file. This change
 log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [2.0.220] - 2021-10-10
 ### Changed
 * Split up project into separate pieces: the core, the web, and the build.
   The impetus for this was to prevent build failures when CLJDOC analyzed a
   release. But it also clarifies which pieces are used when, and what their
-  dependencies are. It also makes the jar smaller, though there's more to do on
-  that front.
-* **BREAKING** Re-organized namespaces, to delineate segments of the core code.
-  Left the primary interface to Schema Voyager, `schema-voyager.cli` untouched,
-  so this change is unlikely to affect many users.
+  dependencies are. It also makes the jar smaller.
+* **BREAKING** In addition to moving the files, also renamed some namespaces.
+  This more clearly deliniates the high level responsibilities of the core code.
+  The primary interface to Schema Voyager, `schema-voyager.cli`, is unchanged,
+  so this renaming is unlikely to affect many users.
 
 ## [1.1.208] - 2021-09-26
 Centralized and tested logic for extracting data for views, eliminating or
@@ -50,7 +52,8 @@ supplemental files.
 This project has existed for some time, but this is the first release that can
 be used from other projects without cloning this library.
 
-[Unreleased]: https://github.com/mainej/f-form/compare/v1.1.208...main
+[Unreleased]: https://github.com/mainej/f-form/compare/v2.0.220...main
+[2.0.220]: https://github.com/mainej/f-form/compare/v1.1.208...v2.0.220
 [1.1.208]: https://github.com/mainej/f-form/compare/v1.0.197...v1.1.208
 [1.0.197]: https://github.com/mainej/f-form/compare/v1.0.192-SNAPSHOT...v1.0.197
 [1.0.192-SNAPSHOT]: https://github.com/mainej/f-form/compare/v0.1.186...v1.0.192-SNAPSHOT

@@ -5,7 +5,7 @@
 
 (def ^:private lib 'com.github.mainej/schema-voyager)
 (def ^:private rev-count (Integer/parseInt (b/git-count-revs nil)))
-(def ^:private semantic-version "1.2")
+(def ^:private semantic-version "2.0")
 (defn- format-version [revision] (format "%s.%s" semantic-version revision))
 (def ^:private version (format-version rev-count))
 (def ^:private next-version (format-version (inc rev-count)))
@@ -46,7 +46,8 @@
     (die (string/join "\n"
                       ["CHANGELOG.md must include tag."
                        "  * If you will amend the current commit, use version %s"
-                       "  * If you intend to create a new commit, use version %s"]) version next-version))
+                       "  * If you intend to create a new commit, use version %s"])
+         version next-version))
   params)
 
 (defn- scm-clean?
@@ -71,7 +72,8 @@
                         [""
                          "Git tag %s must be on HEAD."
                          ""
-                         "Proceed with caution, because this tag may have already been released. If you've determined it's safe, run `git tag -d %s` before re-running `bin/tag-release`."]) tag tag)))
+                         "Proceed with caution, because this tag may have already been released. If you've determined it's safe, run `git tag -d %s` before re-running `bin/tag-release`."])
+           tag tag)))
   params)
 
 (defn- build-template "Create the template html file" [params]
