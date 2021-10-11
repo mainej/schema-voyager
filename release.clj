@@ -10,7 +10,7 @@
 (def ^:private version (format-version rev-count))
 (def ^:private next-version (format-version (inc rev-count)))
 (def ^:private tag (str "v" version))
-(def ^:private basis (b/create-basis {:aliases [:datomic]}))
+(def ^:private basis (b/create-basis {:aliases [:release-deps]}))
 (defn- die
   ([message & args]
    (die (apply format message args)))
