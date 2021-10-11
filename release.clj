@@ -168,6 +168,7 @@
       (assoc :lib lib
              :version version
              :src-dirs ["src/core"]
+             :resource-dirs []
              :basis basis
              :tag (git-rev))
       (build-template)
