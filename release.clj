@@ -140,7 +140,9 @@
   params)
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
-(defn tag-release "Tag the HEAD commit for the current release." [params]
+(defn tag-release
+  "Tag the HEAD commit for the current release."
+  [params]
   (when-not (zero? (:exit (git ["tag" "-a" tag "-m" tag] {})))
     (die "\nCouldn't create tag %s." tag))
   params)
@@ -165,22 +167,23 @@
       (assert-scm-tagged)))
 
 (defn jar
+  "Build the JAR, along with the template HTML resource."
   [params]
   (-> params
       (assoc :lib lib
              :version version
-             :src-dirs ["src/core"]
-             :resource-dirs []
+             :src-dirs ["src/core"] ;; src/build and src/web are only needed in dev
+             :resource-dirs [] ;; ignore resources, which are only needed in dev
              :basis basis
              :tag (git-rev))
       (build-template)
       (copy-template-to-jar-resources)
-      ;; TODO: jar doesn't really use anything from /resources. Should it be
-      ;; copied into jar?
       (bb/jar)))
 
 #_{:clj-kondo/ignore #{:clojure-lsp/unused-public-var}}
-(defn install [params]
+(defn install
+  "Build the JAR, and install it to the local maven repository."
+  [params]
   (-> params
       (assoc :lib lib :version version)
       (bb/clean)
