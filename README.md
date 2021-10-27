@@ -9,19 +9,19 @@ Try exploring the live [mbrainz schema](https://mainej.github.io/schema-voyager/
 If you'd prefer a few screenshots, here's what it looks like.
 The app starts with an overview of your schema, with attributes grouped into related collections.
 
-<img src="/doc/collections.png" alt="Screenshot of the listing of aggregate and enum collections on the Schema Voyager homepage" width="900"/>
+<img src="/doc/collections.png" alt="Screenshot of the listing of aggregate and enum collections on the Schema Voyager homepage" width="450"/>
 
 A configurable interactive diagram shows references between collections.
 
-<img src="/doc/collections_diagram.png" alt="Screenshot of the connections diagram on the Schema Voyager homepage" width="2008"/>
+<img src="/doc/collections_diagram.png" alt="Screenshot of the connections diagram on the Schema Voyager homepage" width="1004"/>
 
 Drill in to a collection to see the attributes it contains, as well as a more focused diagram of how those attributes are connected to other collections.
 
-<img src="/doc/aggregate.png" alt="Screenshot of the attributes list and the connections diagram on the Schema Voyager aggregate page" width="1274"/>
+<img src="/doc/aggregate.png" alt="Screenshot of the attributes list and the connections diagram on the Schema Voyager aggregate page" width="637"/>
 
 Drill further into an attribute, to see its properties.
 
-<img src="/doc/attribute.png" alt="Screenshot of the attribute details on the Schema Voyager attribute page" width="1276"/>
+<img src="/doc/attribute.png" alt="Screenshot of the attribute details on the Schema Voyager attribute page" width="638"/>
 
 ## Big Picture
 
