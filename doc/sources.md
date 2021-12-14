@@ -44,7 +44,7 @@ Schema Voyager extracts schema data by reading the file:
   ,,,]
 ```
 
-Read on to learn about the sources Schema Voyager understands and how it merges them.
+Read on to learn about the different kinds of sources and how Schema Voyager merges them.
 
 ## How to use with `schema-voyager.cli`
 
@@ -77,7 +77,7 @@ From the supplemental file source we also learned that this attribute has been `
 ```
 
 `schema-voyager.cli/ingest` then processes this data to derive missing properties.
-Since it wasn't set explicitly by prior sources, Schema Voyager derives that `:person/given-name` is part of the `:person` aggregate.
+Since `:db.schema/part-of` wasn't set explicitly by prior sources, Schema Voyager derives that `:person/given-name` is part of the `:person` aggregate.
 
 ```clojure
 [{:db/ident              :person/given-name
@@ -133,7 +133,7 @@ Schema Voyager makes a few assumptions about which attributes to extract.
 If you want to exclude certain attributes (or include attributes that are excluded by default), provide `:datomic/exclusions`.
 See `schema-voyager.ingest.datomic/excluded-attr?` for details.
 
-Since not all projects will need to connect to Datomic, it is not one of the default dependencies.
+Since not all projects will need to connect to Datomic, it isn't one of the default dependencies.
 This can lead to errors when ingesting from a Datomic source.
 See the [troubleshooting docs](/doc/troubleshooting.md) for fixes.
 
@@ -211,7 +211,7 @@ You could record that an attribute is deprecated directly in Datomic:
 ```
 
 From experience, this is tempting but tends to fall out of date.
-If someone forgets to add an annotation when an attribute is first installed, or if an annotation needs to be changed, it feels expensive to craft another migration which adds or retracts the right annotation data.
+If someone forgets to add an annotation when an attribute is first installed, or if an annotation needs to be changed, it feels expensive to craft another migration which merely adds or retracts the right annotation data.
 It's cheap, however, to update a file full of annotations.
 If you're intent on trying this route and want to know what schema to install, see `schema-voyager.db/metaschema` and/or `resources/schema-voyager-schema/schema.edn`.
 

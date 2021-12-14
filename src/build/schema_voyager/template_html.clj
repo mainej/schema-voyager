@@ -3,9 +3,10 @@
 
   The dependency order is important here... we want to keep hiccup out of the
   dependencies. Therefore, the CLI depends on
-  `schema-voyager.template.standalone`, which doesn't require hiccup. This file
-  also depends on `schema-voyager.template.standalone`, but it does require
-  hiccup, letting us use hiccup only when necessary."
+  `schema-voyager.template.standalone` which depends on
+  `schema-voyager.template.config`, neither of which requires hiccup. This file
+  also depends on `schema-voyager.template.config`, but it does require hiccup,
+  letting us use hiccup only when necessary."
   (:require
    [clojure.java.io :as io]
    [clojure.tools.build.api :as b]

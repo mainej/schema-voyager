@@ -34,7 +34,7 @@ Second, you probably shouldn't run inference more than a few times.
 Instead, print out the inferences that Schema Voyager makes (see below for how), move them to a file, and maintain that file by hand.
 That is, use the inference tools to kick-start your supplemental schema EDN file, but don't rely on it for the long term.
 
-Keep in mind that whichever database you use, inference is only as good as the data it can query.
+Keep in mind that inference is only as good as the data it can query.
 If your `:dev-local` database isn't using an attribute that _is_ used in production, the inference tools may falsly report that the attribute is deprecated.
 
 ## Usage
@@ -70,7 +70,7 @@ You can include more than one:
 ### standalone
 
 You can also use `:datomic/infer` with [`schema-voyager.cli/standalone`](/doc/installation-and-usage.md).
-However, this it isn't recommended, because `standalone` is designed to run whenever your schema updates.
+However, this isn't recommended, because `standalone` is designed to run whenever your schema updates.
 If it is ever run against a production database with inference enabled, you may experience the problems described above.
 
 ## Future work

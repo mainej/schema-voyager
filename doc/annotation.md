@@ -4,7 +4,7 @@ The core data for Schema Voyager are the [properties of an attribute](https://do
 Datomic needs these properties to run.
 However, Datomic [recommends](https://docs.datomic.com/cloud/best.html#annotate-schema) that you annotate your schema with additional information, information which helps explain the history and structure of your database.
 
-Schema Voyager introduces supplemental properties for annotating attributes.
+Schema Voyager introduces **"supplemental properties"** for annotating attributes.
 
 Though the annotation step is optional, it's an excellent way to enrich and document your schema.
 Without any annotation, Schema Voyager will show the details of an attribute—the name, type, cardinality, uniqueness constraints and other properties.
@@ -115,7 +115,13 @@ In these cases, you can use the longer form:
 
 With this terminology in hand, it's time to learn how to annotate your schema.
 
-To annotate you add supplemental properties–most of which are in the `:db.schema` namespace–directly to attributes.
+If you learn better by example, see [resources/mbrainz-schema/supplemental.edn](/resources/mbrainz-schema/supplemental.edn).
+That file augments the schema defined in [resources/mbrainz-schema/schema.edn](/resources/mbrainz-schema/schema.edn) and [resources/mbrainz-schema/enums.edn](/resources/mbrainz-schema/enums.edn).
+It does not take advantage of every one of the Schema Voyager supplemental properties, but is a good introduction.
+
+If you learn better by exposition, read on.
+
+To annotate you add supplemental properties—most of which are in the `:db.schema` namespace—directly to attributes.
 
 For example, suppose you've installed the following schema for people's names.
 ```clojure
@@ -124,19 +130,19 @@ For example, suppose you've installed the following schema for people's names.
  {:db/ident :person/full-name,   :db/cardinality :db.cardinality/one, :db/valueType :db.type/string}]
 ```
 
-To annotate that an attribute has been deprecated and replaced by another attribute, you might add the following supplemental annotation:
+To annotate that given and family name have been deprecated and replaced by full name, you might add the following supplemental annotation:
 
 ```clojure
 [;; Since not every country follows the given/family name pattern,
  ;; :person/given-name and :person/family-name have been replaced by
  ;; :person/full-name. See migration 5 which merged given+family into full name.
- {:db/ident  :person/given-name,  :db.schema/deprecated? true :db.schema/see-also, [{:db/ident :person/full-name}]}
- {:db/ident  :person/family-name, :db.schema/deprecated? true :db.schema/see-also, [{:db/ident :person/full-name}]}]
+ {:db/ident              :person/given-name
+  :db.schema/deprecated? true 
+  :db.schema/see-also    [{:db/ident :person/full-name}]}
+ {:db/ident              :person/family-name
+  :db.schema/deprecated? true 
+  :db.schema/see-also    [{:db/ident :person/full-name}]}]
 ```
-
-For an example of supplemental properties, see [resources/mbrainz-schema/supplemental.edn](/resources/mbrainz-schema/supplemental.edn).
-That file augments the schema defined in [resources/mbrainz-schema/schema.edn](/resources/mbrainz-schema/schema.edn) and [resources/mbrainz-schema/enums.edn](/resources/mbrainz-schema/enums.edn).
-It does not take advantage of every one of the Schema Voyager supplemental properties, but is a good introduction.
 
 ### :db.schema/references
 
