@@ -50,7 +50,7 @@
           [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
           [:title "Schema Voyager"]
           [:style (slurp "target/styles.css")]
-          [:script {:src "https://unpkg.com/@hpcc-js/wasm/dist/index.min.js"}]
+          [:script {:src "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@1.12.7/dist/index.min.js" :integrity "sha256-N1b/aWuIrKlh7iz7GpUSJo17CQz+tAQt8HBB3u/4HOg=" :crossorigin "anonymous"}]
           [:script "var hpccWasm = window[\"@hpcc-js/wasm\"];"]]
          [:body
           [:div#app]

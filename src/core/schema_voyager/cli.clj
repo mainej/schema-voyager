@@ -38,7 +38,7 @@
     :else                     (throw (ex-info "Unrecognized source" {:source source}))))
 
 (defn ingest-into-db
-  "Create an in-memory DataScript DB from the `source`s. Does not persist the
+  "Create an in-memory DataScript DB from the `sources`. Does not persist the
   database. Useful primarily for exploring the database from a script.
 
   Read about specifying sources in the [sources docs](/doc/sources.md)."

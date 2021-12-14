@@ -72,7 +72,7 @@ Or [infer](/doc/datomic-inference.md) references and deprecations, kickstarting 
   Thanks to [Dorothy](https://github.com/cemerick/dorothy) for the tricky bits of DOT.
   And to [HPCC-Systems](https://github.com/hpcc-systems/hpcc-js-wasm) for compiling GraphViz for the browser.
   Judging from all the projects I tried but failed to get working, this is no small feat.
-  And to [unpkg](https://unpkg.com/) for hosting the WASM.
+  And to [jsdelivr](https://cdn.jsdelivr.net/) for hosting the WASM.
 * [shadow-cljs](http://shadow-cljs.org/) makes it a joy to write CLJS files alongside CLJ files.
   Several client/server interaction tasks I had been putting off turned out to be trivial with shadow-cljs.
 

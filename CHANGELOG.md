@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. This change
 log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [2.0.228] - 2021-12-14
+### Changed
+* Added Subresource integrity attribute to graphviz script, as per
+  best-practices when using CDNs. Changed CDNs.
+
 ## [2.0.221] - 2021-10-10
 ### Fixed
 * Fixed generation of pom.xml.
@@ -55,7 +61,8 @@ supplemental files.
 This project has existed for some time, but this is the first release that can
 be used from other projects without cloning this library.
 
-[Unreleased]: https://github.com/mainej/f-form/compare/v2.0.221...main
+[Unreleased]: https://github.com/mainej/f-form/compare/v2.0.228...main
+[2.0.228]: https://github.com/mainej/f-form/compare/v2.0.221...v2.0.228
 [2.0.221]: https://github.com/mainej/f-form/compare/v2.0.220...v2.0.221
 [2.0.220]: https://github.com/mainej/f-form/compare/v1.1.208...v2.0.220
 [1.1.208]: https://github.com/mainej/f-form/compare/v1.0.197...v1.1.208
