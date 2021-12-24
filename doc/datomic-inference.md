@@ -32,7 +32,7 @@ Use a test database, or even better, a [`:dev-local`](https://docs.datomic.com/c
 
 Second, you probably shouldn't run inference more than a few times.
 Instead, print out the inferences that Schema Voyager makes (see below for how), move them to a file, and maintain that file by hand.
-That is, use the inference tools to kick-start your supplemental schema EDN file, but don't rely on it for the long term.
+That is, kick-start your supplemental schema EDN file with the inference tools, but don't rely on inference for the long term.
 
 Keep in mind that inference is only as good as the data it can query.
 If your `:dev-local` database isn't using an attribute that _is_ used in production, the inference tools may falsly report that the attribute is deprecated.
