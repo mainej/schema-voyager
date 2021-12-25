@@ -1,10 +1,10 @@
 (ns schema-voyager.html.pages.core
-  (:require [schema-voyager.html.util :as util]))
+  (:require
+   ["@heroicons/react/outline/SparklesIcon" :as SparklesIcon]
+   [schema-voyager.html.util :as util]))
 
 (def voyage-icon
-  [:svg.inline.fill-none.stroke-current.stroke-2.w-text.h-text {:viewBox "0 0 24 24"}
-   [:title "Schema Voyage"]
-   [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"}]])
+  [:> SparklesIcon {:class [:stroke-2 :w-text :h-text]}])
 
 (defn page [route]
   [:div.font-sans.text-gray-900

@@ -52,7 +52,7 @@
   [:h1.font-bold.flex.items-center.space-x-2
    [util/ident-name {:coll-props {:class [:font-normal]}} ident coll-type]
    (when (= :db.unique/identity unique)
-     util/lock-closed)
+     util/primary-key)
    (when deprecated?
      util/deprecated-pill)])
 

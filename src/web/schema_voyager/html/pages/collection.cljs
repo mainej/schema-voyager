@@ -1,5 +1,6 @@
 (ns schema-voyager.html.pages.collection
-  (:require [schema-voyager.html.db :as db]
+  (:require ["@heroicons/react/outline/ChevronRightIcon" :as ChevronRightIcon]
+            [schema-voyager.html.db :as db]
             [schema-voyager.html.components.value-type :as value-type]
             [schema-voyager.html.diagrams.core :as diagrams]
             [schema-voyager.html.util :as util]))
@@ -9,8 +10,7 @@
   (db/collection-by-type-and-name collection-type (keyword (:id (:path parameters)))))
 
 (def ^:private chevron-right
-  [:svg.fill-none.stroke-current.stroke-2.w-4.h-4 {:viewBox "0 0 24 24"}
-   [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M9 5l7 7-7 7"}]])
+  [:> ChevronRightIcon {:class [:stroke-2 :w-4 :h-4]}])
 
 (defn doc-str [{:keys [db/doc]}]
   (when doc
@@ -23,7 +23,7 @@
     [util/ident-name {:ident-props {:class [:font-semibold]}}
      ident coll-type]]
    (when (= :db.unique/identity unique)
-     util/lock-closed)
+     util/primary-key)
    (when deprecated?
      [:span.font-medium
       util/deprecated-pill])])
