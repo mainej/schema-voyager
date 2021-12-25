@@ -14,7 +14,7 @@
       (if (= :route/collections (:name (:data route)))
         voyage-icon
         [:a.flex.rounded-sm.focus:outline-none.focus:ring-2.focus:ring-white.focus:ring-offset-gray-900.focus:ring-offset-2 {:href (util/href :route/collections)} voyage-icon])]]]
-   [:main.bg-gray-200.border-gray-200.min-h-screen
+   [:main.border-gray-200.min-h-screen
     [:div.mx-auto.py-6.sm:px-6.lg:px-8
      (when-let [view (:view (:data route))]
        [view (:parameters route)])]]])

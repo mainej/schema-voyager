@@ -46,6 +46,7 @@
   (spit (io/file "resources" template.config/template-file-name)
         ;; IMPORTANT: keep this in sync with index.html
         (hiccup.page/html5
+         {:class "bg-gray-200"}
          [:head
           [:meta {:charset "UTF-8"}]
           [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
