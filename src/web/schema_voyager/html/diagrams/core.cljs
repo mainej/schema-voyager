@@ -6,20 +6,10 @@
             [schema-voyager.html.diagrams.config :as diagrams.config]
             [schema-voyager.html.diagrams.util :as diagrams.util]))
 
-(def ^:private colors
-  {:purple-700  "#6D28D9"
-   :green-600   "#059669"
-   :blue-600    "#2563EB"
-   :white       "#ffffff"
-   :gray-100    "#F3F4F6"
-   :gray-200    "#E5E7EB"
-   :gray-300    "#D1D5DB"
-   :gray-500    "#6B7280"
-   :gray-600    "#4B5563"
-   :transparent "transparent"})
+(def colors diagrams.util/colors)
 
 (defn- coll-id [{coll-type :db.schema.collection/type
-                coll-name :db.schema.collection/name}]
+                 coll-name :db.schema.collection/name}]
   (str (name coll-type) "__" (name coll-name)))
 
 (defn- attr-id [{:keys [db/ident]}]
@@ -30,10 +20,8 @@
    {:ref (fn [div]
            (when div
              (diagrams.util/with-dot-to-svg s
-               (fn [svg-string]
-                 (set! (.-innerHTML div) svg-string)
-                 (doto (.querySelector div "svg")
-                   (.setAttribute "id" "diagram-svg"))
+               (fn [svg]
+                 (.replaceChildren ^js/Element div svg)
                  ;; keep in sync with user selection of sizing
                  (if (diagrams.config/fit-screen?)
                    (diagrams.config/fit-screen!)
@@ -95,6 +83,7 @@
                    "inv"
                    "crow")
       :tooltip   (pr-str (:db/ident attr))
+      #_#_:label (pr-str (:db/ident attr))
       :href      (util/attr-href attr)}]))
 
 (defn- dot-graph [edges]

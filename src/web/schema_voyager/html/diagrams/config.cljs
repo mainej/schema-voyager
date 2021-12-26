@@ -130,8 +130,8 @@
    [ui/popover-overlay {:class [:bg-gray-900 :fixed :inset-0 :opacity-50]}]
    [ui/popover-panel body]])
 
-(defn- svg-to-blob [svg]
-  (js/Blob. #js [svg] #js {:type "image/svg+xml"}))
+(defn- svg-to-blob [^js/Element svg]
+  (js/Blob. #js [(.-outerHTML svg)] #js {:type "image/svg+xml"}))
 
 (defn- icon-button [text icon props]
   [:button.p-3.focus:outline-none.group
