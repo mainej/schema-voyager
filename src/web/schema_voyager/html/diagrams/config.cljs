@@ -3,6 +3,7 @@
             ["file-saver" :as file-saver]
             ["@heroicons/react/outline/CogIcon" :as CogIcon]
             ["@heroicons/react/outline/DocumentDownloadIcon" :as DocumentDownloadIcon]
+            ["@heroicons/react/outline/ArrowsExpandIcon" :as ArrowsExpandIcon]
             [headlessui-reagent.core :as ui]
             [schema-voyager.html.util :as util]
             [schema-voyager.html.components.toggle :as toggle]
@@ -13,16 +14,24 @@
     (disj s item)
     (conj s item)))
 
-(def ^:private default-state
+(def ^:private default-filters
   {:attrs-visible? true
    :excluded-eids  #{}})
 
+(def ^:private default-state
+  (assoc default-filters
+         :fit-screen? false))
+
 (defonce state (r/atom default-state))
+(defn reset-filters [] (swap! state merge default-filters))
 (defn reset-state [] (reset! state default-state))
 
 (def ^:private !attrs-visible? (r/cursor state [:attrs-visible?]))
 (defn attrs-visible? [] @!attrs-visible?)
 (defn- toggle-attrs-visible [] (r/rswap! !attrs-visible? not))
+
+(def ^:private !fit-screen? (r/cursor state [:fit-screen?]))
+(defn fit-screen? [] @!fit-screen?)
 
 (def ^:private !excluded-eids (r/cursor state [:excluded-eids]))
 (defn- excluded-eids [] @!excluded-eids)
@@ -50,15 +59,12 @@
 (def ^:private gear-icon
   [:> CogIcon {:class [:h-6 :w-6 :stroke-2]}])
 
-(def ^:private download-icon
-  [:> DocumentDownloadIcon {:class [:inline-block :w-4 :h-4 :text-teal-500 :group-focus:ring-2 :group-focus:ring-teal-400 :rounded-sm :group-hover:text-teal-400 :stroke-2 :transition-colors]}])
-
 (defn- clear-filters []
   [:div.flex.justify-between
    [:h2.font-semibold.p-3 "Filters"]
    [:button.p-3.hover:underline.focus:outline-none.focus:underline
     {:type     "button"
-     :on-click reset-state}
+     :on-click reset-filters}
     "clear all"]])
 
 (defn- attr-visibility []
@@ -127,15 +133,58 @@
 (defn- svg-to-blob [svg]
   (js/Blob. #js [svg] #js {:type "image/svg+xml"}))
 
-(defn- download [dot-s]
+(defn- icon-button [text icon props]
   [:button.p-3.focus:outline-none.group
-   {:type     "button"
-    :on-click (fn [_e]
+   (assoc props :type "button")
+   [:div.flex.items-center.gap-2
+    text
+    [:> icon {:class [:inline-block :w-4 :h-4
+                      :text-teal-500
+                      :rounded-sm :stroke-2 :transition-colors
+                      :group-focus-visible:ring-2 :group-focus-visible:ring-teal-400
+                      :group-hover:text-teal-400]}]]])
+
+(defn- download [dot-s]
+  [icon-button "Export SVG" DocumentDownloadIcon
+   {:on-click (fn [_e]
                 (diagrams.util/with-dot-to-svg dot-s
-                  #(file-saver/saveAs (svg-to-blob %) "erd.svg")))}
-   [:div.flex.items-center
-    [:span.mr-1 "Export SVG"]
-    download-icon]])
+                  #(file-saver/saveAs (svg-to-blob %) "erd.svg")))}])
+
+;;;; Imperative nonsense for resizing the SVG.
+
+(defn ^js/SVGAnimatedString get-svg! []
+  (js/document.querySelector "#diagram-svg"))
+
+(defn fit-screen!
+  "graphviz gives the svg a height and width that match the viewbox height and
+  width, meaning the svg is as large as the viewbox, even if that means it has
+  to overflow its container. We can remove those attributes to force the svg to
+  fit in its container."
+  []
+  (reset! !fit-screen? true)
+  (doto (get-svg!)
+    (.removeAttribute "height")
+    (.removeAttribute "width")))
+
+(defn fit-intrinsic!
+  "Restore the svg's width and height, so that it overflows its container. See
+  [[fit-screen!]]."
+  []
+  (reset! !fit-screen? false)
+  (let [svg      (get-svg!)
+        view-box (.-baseVal (.-viewBox svg))]
+    (doto svg
+      (.setAttribute "height" (.-height view-box))
+      (.setAttribute "width" (.-width view-box)))))
+
+(defn- fit-screen-button
+  "graphviz renders the SVG at a legible size, even if that means it has to be
+  wider than the screen. But sometimes it's nice to shrink wide SVGs to fit on
+  screen, even if they become less legible. This will also enlarge small SVGs,
+  which is less desirable, but still OK."
+  []
+  [icon-button "Fit Screen" ArrowsExpandIcon
+   {:on-click #(if (fit-screen?) (fit-intrinsic!) (fit-screen!))}])
 
 (defn config [nodes dot-s]
   (let [{enums      :enum
@@ -144,7 +193,9 @@
     [dropdown
      [:div.absolute.mt-2.rounded-md.shadow-lg.overflow-hidden.origin-top-left.left-0.bg-white.text-xs.leading-5.text-gray-700.whitespace-nowrap
       [:div.divide-y.divide-gray-500
-       [download dot-s]
+       [:div.flex.justify-between
+        [download dot-s]
+        [fit-screen-button]]
        [clear-filters]
        [attr-visibility]
        [collections-inclusion aggregates]

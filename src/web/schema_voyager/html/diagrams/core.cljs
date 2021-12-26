@@ -30,7 +30,14 @@
    {:ref (fn [div]
            (when div
              (diagrams.util/with-dot-to-svg s
-               #(set! (.-innerHTML div) %))))}])
+               (fn [svg-string]
+                 (set! (.-innerHTML div) svg-string)
+                 (doto (.querySelector div "svg")
+                   (.setAttribute "id" "diagram-svg"))
+                 ;; keep in sync with user selection of sizing
+                 (if (diagrams.config/fit-screen?)
+                   (diagrams.config/fit-screen!)
+                   (diagrams.config/fit-intrinsic!))))))}])
 
 (def ^:private html
   dom/render-to-static-markup)
