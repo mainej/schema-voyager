@@ -1,7 +1,12 @@
 (ns schema-voyager.html.diagrams.util
   (:require
+   [reagent.core :as r]
    [graphviz]
    [promesa.core :as p]))
+
+(defonce state (r/atom {:fit-screen? false}))
+(def ^:private !fit-screen? (r/cursor state [:fit-screen?]))
+(defn- fit-screen? [] @!fit-screen?)
 
 (def colors
   {:purple-700  "#6D28D9"
@@ -47,10 +52,42 @@
             .-parentNode
             (.setAttributeNS "http://www.w3.org/1999/xlink" "title" text-content))))))
 
+;;;; Imperative nonsense for resizing the SVG.
+
+(defn- ^js/SVGAnimatedString get-svg! []
+  (js/document.querySelector "#diagram-svg"))
+
+(defn- fit-screen!
+  "graphviz gives the svg a height and width that match the viewbox height and
+  width, meaning the svg is as large as the viewbox, even if that means it has
+  to overflow its container. We can remove those attributes to force the svg to
+  fit in its container."
+  [^js/Element svg]
+  (reset! !fit-screen? true)
+  (doto svg
+    (.removeAttribute "height")
+    (.removeAttribute "width")))
+
+(defn- fit-intrinsic!
+  "Restore the svg's width and height, so that it overflows its container. See
+  [[fit-screen!]]."
+  [^js/SVGAnimatedString svg]
+  (reset! !fit-screen? false)
+  (let [view-box (.-baseVal (.-viewBox svg))]
+    (doto svg
+      (.setAttribute "height" (.-height view-box))
+      (.setAttribute "width" (.-width view-box)))))
+
+(defn toggle-fit-screen []
+  (let [svg (get-svg!)]
+    (if (fit-screen?) (fit-intrinsic! svg) (fit-screen! svg))))
+
 (defn with-dot-to-svg [dot-s f]
   (p/let [svg-s (graphviz/graphviz.dot dot-s)]
     (let [svg (-> (js/document.createRange) (.createContextualFragment svg-s) (.querySelector "svg"))]
       (.setAttribute svg "id" "diagram-svg")
+      ;; keep in sync with user selection of sizing
+      (if (fit-screen?) (fit-screen! svg) (fit-intrinsic! svg))
       ;; To make this work, must also enable :label on dot-edge
       #_(label-edges svg)
       (f svg))))

@@ -21,11 +21,7 @@
            (when div
              (diagrams.util/with-dot-to-svg s
                (fn [svg]
-                 (.replaceChildren ^js/Element div svg)
-                 ;; keep in sync with user selection of sizing
-                 (if (diagrams.config/fit-screen?)
-                   (diagrams.config/fit-screen!)
-                   (diagrams.config/fit-intrinsic!))))))}])
+                 (.replaceChildren ^js/Element div svg)))))}])
 
 (def ^:private html
   dom/render-to-static-markup)
@@ -106,7 +102,7 @@
                     (map #(dot-edge % attrs-visible?))))))))
 
 (defn erd [edges]
-  (r/with-let [_ (diagrams.config/reset-state)]
+  (r/with-let [_ (diagrams.config/reset-filters)]
     (when (seq edges)
       (let [dot-s (dot-graph edges)]
         [:div

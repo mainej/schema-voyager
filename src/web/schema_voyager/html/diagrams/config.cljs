@@ -18,20 +18,12 @@
   {:attrs-visible? true
    :excluded-eids  #{}})
 
-(def ^:private default-state
-  (assoc default-filters
-         :fit-screen? false))
-
-(defonce state (r/atom default-state))
-(defn reset-filters [] (swap! state merge default-filters))
-(defn reset-state [] (reset! state default-state))
+(defonce state (r/atom default-filters))
+(defn reset-filters [] (reset! state default-filters))
 
 (def ^:private !attrs-visible? (r/cursor state [:attrs-visible?]))
 (defn attrs-visible? [] @!attrs-visible?)
 (defn- toggle-attrs-visible [] (r/rswap! !attrs-visible? not))
-
-(def ^:private !fit-screen? (r/cursor state [:fit-screen?]))
-(defn fit-screen? [] @!fit-screen?)
 
 (def ^:private !excluded-eids (r/cursor state [:excluded-eids]))
 (defn- excluded-eids [] @!excluded-eids)
@@ -150,33 +142,6 @@
                 (diagrams.util/with-dot-to-svg dot-s
                   #(file-saver/saveAs (svg-to-blob %) "erd.svg")))}])
 
-;;;; Imperative nonsense for resizing the SVG.
-
-(defn ^js/SVGAnimatedString get-svg! []
-  (js/document.querySelector "#diagram-svg"))
-
-(defn fit-screen!
-  "graphviz gives the svg a height and width that match the viewbox height and
-  width, meaning the svg is as large as the viewbox, even if that means it has
-  to overflow its container. We can remove those attributes to force the svg to
-  fit in its container."
-  []
-  (reset! !fit-screen? true)
-  (doto (get-svg!)
-    (.removeAttribute "height")
-    (.removeAttribute "width")))
-
-(defn fit-intrinsic!
-  "Restore the svg's width and height, so that it overflows its container. See
-  [[fit-screen!]]."
-  []
-  (reset! !fit-screen? false)
-  (let [svg      (get-svg!)
-        view-box (.-baseVal (.-viewBox svg))]
-    (doto svg
-      (.setAttribute "height" (.-height view-box))
-      (.setAttribute "width" (.-width view-box)))))
-
 (defn- fit-screen-button
   "graphviz renders the SVG at a legible size, even if that means it has to be
   wider than the screen. But sometimes it's nice to shrink wide SVGs to fit on
@@ -184,7 +149,7 @@
   which is less desirable, but still OK."
   []
   [icon-button "Fit Screen" ArrowsExpandIcon
-   {:on-click #(if (fit-screen?) (fit-intrinsic!) (fit-screen!))}])
+   {:on-click diagrams.util/toggle-fit-screen}])
 
 (defn config [nodes dot-s]
   (let [{enums      :enum
