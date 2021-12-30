@@ -89,50 +89,43 @@
   ;; Voyager). This lets us keep the large template file out of version control.
 
   ;; IMPORTANT: keep this in sync with
-  ;; `schema-voyager.template.config/template-file-name`.
-  ;; We intentionally do not depend on `schema-voyager.template.config`, so that
-  ;; the release can be run as `clojure -T:release`.
+  ;; `schema-voyager.template.config/template-file-name`. We intentionally do
+  ;; not depend on `schema-voyager.template.config`, so that the release can be
+  ;; run as `clojure -T:release`, i.e. as a tool without other dependencies.
   (b/copy-file {:src    "resources/standalone-template.html"
                 :target "target/classes/standalone-template.html"})
   params)
 
-(defn- build-standalone-example [params]
-  (b/process {:command-args ["clojure" "-X:cli" "standalone" (str params)]}))
-
-(defn- build-standalone-examples [params]
-  (println "\nBuilding sample projects for GitHub Pages...")
+(defn- build-standalone-example [file sources]
   ;; expects _site to have been initialized:
   ;; git fetch origin gh-pages
   ;; git worktree add _site gh-pages
-  (when-not (-> {:sources     [{:file/name "resources/mbrainz-schema/schema.edn"}
-                               {:file/name "resources/mbrainz-schema/enums.edn"}
-                               {:file/name "resources/mbrainz-schema/supplemental.edn"}]
-                 :output-path "_site/mbrainz-schema.html"}
-                build-standalone-example
-                :exit
-                zero?)
-    (die "\nCouldn't create mbrainz-schema.html"))
+  (let [params {:sources     sources
+                :output-path (str "_site/" file)}]
+    (when-not (-> (b/process {:command-args ["clojure" "-X:cli" "standalone" (str params)]})
+                  :exit
+                  zero?)
+      (die "\nCouldn't create %s" file))))
+
+(defn- build-standalone-examples [params]
+  (println "\nBuilding sample projects for GitHub Pages...")
+  (build-standalone-example "mbrainz-schema.html"
+                            [{:file/name "resources/mbrainz-schema/schema.edn"}
+                             {:file/name "resources/mbrainz-schema/enums.edn"}
+                             {:file/name "resources/mbrainz-schema/supplemental.edn"}])
   ;; A meta view of Datomic's schema
-  (when-not (-> {:sources     [{:file/name "resources/datomic-schema/schema.edn"}
-                               {:file/name "resources/datomic-schema/fixes.edn"}
-                               {:file/name "resources/datomic-schema/supplemental.edn"}]
-                 :output-path "_site/datomic-schema.html"}
-                build-standalone-example
-                :exit
-                zero?)
-    (die "\nCouldn't create datomic-schema.html"))
+  (build-standalone-example "datomic-schema.html"
+                            [{:file/name "resources/datomic-schema/schema.edn"}
+                             {:file/name "resources/datomic-schema/fixes.edn"}
+                             {:file/name "resources/datomic-schema/supplemental.edn"}])
   ;; A meta view of Schema Voyager. Shows Datomic properties and supplemental
   ;; Schema Voyager properties and their relationships.
-  (when-not (-> {:sources     [{:file/name "resources/datomic-schema/schema.edn"}
-                               {:file/name "resources/datomic-schema/fixes.edn"}
-                               {:file/name "resources/datomic-schema/supplemental.edn"}
-                               {:file/name "resources/schema-voyager-schema/schema.edn"}
-                               {:file/name "resources/schema-voyager-schema/supplemental.edn"}]
-                 :output-path "_site/schema-voyager-schema.html"}
-                build-standalone-example
-                :exit
-                zero?)
-    (die "\nCouldn't create schema-voyager-schema.html"))
+  (build-standalone-example "schema-voyager-schema.html"
+                            [{:file/name "resources/datomic-schema/schema.edn"}
+                             {:file/name "resources/datomic-schema/fixes.edn"}
+                             {:file/name "resources/datomic-schema/supplemental.edn"}
+                             {:file/name "resources/schema-voyager-schema/schema.edn"}
+                             {:file/name "resources/schema-voyager-schema/supplemental.edn"}])
   (when-not (or (scm-clean? {:dir "./_site"})
                 (zero? (:exit (git ["commit" "-a" "--no-gpg-sign" "-m" "Deploy updates"]
                                    {:dir "./_site"}))))
