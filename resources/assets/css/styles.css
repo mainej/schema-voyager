@@ -3,15 +3,15 @@
 @tailwind utilities;
 
 @layer base {
-    input::placeholder,
-    textarea::placeholder {
-        @apply text-gray-800;
-    }
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-800;
+  }
 }
 
 @layer utilities {
-    .small-caps {
-        font-variant: small-caps;
-        @apply tracking-wider;
-    }
+  .small-caps {
+    font-variant: small-caps;
+    @apply tracking-wider;
+  }
 }

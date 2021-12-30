@@ -1,20 +1,20 @@
 {
-    "name": "schema-voyager",
-    "version": "1.0.0",
-    "description": "",
-    "private": true,
-    "author": "",
-    "license": "MIT",
-    "devDependencies": {
-        "tailwindcss": "^2.2.2"
-    },
-    "dependencies": {
-        "@headlessui/react": "^1.4.1",
-        "@heroicons/react": "^1.0.5",
-        "create-react-class": "^15.7.0",
-        "file-saver": "^2.0.5",
-        "react": "^17.0.2",
-        "react-dom": "^17.0.2",
-        "shadow-cljs": "2.15.10"
-    }
+  "name": "schema-voyager",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^2.2.2"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.4.1",
+    "@heroicons/react": "^1.0.5",
+    "create-react-class": "^15.7.0",
+    "file-saver": "^2.0.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "shadow-cljs": "2.15.10"
+  }
 }
