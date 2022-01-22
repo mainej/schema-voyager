@@ -1,12 +1,12 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  mode: 'jit',
-  darkMode: false,
   theme: {
     extend: {
       colors: {
         teal: colors.teal,
+        green: colors.emerald,
+        purple: colors.violet
       },
       spacing: {
         '0half': '0.125rem',
@@ -57,8 +57,8 @@ module.exports = {
     },
   },
   plugins: [],
-  purge: {
-    content: [
+  content: {
+    files: [
       './resources/assets/index.html',
       './src/**/*.cljs',
       './src/**/*.cljc',

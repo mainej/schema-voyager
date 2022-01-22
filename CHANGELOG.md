@@ -3,10 +3,14 @@ All notable changes to this project will be documented in this file. This change
 log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [2.0.240] - 2022-01-21
 ### Added
 * SVG diagrams can be resized to fit screen.
 * Additional collection data, if any, is shown on the collection page, rendered
   similarly to additional attribute data.
+### Changed
+* Bump deps, upgrade Tailwind CSS
 
 ## [2.0.228] - 2021-12-14
 ### Changed
@@ -65,7 +69,8 @@ supplemental files.
 This project has existed for some time, but this is the first release that can
 be used from other projects without cloning this library.
 
-[Unreleased]: https://github.com/mainej/f-form/compare/v2.0.228...main
+[Unreleased]: https://github.com/mainej/f-form/compare/v2.0.240...main
+[2.0.240]: https://github.com/mainej/f-form/compare/v2.0.228...v2.0.240
 [2.0.228]: https://github.com/mainej/f-form/compare/v2.0.221...v2.0.228
 [2.0.221]: https://github.com/mainej/f-form/compare/v2.0.220...v2.0.221
 [2.0.220]: https://github.com/mainej/f-form/compare/v1.1.208...v2.0.220
