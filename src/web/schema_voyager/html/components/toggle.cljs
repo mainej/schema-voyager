@@ -23,7 +23,6 @@
                     :w-3
                     :rounded-full
                     :bg-white
-                    :transform
                     :transition-transform
                     (if checked :translate-x-2 :translate-x-0)]}]]
    [ui/switch-label {:class :cursor-pointer} label]])

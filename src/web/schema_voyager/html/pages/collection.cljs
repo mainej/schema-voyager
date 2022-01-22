@@ -75,7 +75,7 @@
                    (if (:db.schema/deprecated? attribute)
                      :bg-gray-300
                      :hover:bg-gray-100)]}
-       [:div.flex-grow [attribute-panel attribute]]
+       [:div.grow [attribute-panel attribute]]
        chevron-right])])
 
 (defn page [{:keys [db.schema.collection/attributes db.schema.collection/referenced-by-attrs db/doc] :as coll}]
