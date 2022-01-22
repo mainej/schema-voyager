@@ -5,6 +5,8 @@ log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 ## [Unreleased]
 ### Added
 * SVG diagrams can be resized to fit screen.
+* Additional collection data, if any, is shown on the collection page, rendered
+  similarly to additional attribute data.
 
 ## [2.0.228] - 2021-12-14
 ### Changed

@@ -198,6 +198,7 @@
                   {:db/ident                   (:db/ident refers-attr)
                    :db.schema/tuple-references (vec tuple-refs)}))))))
 
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn infer-references
   "Infer references between ref and tuple attributes by inspecting the things
   to which they refer.

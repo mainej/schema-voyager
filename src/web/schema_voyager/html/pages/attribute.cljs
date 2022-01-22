@@ -1,6 +1,7 @@
 (ns schema-voyager.html.pages.attribute
   (:require [schema-voyager.html.db :as db]
             [schema-voyager.html.components.value-type :as value-type]
+            [schema-voyager.html.components.additional-fields :as additional-fields]
             [schema-voyager.html.diagrams.core :as diagrams]
             [schema-voyager.html.util :as util]))
 
@@ -36,13 +37,7 @@
     (= unique :db.unique/identity) (dissoc :db/unique)))
 
 (defn additional-fields [attribute]
-  (when-let [fields (seq (unhandled-fields attribute))]
-    [:dl.divide-y
-     (for [[field value] (sort-by first fields)]
-       ^{:key field}
-       [:div.sm:flex.p-4.sm:p-6
-        [:dt.sm:w-1|3 (pr-str field)]
-        [:dd (pr-str value)]])]))
+  [additional-fields/additional-fields (unhandled-fields attribute)])
 
 (defn diagram [attr]
   ^{:key (:db/id attr)}

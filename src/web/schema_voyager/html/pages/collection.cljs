@@ -3,7 +3,10 @@
             [schema-voyager.html.db :as db]
             [schema-voyager.html.components.value-type :as value-type]
             [schema-voyager.html.diagrams.core :as diagrams]
-            [schema-voyager.html.util :as util]))
+            [schema-voyager.html.util :as util]
+            [schema-voyager.html.components.additional-fields :as additional-fields]))
+
+(def card :div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl.divide-y)
 
 (defn collection-from-route
   [collection-type parameters]
@@ -28,6 +31,19 @@
      [:span.font-medium
       util/deprecated-pill])])
 
+(defn unhandled-fields [coll]
+  (dissoc coll
+          :db/id :db/doc :db.schema.pseudo/type
+          :db.schema.collection/name
+          :db.schema.collection/type
+          :db.schema.collection/attributes
+          :db.schema.collection/referenced-by-attrs))
+
+(defn additional-fields [coll]
+  (when-let [unhandled-fields (seq (unhandled-fields coll))]
+    [card
+     [additional-fields/additional-fields unhandled-fields]]))
+
 (defmulti attribute-panel :db.schema.pseudo/type)
 
 (defmethod attribute-panel :attribute [attribute]
@@ -41,18 +57,8 @@
    [attribute-header constant :enum]
    [doc-str constant]])
 
-(defn page [{:keys [db.schema.collection/attributes db.schema.collection/referenced-by-attrs db/doc] :as coll}]
-  [:div.space-y-6
-   [:div.px-4.sm:px-0.space-y-6
-    [:h1.whitespace-nowrap
-     [util/coll-name* {:class [:font-bold]} coll]
-     " "
-     [util/aggregate-abbr coll]]
-    (when doc
-      [:p doc])
-    (when (seq referenced-by-attrs)
-      [:div.text-gray-600 "Referenced by " [util/attr-links referenced-by-attrs]])]
-   [:div.sm:shadow-lg.overflow-hidden.sm:rounded-lg.bg-white.max-w-4xl.divide-y
+(defn attributes-card [attributes]
+  [card
     (for [attribute attributes]
       ^{:key (:db/id attribute)}
       [:section
@@ -69,8 +75,22 @@
                    (if (:db.schema/deprecated? attribute)
                      :bg-gray-300
                      :hover:bg-gray-100)]}
-       [:div.flex-1 [attribute-panel attribute]]
-       chevron-right])]
+       [:div.flex-grow [attribute-panel attribute]]
+       chevron-right])])
+
+(defn page [{:keys [db.schema.collection/attributes db.schema.collection/referenced-by-attrs db/doc] :as coll}]
+  [:div.space-y-6
+   [:div.px-4.sm:px-0.space-y-6
+    [:h1.whitespace-nowrap
+     [util/coll-name* {:class [:font-bold]} coll]
+     " "
+     [util/aggregate-abbr coll]]
+    (when doc
+      [:p doc])
+    (when (seq referenced-by-attrs)
+      [:div.text-gray-600 "Referenced by " [util/attr-links referenced-by-attrs]])]
+   [additional-fields coll]
+   [attributes-card attributes]
    [:div
     ^{:key (:db/id coll)}
     [diagrams/erd (db/coll-edges coll)]]])
